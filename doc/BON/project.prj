@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<defaultNode>
+<nodeSDGroup SDGroupPath="[{fs}]Static_Diagrams[{fs}]Static Diagrams[{fs}]">
+<staticDiagram diagramFile="[{fs}]Static_Diagrams[{fs}]Static Diagrams[{fs}]Main View">
+</staticDiagram></nodeSDGroup><nodeDDGroup DDGroupPath="[{fs}]Dynamic_Diagrams[{fs}]Dynamic Diagrams[{fs}]">
+</nodeDDGroup><nodeUseGroup useGroupPath="[{fs}]Use_Case_Diagrams[{fs}]Use Case Diagrams[{fs}]">
+</nodeUseGroup><nodeGroup groupPath="[{fs}]Supporting_Documentation[{fs}]Supporting Documents[{fs}]">
+</nodeGroup></defaultNode>

@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<cluster name="System">
+<cluster currentMode="true" name="GAME LOGIC" nonIconifiedHeight="415" nonIconifiedWidth="641">
+<figure height="415" visible="true" width="641" x="15" y="245">
+</figure><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="HUMAN_PLAYER" nonDetailX="177" nonDetailY="41" persistent="false" prefix="" reused="false">
+<figure height="41" visible="true" width="177" x="23" y="409">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="PLAYER" nonDetailX="103" nonDetailY="41" persistent="false" prefix="deferred" reused="false">
+<figure height="41" visible="true" width="103" x="97" y="318">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="GAME" nonDetailX="95" nonDetailY="41" persistent="false" prefix="root" reused="false">
+<figure height="41" visible="true" width="95" x="284" y="424">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="BALL" nonDetailX="106" nonDetailY="41" persistent="false" prefix="" reused="false">
+<figure height="41" visible="true" width="106" x="414" y="312">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="SHOT" nonDetailX="94" nonDetailY="41" persistent="false" prefix="" reused="false">
+<figure height="41" visible="true" width="94" x="413" y="544">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="HOLE" nonDetailX="97" nonDetailY="41" persistent="false" prefix="" reused="false">
+<figure height="41" visible="true" width="97" x="521" y="378">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="BANK" nonDetailX="103" nonDetailY="41" persistent="false" prefix="" reused="false">
+<figure height="41" visible="true" width="103" x="510" y="477">
+</figure></class><class detailed="false" indexing="description:  &quot;This class represents the physical table with all balls&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="TABLE" nonDetailX="106" nonDetailY="41" persistent="false" prefix="" reused="false">
+<figure height="41" visible="true" width="106" x="262" y="299">
+</figure><feature inherited="false" type="attribute">
+feature { ANY }
+	balls: LIST[ BALL ]
+</feature><feature inherited="false" type="attribute">
+feature { ANY }
+	banks: LIST[ BANK ]
+</feature><feature inherited="false" type="attribute">
+feature { ANY }
+	holes: LIST[ HOLE ]
+</feature></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="IO" nonDetailX="106" nonDetailY="41" persistent="false" prefix="" reused="false">
+<figure height="41" visible="true" width="106" x="54" y="534">
+</figure></class></cluster><cluster currentMode="true" name="PHYSICS ENGINE" nonIconifiedHeight="200" nonIconifiedWidth="299">
+<figure height="200" visible="true" width="299" x="16" y="26">
+</figure><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="SIMULATION" nonDetailX="130" nonDetailY="41" persistent="false" prefix="" reused="false">
+<figure height="41" visible="true" width="130" x="51" y="70">
+</figure></class></cluster><cluster currentMode="true" name="GRAPHICS ENGINE" nonIconifiedHeight="201" nonIconifiedWidth="324">
+<figure height="201" visible="true" width="324" x="331" y="25">
+</figure><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="VIEW" nonDetailX="95" nonDetailY="41" persistent="false" prefix="" reused="false">
+<figure height="41" visible="true" width="95" x="350" y="70">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="MENU" nonDetailX="106" nonDetailY="41" persistent="false" prefix="" reused="false">
+<figure height="41" visible="true" width="106" x="507" y="70">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="RENDER" nonDetailX="118" nonDetailY="41" persistent="false" prefix="" reused="false">
+<figure height="41" visible="true" width="118" x="398" y="156">
+</figure></class></cluster><edge destNodeIndex="5" destPortIndex="bigport" srcNodeIndex="4" srcPortIndex="bigport" type="inheritance">
+<figure height="60" visible="true" width="38" x="102" y="349">
+<poly type="DoublePoly">
+<point x="119.0" y="409.0">
+</point><point x="140.0" y="358.0">
+</point></poly></figure></edge><edge destNodeIndex="12" destPortIndex="bigport" isMultiplicity="false" isShared="false" numMultiplicity="" numShared="" srcNodeIndex="4" srcPortIndex="bigport" type="association">
+<figure height="85" visible="true" width="35" x="107" y="449">
+<poly type="Poly">
+<point x="111.0" y="449.0">
+</point><point x="107.0" y="534.0">
+</point></poly></figure></edge><options interfaceFontName="Serif" interfaceFontSize="12">
+</options></cluster>

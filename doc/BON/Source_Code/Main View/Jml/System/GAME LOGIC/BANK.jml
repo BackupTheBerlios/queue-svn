@@ -1,0 +1,5 @@
+model import edu.iastate.cs.jml.models.*;
+
+public interface BANK {
+
+null}
