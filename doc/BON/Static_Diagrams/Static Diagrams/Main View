@@ -39,8 +39,8 @@ feature { ANY }
 <figure height="41" visible="true" width="95" x="350" y="70">
 </figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="MENU" nonDetailX="106" nonDetailY="41" persistent="false" prefix="" reused="false">
 <figure height="41" visible="true" width="106" x="507" y="70">
-</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="RENDER" nonDetailX="118" nonDetailY="41" persistent="false" prefix="" reused="false">
-<figure height="41" visible="true" width="118" x="398" y="156">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="RENDERER" nonDetailX="118" nonDetailY="41" persistent="false" prefix="" reused="false">
+<figure height="41" visible="true" width="118" x="426" y="152">
 </figure></class></cluster><edge destNodeIndex="5" destPortIndex="bigport" srcNodeIndex="4" srcPortIndex="bigport" type="inheritance">
 <figure height="60" visible="true" width="38" x="102" y="349">
 <poly type="DoublePoly">
