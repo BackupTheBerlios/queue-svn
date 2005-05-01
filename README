@@ -1,4 +1,11 @@
 Queue
 =====
 
-Queue is a 3D billiard game. It features a realistic physics engine and supports different billiard variants.
+Queue is a 3D billiard game. It features a realistic physics engine
+and supports different billiard variants.
+
+Installation
+------------
+
+See file INSTALL. (Queue is written in Eiffel, that should explain
+why an extra document is needed ;-)
