@@ -114,9 +114,9 @@ feature  -- Commands
 						curr_array_ ?= curr_face_ @ (1)
 						
 						vertex_.set_position (
-									curr_array_ @ (0),
-									curr_array_ @ (1),
-									curr_array_ @ (2)
+									vectors @ (curr_array_ @ (inner_index_) - 1) @ (0),
+									vectors @ (curr_array_ @ (inner_index_) - 1) @ (1),
+									vectors @ (curr_array_ @ (inner_index_) - 1) @ (2)
 											 )
 					end
 					
@@ -124,8 +124,8 @@ feature  -- Commands
 						curr_array_ ?= curr_face_ @ (2)
 						
 						vertex_.set_texture_coordinates (
-												curr_array_ @ (0),
-												curr_array_ @ (1)
+										texture_coordinates @ (curr_array_ @ (inner_index_) - 1) @ (0),
+										texture_coordinates @ (curr_array_ @ (inner_index_) - 1) @ (1)
 											 			)
 					end
 					
@@ -133,17 +133,15 @@ feature  -- Commands
 						curr_array_ ?= curr_face_ @ (3)
 						
 						vertex_.set_normal (
-									curr_array_ @ (0),
-									curr_array_ @ (1),
-									curr_array_ @ (2)
+									normals @ (curr_array_ @ (inner_index_) - 1) @ (0),
+									normals @ (curr_array_ @ (inner_index_) - 1) @ (1),
+									normals @ (curr_array_ @ (inner_index_) - 1) @ (2)
 										   )
 					end
 					
 					result.vertices.force (vertex_, 3*index_+inner_index_)
-					
 					inner_index_ := inner_index_ + 1
 				end
-				
 				index_ := index_ + 1
 			end
 		end
@@ -167,6 +165,7 @@ feature {NONE} -- implementation
 			loop
 				result.force (input.item.to_double, index_)	
 				input.forth
+				index_ := index_ + 1
 			end
 			
 		end
@@ -181,8 +180,6 @@ feature {NONE} -- implementation
 			normals_index_:INTEGER
 			tex_coords_: ARRAY[INTEGER]
 			tex_coords_index:INTEGER
-			
-			index_: INTEGER
 		do
 			create result
 			
@@ -193,7 +190,7 @@ feature {NONE} -- implementation
 			create tex_coords_.make (0,1)
 			
 			from
-				index_ := 0
+				
 			until
 				input.off
 			loop
