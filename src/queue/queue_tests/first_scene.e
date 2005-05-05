@@ -42,14 +42,43 @@ feature {NONE} -- root
 	gl_object : Q_GL_OBJECT is
 		local 
 			group : Q_GL_GROUP[Q_GL_OBJECT]
+			light_1, light_2, light_3 : Q_GL_LIGHT
 		do
 			create group.make
 			
-			group.force( create {Q_GL_COLOR_CUBE}.make_positioned_and_sized( 0, 0, -20, 5 ))
-			group.force( create {Q_GL_COLOR_CUBE}.make_positioned_and_sized( 10, 0, -20, 5 ))
-			group.force( create {Q_GL_COLOR_CUBE}.make_positioned_and_sized( 0, 10, -20, 5 ))
-			group.force( create {Q_GL_COLOR_CUBE}.make_positioned_and_sized( -10, 0, -20, 5 ))
-			group.force( create {Q_GL_COLOR_CUBE}.make_positioned_and_sized( 0, -10, -20, 5 ))
+			group.force( create {Q_GL_WHITE_CUBE}.make_positioned_and_sized( 0, 0, -20, 5 ))
+			group.force( create {Q_GL_WHITE_CUBE}.make_positioned_and_sized( 10, 0, -20, 5 ))
+			group.force( create {Q_GL_WHITE_CUBE}.make_positioned_and_sized( 0, 10, -20, 5 ))
+			group.force( create {Q_GL_WHITE_CUBE}.make_positioned_and_sized( -10, 0, -20, 5 ))
+			group.force( create {Q_GL_WHITE_CUBE}.make_positioned_and_sized( 0, -10, -20, 5 ))
+			
+			
+			create light_1.make( 0 )
+			create light_2.make( 1 )	
+			create light_3.make( 2 )
+			
+			light_1.set_ambient( 0, 0, 0, 1 )
+			light_1.set_specular( 0, 0, 0, 1 )
+			light_1.set_diffuse( 0, 0, 1, 1 )
+			light_1.set_position( 0, 20, -10 )
+			
+			light_2.set_ambient( 0, 0, 0, 1 )
+			light_2.set_specular( 0, 0, 0, 1 )
+			light_2.set_diffuse( 1, 0, 0, 1 )
+			light_2.set_position( -10, -20, -10 )
+
+			light_3.set_ambient( 0, 0, 0, 1 )
+			light_3.set_specular( 0, 0, 0, 1 )
+			light_3.set_diffuse( 0, 1, 0, 1 )
+			light_3.set_position( 0, -10, 0 )
+			
+			light_3.set_spot_cut_off ( 20 )
+			light_3.set_spot_direction ( 0.25, 1, -1 )
+			light_3.set_spot_exponent ( 0 )
+			
+			group.force( light_1 )
+			group.force( light_2 )
+			group.force( light_3 )
 			
 			result := group
 		end

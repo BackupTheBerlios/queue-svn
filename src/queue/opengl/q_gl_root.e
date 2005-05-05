@@ -22,6 +22,7 @@ feature{NONE} -- initialisation
 			set_far( 10000 )
 			
 			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_depth_test )
+			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_lighting )
 		end
 
 feature -- visualisation

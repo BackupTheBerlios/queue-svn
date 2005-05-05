@@ -137,5 +137,4 @@ feature -- visualisation
 			gl_.gl_vertex3d( x+delta_, y-delta_, z-delta_ )
 			gl_.gl_end
 		end
-
 end -- class Q_GL_COLOR_CUBE
