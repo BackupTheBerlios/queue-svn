@@ -9,7 +9,14 @@ deferred class
 
 feature
 	load_file (a_filename: STRING) is
-	deferred
-	end
+		deferred
+		end
 
+	create_flat_model : Q_GL_FLAT_MODEL is
+		deferred
+		end		
+	
+	create_index_model : Q_GL_INDEX_MODEL is
+		deferred
+		end
 end

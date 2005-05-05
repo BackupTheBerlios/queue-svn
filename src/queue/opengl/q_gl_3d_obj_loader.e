@@ -9,11 +9,8 @@ class
 
 inherit 
 	Q_GL_3D_LOADER
-		redefine
-			load_file
-		end
 
-creation
+create
 	make
 
 feature -- Initialization
@@ -88,6 +85,71 @@ feature  -- Commands
 					end
 				end
 			end
+		end
+		
+	create_flat_model : Q_GL_FLAT_MODEL is
+			-- Create a flat object.
+		local
+			index_, inner_index_:INTEGER
+			curr_face_:TUPLE[ARRAY[INTEGER],ARRAY[INTEGER], ARRAY[INTEGER]]
+			vertex_:Q_GL_VERTEX
+			
+			curr_array_:ARRAY[INTEGER]
+		do
+			create result.make(faces.count*3)
+			
+			from
+				index_ := 0
+			until
+				index_ >= faces.count
+			loop
+				curr_face_ := faces @ (index_)
+				
+				-- process this face
+				from inner_index_ := 0 until inner_index_ >= 3
+				loop
+					create vertex_
+					
+					if has_vectors then
+						curr_array_ ?= curr_face_ @ (1)
+						
+						vertex_.set_position (
+									curr_array_ @ (0),
+									curr_array_ @ (1),
+									curr_array_ @ (2)
+											 )
+					end
+					
+					if has_texture_cooridnates then
+						curr_array_ ?= curr_face_ @ (2)
+						
+						vertex_.set_texture_coordinates (
+												curr_array_ @ (0),
+												curr_array_ @ (1)
+											 			)
+					end
+					
+					if has_normals then
+						curr_array_ ?= curr_face_ @ (3)
+						
+						vertex_.set_normal (
+									curr_array_ @ (0),
+									curr_array_ @ (1),
+									curr_array_ @ (2)
+										   )
+					end
+					
+					result.vertices.force (vertex_, 3*index_+inner_index_)
+					
+					inner_index_ := inner_index_ + 1
+				end
+				
+				index_ := index_ + 1
+			end
+		end
+	
+	create_index_model : Q_GL_INDEX_MODEL is
+		do
 		end
 		
 feature {NONE} -- implementation
