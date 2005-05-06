@@ -7,16 +7,18 @@ class
 	Q_EVENT_QUEUE
 
 creation
-	make,
-	make_from_loop
+	make
 	
 feature{NONE} -- creation
-	make_from_loop( event_loop_ : ESDL_EVENT_LOOP ) is
+	make( event_loop_ : ESDL_EVENT_LOOP; surface_ : ESDL_VIDEO_SUBSYSTEM ) is
 			-- creates a queue, using a predefined loop
 		require
 			loop_not_void : event_loop_ /= void
+			surface_not_void : surface_ /= void
 		do
 			event_loop := event_loop_
+			surface := surface_
+			
 			create queue.make	
 
 			event_loop.active_event.force( agent handle_active_event(?) )
@@ -35,14 +37,7 @@ feature{NONE} -- creation
 			event_loop.user_event.force( agent handle_user_event(?) )
 			event_loop.expose_event.force( agent handle_expose_event(?) )
 			event_loop.quit_event.force( agent handle_quit_event(?) )
-		end
-		
-
-	make is
-		do
-			make_from_loop( create {ESDL_EVENT_LOOP}.make_poll )
-		end
-		
+		end		
 
 feature -- information top
 	top_flag : INTEGER is
@@ -384,10 +379,16 @@ feature -- loop
 			event_loop.stop
 		end		
 
+feature -- additional informations
+	surface : ESDL_VIDEO_SUBSYSTEM
+		-- the surface from witch the events came
+
 feature {NONE} -- fields
 	event_loop : ESDL_EVENT_LOOP
-	
+		-- the eventloop to get events
+		
 	queue : LINKED_LIST[ TUPLE[ INTEGER, ANY ]]
+		-- the events not yet processed
 
 feature {NONE} -- handlers
 	handle_active_event( any_ : ANY ) is

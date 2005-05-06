@@ -6,10 +6,16 @@ class
 	Q_GL_ROOT
 
 creation
-	init
+	init,
+	init_lighting
 
 feature{NONE} -- initialisation
-	init() is
+	init is
+		do
+			init_lighting( true )
+		end
+
+	init_lighting( lighting_ : BOOLEAN ) is
 		do
 			create live_manager.make
 			open_gl := create {Q_GL_DRAWABLE_IMPLEMENTATION}.make( live_manager )
@@ -22,7 +28,13 @@ feature{NONE} -- initialisation
 			set_far( 10000 )
 			
 			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_depth_test )
-			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_lighting )
+			
+			if lighting_ then
+				open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_lighting )
+			end
+			
+			create hud.make
+			hud.set_bounds ( 0, 0, 1, 1 )
 		end
 
 feature -- visualisation
@@ -72,6 +84,7 @@ feature {NONE} -- helpfeatures
 			width_, height_ : DOUBLE
 		do
 			open_gl.gl.gl_load_identity
+		    open_gl.gl.gl_push_matrix
 		    
 		    display_x_ := ( left + right ) / 2.0;
 		    display_y_ := ( top + bottom ) / 2.0;
@@ -80,17 +93,19 @@ feature {NONE} -- helpfeatures
 		    width_ := right - left;
 		    height_ := top - bottom;
 		    
-		    open_gl.gl.gl_translated( display_x_ - width_/2, display_y_ - height_/2, display_z_ );
-		    open_gl.gl.gl_scaled( width_, height_, 1.0 );
+		    open_gl.gl.gl_translated( display_x_ - width_/2, -(display_y_ - height_/2), display_z_ );
+		    open_gl.gl.gl_scaled( width_, -height_, 1.0 );
 		    open_gl.gl.gl_normal3f( 0, 0, 1 );
 		    
 		    hud.draw( open_gl )
+		    
+		    open_gl.gl.gl_pop_matrix
 		end
 		
 
 feature -- parts to be displayed
 	inside : Q_GL_OBJECT
-	hud : Q_HUD_COMPONENT
+	hud : Q_HUD_ROOT_PANE
 	transform : Q_GL_TRANSFORM
 	
 	set_inside( inside_ : Q_GL_OBJECT ) is
@@ -99,7 +114,7 @@ feature -- parts to be displayed
 			inside := inside_
 		end
 		
-	set_hud( hud_ : Q_HUD_COMPONENT ) is
+	set_hud( hud_ : Q_HUD_ROOT_PANE ) is
 			-- set the Heads-Up-Display
 		do
 			hud := hud_

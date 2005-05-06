@@ -29,7 +29,7 @@ feature {NONE} -- Initialization
 			set_application_name ("Queue OpenGL Proof of Concept")
 			
 			-- Create first scene.
-			create first_scene
+			create first_scene.make_scene( video_subsystem )
 
 			-- Set and launch the first scene.
 			set_scene (first_scene)
