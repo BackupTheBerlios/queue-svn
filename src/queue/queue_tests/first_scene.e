@@ -34,9 +34,13 @@ feature -- Initialization
 			
 			camera_.set_y( 15 )
 			camera_.set_x( -10 )
-		end
+			
+			create events.make_from_loop( event_loop )
+		end		
 		
-feature {NONE} -- root
+feature {NONE} -- values
+	events : Q_EVENT_QUEUE
+
 	root : Q_GL_ROOT
 	
 	gl_object : Q_GL_OBJECT is
@@ -87,9 +91,23 @@ feature {NONE} -- root
 feature {NONE} -- Implementation
 
 	redraw is
-			-- Draw all
+		local
+			empty_ : ANY
 		do
+			-- draw scene
 			root.draw
+			
+			-- work on input
+			from
+				
+			until
+				events.is_empty
+			loop
+				io.put_integer( events.top_flag )
+				io.put_new_line
+				empty_ := events.pop_event
+			end
+			
 			screen.redraw
 		end
 end

@@ -63,11 +63,15 @@ feature {NONE} -- root
 			light_1.set_specular( 0, 0, 0, 1 )
 			light_1.set_diffuse( 0, 0, 1, 1 )
 			light_1.set_position( 0, 200, 200 )
+			light_1.set_constant_attenuation( 0 )
+			light_1.set_linear_attenuation( 0.01 )
 			
 			light_2.set_ambient( 0, 0, 0, 1 )
 			light_2.set_specular( 0, 0, 0, 1 )
 			light_2.set_diffuse( 1, 0, 0, 1 )
 			light_2.set_position( 0, -200, 200 )
+			light_2.set_constant_attenuation( 0 )
+			light_2.set_linear_attenuation( 0.01 )
 			
 			group.force( light_1 )
 			group.force( light_2 )

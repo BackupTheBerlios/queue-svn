@@ -39,7 +39,7 @@ feature -- managing
 		end
 		
 	
-	kill() is
+	kill is
 			-- kills all livables witch did not call alive, since the last grow-call
 		do
 			from

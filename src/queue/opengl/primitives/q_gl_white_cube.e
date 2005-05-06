@@ -63,7 +63,7 @@ feature -- position, size
 		end
 		
 feature -- visualisation
-	resolution : INTEGER is 20
+	resolution : INTEGER is 5
 
 	draw( open_gl : Q_GL_DRAWABLE ) is
 		local
