@@ -68,13 +68,23 @@ feature {NONE} -- values
 	gl_hud : Q_HUD_COMPONENT is
 		local
 			hud_, child_ : SIMPLE_HUD_CONTAINER
+			font : Q_HUD_IMAGE_FONT
+			label : Q_HUD_LABEL
 		do
 			create hud_.make_color( 1, 0, 0 )
 			create child_.make_color( 0, 0, 1 )
+			create font.make ("data/times new roman.txt", "data/times new roman.gif" )
+			create label
+			
+			label.set_font( font )
+			label.set_text( "abc" )
+			label.set_bounds( 0.2, 0.2, 0.5, 0.5 )
+			label.set_font_size( 0.5 )
 			
 			hud_.set_bounds ( 0.1, 0.1, 0.2, 0.2 )			
 			child_.set_bounds( 0.1, 0.1, 0.2, 0.2 )
-			
+
+			hud_.add( label )
 			hud_.add( child_ )
 			
 			result := hud_
@@ -84,6 +94,7 @@ feature {NONE} -- values
 	gl_object : Q_GL_OBJECT is
 		local 
 			group : Q_GL_GROUP[Q_GL_OBJECT]
+			
 	--		light_1, light_2, light_3 : Q_GL_LIGHT
 		do
 			create group.make
