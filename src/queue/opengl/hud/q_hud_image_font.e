@@ -84,7 +84,7 @@ feature{NONE} -- creation
 feature{NONE} -- Implementation
 	to_factor( size_ : DOUBLE ) : DOUBLE is
 		do
-			result := size_ / 15
+			result := size_ / 64
 		end
 	
 	image_width, image_height : INTEGER

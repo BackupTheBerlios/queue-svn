@@ -27,11 +27,11 @@ feature -- draw
 		require
 			open_gl_not_void : open_gl /= void
 		do
-			open_gl.gl.gl_push_attrib( open_gl.gl_constants.esdl_gl_enable_bit )
+
 			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_texture_2d )
-			open_gl.gl.gl_begin( open_gl.gl_constants.esdl_gl_quads )
 			
-			open_gl.gl.gl_bind_texture( open_gl.gl_constants.esdl_gl_texture_2d, texture_id )
+			open_gl.gl.gl_begin( open_gl.gl_constants.esdl_gl_quads )
+			open_gl.gl.gl_color3f( 1, 1, 1 )
 			
 			open_gl.gl.gl_tex_coord4i( x, y, image_width_, image_height_ )
 			open_gl.gl.gl_vertex2d( x_, base_ - factor_ * base )
@@ -46,7 +46,7 @@ feature -- draw
 			open_gl.gl.gl_vertex2d( x_, base_ + factor_ * (height - base) )
 			
 			open_gl.gl.gl_end
-			open_gl.gl.gl_pop_attrib
+			open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_texture_2d )
 		end
 		
 

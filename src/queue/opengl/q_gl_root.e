@@ -17,6 +17,8 @@ feature{NONE} -- initialisation
 
 	init_lighting( lighting_ : BOOLEAN ) is
 		do
+			lighting := lighting_
+
 			create live_manager.make
 			open_gl := create {Q_GL_DRAWABLE_IMPLEMENTATION}.make( live_manager )
 			
@@ -83,6 +85,10 @@ feature {NONE} -- helpfeatures
 			display_x_, display_y_, display_z_ : DOUBLE
 			width_, height_ : DOUBLE
 		do
+			if lighting then
+				open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_lighting )
+			end
+			
 			open_gl.gl.gl_load_identity
 		    open_gl.gl.gl_push_matrix
 		    
@@ -100,6 +106,10 @@ feature {NONE} -- helpfeatures
 		    hud.draw( open_gl )
 		    
 		    open_gl.gl.gl_pop_matrix
+		    
+		    if lighting then
+				open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_lighting )
+			end
 		end
 		
 
@@ -165,4 +175,8 @@ feature -- frustum
  		do
  			far := far_
  		end
+ 		
+feature -- values
+	lighting : BOOLEAN
+	
 end -- class Q_GL_ROOT
