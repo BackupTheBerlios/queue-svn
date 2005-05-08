@@ -15,11 +15,12 @@ creation
 feature{NONE} -- creation
 	make( font_file_, image_file_ : STRING ) is
 			-- font_file is a file listing all Letters in the format
-			-- *c x y w h b
+			-- *c xt yt wt ht w h b
 			-- where every letter stands on a new line.
 			-- c is a Character
-			-- x, y, w, and h the position and size of the character in the image (pixels)
-			-- b the baseline. a value between 0 and height, for most characters, it will be equal to height
+			-- xt, yt, wt, and ht the position and size of the character in the image (pixels)
+			-- w, h the real size of the letter.
+			-- b the baseline. a value between 0 and height, for most characters, it will be 0
 			--
 			-- image_file is an image
 		local
@@ -29,7 +30,7 @@ feature{NONE} -- creation
 			orakel_ : PLAIN_TEXT_FILE
 			
 			c_ : CHARACTER
-			x_, y_, width_, height_, base_ : INTEGER
+			x_t_, y_t_, width_t_, height_t_, width_, height_, base_ : INTEGER
 		do
 			create shared_factory_
 			create letters.make( 80 )
@@ -41,6 +42,7 @@ feature{NONE} -- creation
 			
 			from
 				create orakel_.make_open_read( font_file_ )
+				factor := 0
 			until
 				orakel_.end_of_file
 			loop
@@ -58,25 +60,29 @@ feature{NONE} -- creation
 				
 					orakel_.read_character
 					orakel_.read_integer
-					x_ := orakel_.last_integer
-				
---					orakel_.read_character
+					x_t_ := orakel_.last_integer
+
 					orakel_.read_integer
-					y_ := orakel_.last_integer
+					y_t_ := orakel_.last_integer
 				
---					orakel_.read_character
+					orakel_.read_integer
+					width_t_ := orakel_.last_integer
+				
+					orakel_.read_integer
+					height_t_ := orakel_.last_integer
+
 					orakel_.read_integer
 					width_ := orakel_.last_integer
-				
---					orakel_.read_character
+					
 					orakel_.read_integer
-					height_ := orakel_.last_integer
+					height_ := orakel_.last_integer					
 				
---					orakel_.read_character
 					orakel_.read_integer
 					base_ := orakel_.last_integer
 					
-					letters.force ( create{Q_HUD_IMAGE_LETTER}.make( x_, y_, width_, height_, base_, gl_texture_ ), c_ )
+					letters.force ( create{Q_HUD_IMAGE_LETTER}.make( x_t_, y_t_, width_t_, height_t_, width_, height_, base_, gl_texture_ ), c_ )
+					
+					factor := factor.max( height_ )
 				end
 			end
 		end
@@ -84,10 +90,12 @@ feature{NONE} -- creation
 feature{NONE} -- Implementation
 	to_factor( size_ : DOUBLE ) : DOUBLE is
 		do
-			result := size_ / 64
+			result := size_ / factor
 		end
 	
 	image_width, image_height : INTEGER
+	
+	factor : INTEGER
 
 feature -- Interface
 	draw_letter( letter_ : CHARACTER; x_, base_, size_ : DOUBLE; open_gl : Q_GL_DRAWABLE;  ) is

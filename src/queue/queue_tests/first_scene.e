@@ -69,22 +69,29 @@ feature {NONE} -- values
 		local
 			hud_, child_ : SIMPLE_HUD_CONTAINER
 			font : Q_HUD_IMAGE_FONT
-			label : Q_HUD_LABEL
+			label_1, label_2 : Q_HUD_LABEL
 		do
 			create hud_.make_color( 1, 0, 0 )
 			create child_.make_color( 0, 0, 1 )
-			create font.make ("data/font/century_gothic.txt", "data/font/century_gothic.gif" )
-			create label
+			create font.make ("data/font/Arial.txt", "data/font/Arial.png" )
+			create label_1
+			create label_2
 			
-			label.set_font( font )
-			label.set_text( "baba" )
-			label.set_bounds( 0.2, 0.3, 0.5, 0.5 )
-			label.set_font_size( 0.05 )
+			label_1.set_font( font )
+			label_1.set_text( "The Q_HUD_IMAGE_FONT has more abbilities than ESDL" )
+			label_1.set_bounds( 0.0, 0.3, 1.0, 0.5 )
+			label_1.set_font_size( 0.025 )
 			
-			hud_.set_bounds ( 0.1, 0.1, 0.2, 0.2 )			
+			label_2.set_font( font )
+			label_2.set_text( "For example: not every character has the same width..." )
+			label_2.set_bounds( 0.0, 0.33, 1.0, 0.5 )
+			label_2.set_font_size( 0.025 )
+			
+			hud_.set_bounds ( 0.0, 0.1, 0.2, 0.2 )			
 			child_.set_bounds( 0.1, 0.1, 0.2, 0.2 )
 
-			hud_.add( label )
+			hud_.add( label_1 )
+			hud_.add( label_2 )
 			hud_.add( child_ )
 			
 			result := hud_
