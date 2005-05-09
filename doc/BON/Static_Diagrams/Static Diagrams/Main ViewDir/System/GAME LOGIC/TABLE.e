@@ -1,7 +1,7 @@
 indexing
 	description: "Enter class description here"
-	date: "Wed Apr 27 18:11:36 CEST 2005"
+	date: "Mon May 02 11:57:53 CEST 2005"
 
-class CLASS_10
+class CLASS_8
 
-end -- class CLASS_10
+end -- class CLASS_8

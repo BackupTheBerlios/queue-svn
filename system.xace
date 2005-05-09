@@ -1,31 +1,33 @@
 <?xml version="1.0"?>
 
 <system name="queue">
-  <root class="QUEUE_TEST" creation="make"/>
-  <option unless="${DEBUG}">
-    <option name="assertion" value="none"/>
-    <option name="garbage_collector" value="none"/>
-    <option name="finalize" value="true"/>
-    <option name="console_application" value="false"/>
-  </option>
-  <option if="${DEBUG}">
-    <option name="assertion" value="all"/>
-    <option name="garbage_collector" value="none"/>
-    <option name="finalize" value="false"/>
-    <option name="console_application" value="false"/>
-  </option>
+	<root class="QUEUE_TEST" creation="make"/>
+	<option unless="${DEBUG}">
+		<option name="assertion" value="none"/>
+		<option name="garbage_collector" value="none"/>
+		<option name="finalize" value="true"/>
+		<option name="console_application" value="false"/>
+	</option>
+	<option if="${DEBUG}">
+		<option name="assertion" value="all"/>
+		<option name="garbage_collector" value="none"/>
+		<option name="finalize" value="false"/>
+		<option name="console_application" value="false"/>
+	</option>
 
-  <cluster name="queue" location="./src/queue">
-	  <cluster name="opengl">
-		  <cluster name="primitives"/>
-	  </cluster>
-    <cluster name="queue_tests"/>
-    <cluster name="support"/>
-  </cluster>
+	<cluster name="queue" location="./src/queue">
+		<cluster name="events"/>
+		<cluster name="opengl">
+			<cluster name="hud"/>
+			<cluster name="primitives"/>
+		</cluster>
+		<cluster name="queue_tests"/>
+		<cluster name="support"/>
+	</cluster>
 
-  <mount location="${GOBO}/library/kernel.xace"/>
-  <mount location="${GOBO}/library/library.xace"/>
-  <mount location="${EWG}/library/runtime/eiffel/library.xace"/>
-  <mount location="${ESDL}/library/library.xace"/>
+	<mount location="${GOBO}/library/kernel.xace"/>
+	<mount location="${GOBO}/library/library.xace"/>
+	<mount location="${EWG}/library/runtime/eiffel/library.xace"/>
+	<mount location="${ESDL}/library/library.xace"/>
 
 </system>

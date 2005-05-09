@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
 
 <project name="queue" default="help">
-  <inherit>
-    <parent location="${ESDL}/misc/esdl_application.eant">
-      <redefine target="init_system"/>
-    </parent>
-  </inherit>
-  
-  <!-- Implementation -->
+	<inherit>
+		<parent location="${ESDL}/misc/esdl_application.eant">
+			<redefine target="init_system"/>
+		</parent>
+	</inherit>
+	
+	<!-- Implementation -->
 
-  <target name="init_system">
-    <set name="system" value="queue"/>
-    <set name="system_dir" value="."/>
-  </target>
-  
+	<target name="init_system">
+		<set name="system" value="queue"/>
+		<set name="system_dir" value="."/>
+	</target>
+	
 </project>
