@@ -33,12 +33,9 @@ feature -- visualisation
 			loop
 				component_ := children.item
 				
-				open_gl.gl.gl_push_matrix
-				
 				open_gl.gl.gl_translated( component_.x, component_.y, 0 )
 				component_.draw( open_gl )
-				
-				open_gl.gl.gl_pop_matrix
+				open_gl.gl.gl_translated( -component_.x, -component_.y, 0 )
 
 				children.forth	
 			end

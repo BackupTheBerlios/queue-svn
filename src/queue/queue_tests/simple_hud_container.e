@@ -14,24 +14,22 @@ creation
 	make_color
 	
 feature
-	make_color( red_, green_, blue_ : REAL ) is
+	make_color( red_, green_, blue_ : DOUBLE ) is
 		do
 			make
-			red := red_
-			green := green_
-			blue := blue_
+			create color.make_rgb( red_, green_, blue_ )
 		end
 		
 	draw( open_gl : Q_GL_DRAWABLE ) is
 		do
 
 			open_gl.gl.gl_begin( open_gl.gl_constants.esdl_gl_quads )
-			open_gl.gl.gl_color3f( red, green, blue )
+			color.set( open_gl )
 			
-			open_gl.gl.gl_vertex2d( x, y )
-			open_gl.gl.gl_vertex2d( x, y+height )
-			open_gl.gl.gl_vertex2d( x+width, y+height )
-			open_gl.gl.gl_vertex2d( x+width, y )			
+			open_gl.gl.gl_vertex2d( 0, 0 )
+			open_gl.gl.gl_vertex2d( 0, height )
+			open_gl.gl.gl_vertex2d( width, height )
+			open_gl.gl.gl_vertex2d( width, 0 )			
 			
 			open_gl.gl.gl_end
 			
@@ -40,6 +38,6 @@ feature
 		
 
 feature
-	red, green, blue : REAL
+	color : Q_GL_COLOR
 
 end -- class SIMPLE_HUD_CONTAINER

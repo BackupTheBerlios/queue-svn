@@ -39,10 +39,10 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 		
-	width: INTEGER is 1000
+	width: INTEGER is 512
 		-- The width of the surface
 		
-	height: INTEGER is 1000
+	height: INTEGER is 512
 		-- The height of the surface
 		
 	resolution: INTEGER is 24

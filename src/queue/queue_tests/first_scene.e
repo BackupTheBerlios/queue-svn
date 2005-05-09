@@ -1,9 +1,6 @@
 indexing
 
-	description: "TODO"
-	author: "Rolf Bruderer, bruderol@student.ethz.ch"
-	date: "$Date: 2005/04/21 08:28:32 $"
-	revision: "$Revision: 1.1 $"
+	author: ""
 
 class
 
@@ -67,36 +64,49 @@ feature {NONE} -- values
 	
 	gl_hud : Q_HUD_COMPONENT is
 		local
-			hud_, child_ : SIMPLE_HUD_CONTAINER
-			font : Q_HUD_IMAGE_FONT
-			label_1, label_2 : Q_HUD_LABEL
-		do
-			create hud_.make_color( 1, 0, 0 )
-			create child_.make_color( 0, 0, 1 )
-			create font.make ("data/font/Arial.txt", "data/font/Arial.png" )
-			create label_1
-			create label_2
-			
-			label_1.set_font( font )
-			label_1.set_text( "The Q_HUD_IMAGE_FONT has more abbilities than ESDL" )
-			label_1.set_bounds( 0.0, 0.3, 1.0, 0.5 )
-			label_1.set_font_size( 0.025 )
-			
-			label_2.set_font( font )
-			label_2.set_text( "For example: not every character has the same width..." )
-			label_2.set_bounds( 0.0, 0.33, 1.0, 0.5 )
-			label_2.set_font_size( 0.025 )
-			
-			hud_.set_bounds ( 0.0, 0.1, 0.2, 0.2 )			
-			child_.set_bounds( 0.1, 0.1, 0.2, 0.2 )
+			hud_ : SIMPLE_HUD_CONTAINER
+			font_ : Q_HUD_IMAGE_FONT
 
-			hud_.add( label_1 )
-			hud_.add( label_2 )
-			hud_.add( child_ )
+			button_1, button_2 : Q_HUD_BUTTON
+		do
+			create hud_.make_color( 0.5, 0.5, 0.5 )
+			create font_.make_standard ( "Arial", 32, false, false )
+			create button_1.make
+			create button_2.make
+			
+			hud_.set_bounds ( 0.0, 0.1, 0.5, 0.5 )
+			hud_.add( button_1 )
+			hud_.add( button_2 )
+			
+			button_1.set_font( font_ )
+			button_2.set_font( font_ )
+			
+			button_1.set_font_size( 0.0625 )
+			button_2.set_font_size( 0.0625 )
+			
+			button_1.set_bounds( 0.0, 0.0, 0.4, 0.1 )
+			button_2.set_bounds( 0.0, 0.1, 0.4, 0.1 )
+			
+			button_1.set_text( "Button 1" )
+			button_2.set_text( "Button 2" )
+			
+			button_1.actions.extend( agent button_1_call() )
+			button_2.actions.extend( agent button_2_call() )
 			
 			result := hud_
 		end
-		
+	
+	button_1_call is
+		do
+			io.put_string( "1" )
+			io.put_new_line
+		end
+
+	button_2_call is
+		do
+			io.put_string( "2" )
+			io.put_new_line
+		end		
 	
 	gl_object : Q_GL_OBJECT is
 		local 

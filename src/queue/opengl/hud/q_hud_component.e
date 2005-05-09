@@ -32,6 +32,12 @@ feature -- eventhandling
 	focusable : BOOLEAN
 		-- tells, if this Component can hold the focus. Only focusable Components will recieve Key-Events
 		
+	focused : BOOLEAN is
+			-- true if this component has the focus
+		do
+			result := root_pane /= void and then root_pane.focused_component = current	
+		end
+
 	lightweight : BOOLEAN
 		-- if this component is disabled: if lightweight is true, the parent will get the event, if false,
 		-- the event will be thrown away
@@ -66,6 +72,19 @@ feature{Q_HUD_ROOT_PANE, Q_HUD_COMPONENT} -- eventhandling
 		do
 			result := true
 		end
+		
+	process_mouse_enter( x_, y_ : DOUBLE ) is
+			-- invoked when the Mouse enters this component
+		do
+		end
+		
+	process_mouse_exit( x_, y_ : DOUBLE ) is
+			-- invoked when the Mouse exites this component.
+			-- this method will perhaps not be called, if the enabled-state is set to false,
+			-- or the component is removed from its parent
+		do	
+		end
+		
 		
 	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
 			-- invoked when a Mousebutton is pressed, and the Mouse is over this Component
@@ -125,7 +144,7 @@ feature -- position and size
 	inside( x_, y_ : DOUBLE ) : BOOLEAN is
 			-- true, if the point is inside this component, false otherwise
 		do
-			result := x_ >= x and y_ >= y and x_ <= x + width and y_ <= y + height
+			result := x_ >= 0 and y_ >= 0 and x_ <= width and y_ <= height
 		end
 		
 	

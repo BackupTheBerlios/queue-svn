@@ -103,7 +103,9 @@ feature {NONE} -- helpfeatures
 		    open_gl.gl.gl_scaled( width_, -height_, 1.0 );
 		    open_gl.gl.gl_normal3f( 0, 0, 1 );
 		    
+		    open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_depth_test )
 		    hud.draw( open_gl )
+		    open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_depth_test )
 		    
 		    open_gl.gl.gl_pop_matrix
 		    

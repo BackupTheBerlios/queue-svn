@@ -202,8 +202,8 @@ feature -- Eventhandling
 				x_ := event_.proportional_position.x / screen_width_
 				y_ := event_.proportional_position.y / screen_height_
 				
-				cx_ := absolut_x_location( component_ )
-				cy_ := absolut_x_location( component_ )				
+				cx_ := absolut_x_location( selected_component )
+				cy_ := absolut_y_location( selected_component )				
 				
 				from
 					component_ := selected_component
@@ -211,7 +211,7 @@ feature -- Eventhandling
 					component_ = void
 				loop
 					if component_.enabled then
-						if component_.process_mouse_button_up ( event_, x_, y_ ) or not component_.lightweight then
+						if component_.process_mouse_button_up ( event_, x_ - cx_, y_ - cy_ ) or not component_.lightweight then
 							component_ := void
 						else
 							cx_ := cx_ - component_.x
@@ -310,8 +310,11 @@ feature{NONE} -- assistants
 		end
 
 	component_select( x_, y_ : DOUBLE ) is
+		local
+			old_selected_component_ : Q_HUD_COMPONENT
 		do
 			from
+				old_selected_component_ := selected_component
 				selected_component := tree_child_at(x_, y_ )	
 			until
 				selected_component = void or else selected_component.enabled
@@ -323,6 +326,20 @@ feature{NONE} -- assistants
 						 not selected_component.lightweight ) then
 						 	
 					selected_component := void
+				end
+			end
+			
+			if old_selected_component_ /= selected_component then
+				if old_selected_component_ /= void then
+					old_selected_component_.process_mouse_exit( 
+						x_ - absolut_x_location ( old_selected_component_),
+						y_ - absolut_y_location ( old_selected_component_) )
+				end
+				
+				if selected_component /= void then
+						selected_component.process_mouse_enter( 
+						x_ - absolut_x_location ( selected_component),
+						y_ - absolut_y_location ( selected_component) )				
 				end
 			end
 		end

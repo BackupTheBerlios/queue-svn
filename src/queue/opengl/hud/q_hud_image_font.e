@@ -10,9 +10,43 @@ inherit
 	Q_HUD_FONT
 	
 creation
-	make
+	make,
+	make_standard
 
 feature{NONE} -- creation
+	make_standard( font_ : STRING; size_ : INTEGER; bold_, italic_ : BOOLEAN ) is
+			-- Searches in the data/font folder for a font descriping the given parameters
+		local
+			id_ : STRING
+			txt_, img_ : STRING
+		do
+			id_ := ""
+			id_.append( font_ )
+			id_.append( "_" )
+			id_.append_integer( size_ )
+			id_.append( "_" )
+			
+			if bold_ then
+				id_.append( "b" )
+			end
+			
+			if italic_ then
+				id_.append( "i" )
+			end
+			
+			txt_ := "data/font/"
+			img_ := "data/font/"
+			
+			txt_.append( id_ )
+			txt_.append( ".txt" )
+			
+			img_.append( id_ )
+			img_.append( ".png" )
+			
+			make( txt_, img_ )
+		end
+		
+
 	make( font_file_, image_file_ : STRING ) is
 			-- font_file is a file listing all Letters in the format
 			-- *c xt yt wt ht w h b
@@ -24,21 +58,16 @@ feature{NONE} -- creation
 			--
 			-- image_file is an image
 		local
-			shared_factory_ : ESDL_SHARED_BITMAP_FACTORY
-			factory_ : ESDL_BITMAP_FACTORY
-			gl_texture_ : INTEGER
 			orakel_ : PLAIN_TEXT_FILE
 			
 			c_ : CHARACTER
 			x_t_, y_t_, width_t_, height_t_, width_, height_, base_ : INTEGER
 		do
-			create shared_factory_
+			create texture.make( image_file_ )
 			create letters.make( 80 )
-			factory_ := shared_factory_.bitmap_factory
-			factory_.create_bitmap_from_image( image_file_ )
-			gl_texture_ := factory_.last_bitmap.gl_texture_mipmap
-			image_width := factory_.last_bitmap.width
-			image_height := factory_.last_bitmap.height
+
+			image_width := texture.width 
+			image_height := texture.height
 			
 			from
 				create orakel_.make_open_read( font_file_ )
@@ -80,7 +109,9 @@ feature{NONE} -- creation
 					orakel_.read_integer
 					base_ := orakel_.last_integer
 					
-					letters.force ( create{Q_HUD_IMAGE_LETTER}.make( x_t_, y_t_, width_t_, height_t_, width_, height_, base_, gl_texture_ ), c_ )
+					letters.force ( create{Q_HUD_IMAGE_LETTER}.make( 
+						x_t_, y_t_, width_t_, height_t_, 
+						width_, height_, base_, texture.id ), c_ )
 					
 					factor := factor.max( height_ )
 				end
@@ -98,22 +129,41 @@ feature{NONE} -- Implementation
 	factor : INTEGER
 
 feature -- Interface
+	letter_list : ARRAY[ CHARACTER ] is
+		local
+			index_ : INTEGER
+		do
+			create result.make( 0, letters.count-1 )
+			
+			from
+				letters.start
+				index_ := result.lower
+			until
+				letters.after
+			loop
+				result.put( letters.key_for_iteration, index_ )
+				index_ := index_ + 1
+				letters.forth
+			end
+		end
+		
+
 	draw_letter( letter_ : CHARACTER; x_, base_, size_ : DOUBLE; open_gl : Q_GL_DRAWABLE;  ) is
 		do
 			letters.item( letter_ ).draw ( x_, base_, to_factor( size_ ), open_gl, image_width, image_height )
 		end	
 		
-	width_of_letter( letter_ : CHARACTER; size_ : DOUBLE ) : DOUBLE is
+	width( letter_ : CHARACTER; size_ : DOUBLE ) : DOUBLE is
 		do
 			result := letters.item( letter_ ).width * to_factor( size_ )
 		end
 	
-	height_of_letter( letter_ : CHARACTER; size_ : DOUBLE ) : DOUBLE is
+	height( letter_ : CHARACTER; size_ : DOUBLE ) : DOUBLE is
 		do
 			result := letters.item ( letter_ ).height * to_factor( size_ )
 		end	
 	
-	base_of_letter( letter_ : CHARACTER; size_ : DOUBLE ) : DOUBLE is
+	base( letter_ : CHARACTER; size_ : DOUBLE ) : DOUBLE is
 		do
 			result := letters.item ( letter_ ).base * to_factor( size_ )
 		end	
@@ -123,7 +173,10 @@ feature -- Interface
 			result := letters.has( letter_ )
 		end
 
-feature{NONE} -- letters
+feature{NONE} -- Letters
 	letters : HASH_TABLE[ Q_HUD_IMAGE_LETTER, CHARACTER ]
+
+feature -- Texture
+	texture : Q_GL_TEXTURE
 
 end -- class Q_HUD_IMAGE_FONT
