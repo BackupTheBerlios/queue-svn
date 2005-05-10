@@ -65,6 +65,25 @@ feature {NONE} -- values
 	gl_hud : Q_HUD_COMPONENT is
 		local
 			hud_ : SIMPLE_HUD_CONTAINER
+			child_ : Q_HUD_CONTAINER
+		do
+			create hud_.make_color ( 0, 0.2, 0 )
+			hud_.set_size( 0.6, 0.8 )
+			
+			child_ := buttons
+			child_.set_location ( 0, 0.1 )
+			hud_.add( child_ )
+			
+			child_ := buttons
+			child_.set_location ( 0.1, 0.5 )
+			hud_.add( child_ )
+			
+			result := hud_
+		end
+	
+	buttons : Q_HUD_CONTAINER is
+		local
+			hud_ : SIMPLE_HUD_CONTAINER
 			font_ : Q_HUD_IMAGE_FONT
 
 			button_1, button_2 : Q_HUD_BUTTON
@@ -74,7 +93,7 @@ feature {NONE} -- values
 			create button_1.make
 			create button_2.make
 			
-			hud_.set_bounds ( 0.0, 0.1, 0.5, 0.5 )
+			hud_.set_size ( 0.5, 0.3 )
 			hud_.add( button_1 )
 			hud_.add( button_2 )
 			
@@ -90,23 +109,18 @@ feature {NONE} -- values
 			button_1.set_text( "Button 1" )
 			button_2.set_text( "Button 2" )
 			
-			button_1.actions.extend( agent button_1_call() )
-			button_2.actions.extend( agent button_2_call() )
+			button_1.actions.extend( agent button_call(?, ?) )
+			button_2.actions.extend( agent button_call(?, ?) )
 			
-			result := hud_
+			result := hud_	
 		end
+		
 	
-	button_1_call is
+	button_call( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
-			io.put_string( "1" )
+			io.put_string( command_ )
 			io.put_new_line
 		end
-
-	button_2_call is
-		do
-			io.put_string( "2" )
-			io.put_new_line
-		end		
 	
 	gl_object : Q_GL_OBJECT is
 		local 

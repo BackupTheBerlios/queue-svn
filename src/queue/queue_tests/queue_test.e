@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 	make is
 			-- Create the main application.
 		local
-			first_scene: FIRST_SCENE
+			scene_ : Q_TEST_CASE_SCENE
 		do
 			video_subsystem.set_video_surface_width (width)
 			video_subsystem.set_video_surface_height (height)
@@ -29,10 +29,10 @@ feature {NONE} -- Initialization
 			set_application_name ("Queue OpenGL Proof of Concept")
 			
 			-- Create first scene.
-			create first_scene.make_scene( video_subsystem )
+			create scene_.make_scene( video_subsystem )
 
 			-- Set and launch the first scene.
-			set_scene (first_scene)
+			set_scene ( scene_ )
 			launch
 		end
 		

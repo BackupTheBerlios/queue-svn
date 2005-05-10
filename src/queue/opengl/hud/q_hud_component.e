@@ -57,6 +57,17 @@ feature -- eventhandling
 			lightweight := lightweight_
 		end
 		
+	request_focus is
+			-- requests focus for this component
+		require
+			focusable
+			enabled
+		do
+			if root_pane /= void then
+				root_pane.request_focused_component( current )	
+			end
+		end
+		
 		
 feature{Q_HUD_ROOT_PANE, Q_HUD_COMPONENT} -- eventhandling
 	process_key_down( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
@@ -106,6 +117,18 @@ feature{Q_HUD_ROOT_PANE, Q_HUD_COMPONENT} -- eventhandling
 		do
 			result := true
 		end
+			
+	process_component_added( parent_ : Q_HUD_CONTAINER ) is
+			-- invoked, when this component is set to a new parentcontainer
+		do
+		end
+	
+	process_component_removed( parent_ : Q_HUD_CONTAINER ) is
+			-- invoked, when this component is removed from a parentcontainer
+		do
+		end
+		
+		
 			
 feature -- Componenttree
 	parent : Q_HUD_CONTAINER

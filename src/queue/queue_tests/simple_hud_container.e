@@ -16,6 +16,7 @@ creation
 feature
 	make_color( red_, green_, blue_ : DOUBLE ) is
 		do
+			default_create
 			make
 			create color.make_rgb( red_, green_, blue_ )
 		end

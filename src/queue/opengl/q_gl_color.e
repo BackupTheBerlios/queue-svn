@@ -75,7 +75,7 @@ feature -- public creation
 		
 	make_orange is
 		do
-			make_rgb( 0.5, 0.5, 0 )
+			make_rgb( 1.0, 0.5, 0 )
 		end
 		
 	make_gray is

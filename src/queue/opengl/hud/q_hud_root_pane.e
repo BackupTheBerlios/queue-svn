@@ -14,12 +14,19 @@ inherit
 		process_mouse_button_up as component_mouse_button_up,
 		process_mouse_moved as component_mouse_moved
 	redefine
-		is_toplevel, root_pane
+		is_toplevel, root_pane, make
 	end
 
 creation
 	make
-	
+
+feature{NONE} -- creation
+	make is
+		do
+			precursor
+			set_focus_handler( create {Q_FOCUS_DEFAULT_HANDLER} )
+		end
+		
 	
 feature
 	is_toplevel : BOOLEAN is false
@@ -38,6 +45,18 @@ feature -- Eventhandling
 		
 	mouse_button_pressed : BOOLEAN
 		-- mouse buttons witch are currently pressed
+	
+	request_focused_component( component_ : Q_HUD_COMPONENT ) is
+			-- Tries to set the given component as the component with the focus.
+			-- This action may be abordet, if currently the mouse is pressed
+		require
+			component_ /= void
+		do
+			if focused_component = void or not mouse_button_pressed then
+				focused_component := component_
+			end
+		end
+		
 	
 	process( events_ : Q_EVENT_QUEUE ) is
 		-- process all events in the queue.
@@ -109,6 +128,11 @@ feature -- Eventhandling
 					stop_ := not component_.lightweight
 				end
 				component_ := component_.parent
+			end
+			
+			if not stop_ and component_ = void then
+				-- perhaps the root-focus manager is interested in this event
+				stop_ := component_key_down( event_ )
 			end
 		end
 		
