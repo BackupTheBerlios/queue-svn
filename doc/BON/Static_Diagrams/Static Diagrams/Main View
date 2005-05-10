@@ -1,23 +1,23 @@
 <?xml version="1.0" ?>
 <cluster name="System">
 <cluster currentMode="true" name="GAME LOGIC" nonIconifiedHeight="415" nonIconifiedWidth="641">
-<figure height="415" visible="true" width="641" x="15" y="245">
+<figure height="430" visible="true" width="929" x="32" y="244">
 </figure><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="HUMAN_PLAYER" nonDetailX="177" nonDetailY="41" persistent="false" prefix="" reused="false">
-<figure height="41" visible="true" width="177" x="23" y="409">
+<figure height="41" visible="true" width="177" x="117" y="446">
 </figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="PLAYER" nonDetailX="103" nonDetailY="41" persistent="false" prefix="deferred" reused="false">
-<figure height="41" visible="true" width="103" x="97" y="318">
-</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="GAME" nonDetailX="95" nonDetailY="41" persistent="false" prefix="root" reused="false">
-<figure height="41" visible="true" width="95" x="284" y="424">
+<figure height="41" visible="true" width="103" x="114" y="317">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="GAME_LOGIC" nonDetailX="135" nonDetailY="41" persistent="false" prefix="root" reused="false">
+<figure height="41" visible="true" width="135" x="420" y="482">
 </figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="BALL" nonDetailX="106" nonDetailY="41" persistent="false" prefix="" reused="false">
-<figure height="41" visible="true" width="106" x="414" y="312">
+<figure height="41" visible="true" width="106" x="473" y="287">
 </figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="SHOT" nonDetailX="94" nonDetailY="41" persistent="false" prefix="" reused="false">
-<figure height="41" visible="true" width="94" x="413" y="544">
+<figure height="41" visible="true" width="94" x="281" y="559">
 </figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="HOLE" nonDetailX="97" nonDetailY="41" persistent="false" prefix="" reused="false">
-<figure height="41" visible="true" width="97" x="521" y="378">
+<figure height="41" visible="true" width="97" x="543" y="349">
 </figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="BANK" nonDetailX="103" nonDetailY="41" persistent="false" prefix="" reused="false">
-<figure height="41" visible="true" width="103" x="510" y="477">
+<figure height="41" visible="true" width="103" x="403" y="346">
 </figure></class><class detailed="false" indexing="description:  &quot;This class represents the physical table with all balls&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="TABLE" nonDetailX="106" nonDetailY="41" persistent="false" prefix="" reused="false">
-<figure height="41" visible="true" width="106" x="262" y="299">
+<figure height="41" visible="true" width="106" x="319" y="280">
 </figure><feature inherited="false" type="attribute">
 feature { ANY }
 	balls: LIST[ BALL ]
@@ -27,29 +27,62 @@ feature { ANY }
 </feature><feature inherited="false" type="attribute">
 feature { ANY }
 	holes: LIST[ HOLE ]
-</feature></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="IO" nonDetailX="106" nonDetailY="41" persistent="false" prefix="" reused="false">
-<figure height="41" visible="true" width="106" x="54" y="534">
+</feature></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="AI_PLAYER" nonDetailX="111" nonDetailY="40" persistent="false" prefix="" reused="false">
+<figure height="40" visible="true" width="111" x="50" y="391">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="MODE" nonDetailX="105" nonDetailY="40" persistent="false" prefix="deferred" reused="false">
+<figure height="40" visible="true" width="105" x="764" y="308">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="8BALL" nonDetailX="105" nonDetailY="40" persistent="false" prefix="" reused="false">
+<figure height="40" visible="true" width="105" x="714" y="443">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="SNOOKER" nonDetailX="105" nonDetailY="40" persistent="false" prefix="" reused="false">
+<figure height="40" visible="true" width="105" x="827" y="505">
+</figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="ETH" nonDetailX="105" nonDetailY="40" persistent="false" prefix="" reused="false">
+<figure height="40" visible="true" width="105" x="724" y="567">
 </figure></class></cluster><cluster currentMode="true" name="PHYSICS ENGINE" nonIconifiedHeight="200" nonIconifiedWidth="299">
 <figure height="200" visible="true" width="299" x="16" y="26">
 </figure><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="SIMULATION" nonDetailX="130" nonDetailY="41" persistent="false" prefix="" reused="false">
 <figure height="41" visible="true" width="130" x="51" y="70">
 </figure></class></cluster><cluster currentMode="true" name="GRAPHICS ENGINE" nonIconifiedHeight="201" nonIconifiedWidth="324">
 <figure height="201" visible="true" width="324" x="331" y="25">
-</figure><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="VIEW" nonDetailX="95" nonDetailY="41" persistent="false" prefix="" reused="false">
+</figure><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="CAMERA" nonDetailX="95" nonDetailY="41" persistent="false" prefix="" reused="false">
 <figure height="41" visible="true" width="95" x="350" y="70">
 </figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="MENU" nonDetailX="106" nonDetailY="41" persistent="false" prefix="" reused="false">
 <figure height="41" visible="true" width="106" x="507" y="70">
 </figure></class><class detailed="false" indexing="description:  &quot;???&quot;" interfaced="false" isIndex="true" isInherit="true" isInvariant="true" isNone="true" isPost="true" isPre="true" name="RENDERER" nonDetailX="118" nonDetailY="41" persistent="false" prefix="" reused="false">
 <figure height="41" visible="true" width="118" x="426" y="152">
 </figure></class></cluster><edge destNodeIndex="5" destPortIndex="bigport" srcNodeIndex="4" srcPortIndex="bigport" type="inheritance">
-<figure height="60" visible="true" width="38" x="102" y="349">
+<figure height="89" visible="true" width="55" x="144" y="357">
 <poly type="DoublePoly">
-<point x="119.0" y="409.0">
-</point><point x="140.0" y="358.0">
-</point></poly></figure></edge><edge destNodeIndex="12" destPortIndex="bigport" isMultiplicity="false" isShared="false" numMultiplicity="" numShared="" srcNodeIndex="4" srcPortIndex="bigport" type="association">
-<figure height="85" visible="true" width="35" x="107" y="449">
+<point x="199.0" y="446.0">
+</point><point x="171.0" y="357.0">
+</point></poly></figure></edge><edge destNodeIndex="5" destPortIndex="bigport" srcNodeIndex="12" srcPortIndex="bigport" type="inheritance">
+<figure height="51" visible="true" width="38" x="112" y="341">
+<poly type="DoublePoly">
+<point x="120.0" y="392.0">
+</point><point x="150.0" y="356.0">
+</point></poly></figure></edge><edge destNodeIndex="14" destPortIndex="bigport" srcNodeIndex="16" srcPortIndex="bigport" type="inheritance">
+<figure height="86" visible="true" width="40" x="735" y="482">
+<poly type="DoublePoly">
+<point x="775.0" y="568.0">
+</point><point x="767.0" y="482.0">
+</point></poly></figure></edge><edge destNodeIndex="13" destPortIndex="bigport" srcNodeIndex="14" srcPortIndex="bigport" type="inheritance">
+<figure height="97" visible="true" width="41" x="768" y="347">
+<poly type="DoublePoly">
+<point x="773.0" y="444.0">
+</point><point x="809.0" y="347.0">
+</point></poly></figure></edge><edge destNodeIndex="13" destPortIndex="bigport" srcNodeIndex="15" srcPortIndex="bigport" type="inheritance">
+<figure height="159" visible="true" width="74" x="799" y="347">
+<poly type="DoublePoly">
+<point x="873.0" y="506.0">
+</point><point x="822.0" y="347.0">
+</point></poly></figure></edge><edge destNodeIndex="13" destPortIndex="bigport" isMultiplicity="false" isShared="false" numMultiplicity="" numShared="" srcNodeIndex="6" srcPortIndex="bigport" type="association">
+<figure height="141" visible="true" width="266" x="520" y="344">
 <poly type="Poly">
-<point x="111.0" y="449.0">
-</point><point x="107.0" y="534.0">
+<point x="520.0" y="485.0">
+</point><point x="786.0" y="344.0">
+</point></poly></figure></edge><edge destNodeIndex="5" destPortIndex="bigport" isMultiplicity="false" isShared="false" numMultiplicity="" numShared="" srcNodeIndex="6" srcPortIndex="bigport" type="association">
+<figure height="132" visible="true" width="257" x="196" y="353">
+<poly type="Poly">
+<point x="453.0" y="485.0">
+</point><point x="196.0" y="353.0">
 </point></poly></figure></edge><options interfaceFontName="Serif" interfaceFontSize="12">
 </options></cluster>

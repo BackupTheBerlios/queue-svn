@@ -87,5 +87,6 @@ feature {NONE} -- Implementation
 		do
 			root.draw
 			screen.redraw
+			
 		end
 end
