@@ -21,7 +21,10 @@ feature -- drawing
 				draw_text( "_", 0, height/2, ascent_, descent_, open_gl )
 			else
 				string_ := font.compact ( text, font_size, width )
-	
+				if font_color /= void then
+					font_color.set( open_gl )					
+				end
+
 				draw_text( string_,
 					alignement_x * ( width - font.string_width( string_, font_size ) ),
 					(  alignement_y)*(height - descent_) +
@@ -47,6 +50,9 @@ feature -- values
 	font_size : DOUBLE
 		-- Size of the font
 		
+	font_color : Q_GL_COLOR
+		-- color of the font
+	
 	alignement_x, alignement_y : DOUBLE
 
 	set_text( text_ : STRING) is
@@ -83,4 +89,13 @@ feature -- values
 		do
 			alignement_y := alignement_
 		end
+		
+	set_font_color( font_color_ : Q_GL_COLOR ) is
+			-- sets the default-color for the font, a value of void means,
+			-- that the color should not be changed
+			-- There may be some fonts, who dont support different colors.
+		do
+			font_color := font_color_
+		end
+		
 end -- class Q_HUD_TEXTED

@@ -63,7 +63,7 @@ feature{NONE} -- creation
 			c_ : CHARACTER
 			x_t_, y_t_, width_t_, height_t_, width_, height_, base_ : INTEGER
 		do
-			create texture.make( image_file_ )
+			create texture.make_with_colorkey ( image_file_, 0, 0, 0 )
 			create letters.make( 80 )
 
 			image_width := texture.width 

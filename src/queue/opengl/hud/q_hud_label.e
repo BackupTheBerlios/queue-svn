@@ -8,7 +8,7 @@ class
 
 inherit
 	Q_HUD_TEXTED
-	Q_HUD_CONTAINER
+
 
 creation
 	make

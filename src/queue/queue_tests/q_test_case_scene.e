@@ -35,15 +35,20 @@ feature -- Initialization
 				create menus.make( 10 )
 				create cases.make
 				create root.init_lighting( false )
-				
+				create navigation.make
+							
 				generate_menus
 			
-				root.hud.add( menus.first )
+				root.hud.add( navigation )
+				navigation.set_bounds( 0, 0, 1, 1 )
+				navigation.add( menus.first )
 				create events.make( event_loop, surface )
 			end
 		end		
 		
 feature{NONE} -- hud
+	navigation : Q_HUD_CAMERA_NAVIGATOR
+
 	cases : Q_TEST_CASE_LIST
 	
 	menus : ARRAYED_LIST[ Q_HUD_COMPONENT ]
@@ -99,7 +104,7 @@ feature{NONE} -- hud
 					button_.set_text( "Back" )
 					button_.set_font( font_ )
 					button_.set_font_size( 0.05 ) 
-					button_.set_bounds( 0.1, 0.9, 0.3, 0.09 )
+					button_.set_bounds( 0.2, 0.9, 0.3, 0.09 )
 					button_.set_command( command_ ) 
 					button_.actions.extend( agent action(?,?) )
 					
@@ -116,7 +121,7 @@ feature{NONE} -- hud
 					button_.set_text( "Next" )
 					button_.set_font( font_ )
 					button_.set_font_size( 0.05 ) 
-					button_.set_bounds( 0.5, 0.9, 0.3, 0.09 )
+					button_.set_bounds( 0.6, 0.9, 0.3, 0.09 )
 					button_.set_command( command_ ) 
 					button_.actions.extend( agent action(?,?) )
 					
@@ -132,10 +137,10 @@ feature{NONE} -- hud
 			index_ := command_.substring ( 2, command_.count ).to_integer
 				
 			if command_.item ( 1 ) = 'm' then
-				root.hud.remove_all
-				root.hud.add( menus.i_th ( index_ ) )
+				navigation.remove_all
+				navigation.add( menus.i_th ( index_ ) )
 			elseif command_.item( 1 ) = 's' then
-				root.hud.remove_all
+				navigation.remove_all
 				set_test_case( cases.i_th ( index_ ) )
 			end
 		end
@@ -159,13 +164,16 @@ feature {NONE} -- values
 			test_case_.init
 			
 			hud_ := test_case_.hud
+			root.hud.add( navigation )
+				
 			if hud_ /= void then
-				root.hud.add( hud_ )
+				navigation.add( hud_ )
 			end
 			
 			object_ := test_case_.object
 			create camera_
 			root.set_transform( camera_ )
+			navigation.set_camera( camera_ )
 			
 			if object_ /= void then
 				root.set_inside( object_ )
@@ -177,9 +185,9 @@ feature {NONE} -- values
 				pos_ := max_.sum ( min_ )
 				
 				pos_.scaled( 0.5 )
-				dir_.scaled( -1.0 )
+				dir_.scaled( 1.0 )
 				
-				pos_ := pos_ - dir_
+				pos_ := pos_ + dir_
 				
 				camera_.set_x( pos_.x )
 				camera_.set_y( pos_.y )
@@ -187,6 +195,8 @@ feature {NONE} -- values
 				
 				camera_.set_alpha( -45 )
 				camera_.set_beta( -45 )
+				
+				navigation.set_rotation_distance( dir_.length )
 			end
 			
 			test_case_.initialized( root )

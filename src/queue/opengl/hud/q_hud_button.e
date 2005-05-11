@@ -29,6 +29,7 @@ feature {NONE} -- creation
 			set_focusable( true )
 			set_enabled( true )
 			set_command( "no command" )
+			set_font_color( create {Q_GL_COLOR}.make_black )
 			
 			set_alignement_x( 0.5 )
 			set_alignement_y( 0.5 )

@@ -30,11 +30,27 @@ feature -- draw
 			open_gl_not_void : open_gl /= void
 		do
 
+--			open_gl.gl.gl_enable (open_gl.gl_constants.esdl_gl_alpha_test)
+--			open_gl.gl.gl_alpha_func (open_gl.gl_constants.esdl_gl_notequal, 0)
+
+	open_gl.gl.gl_color3f( 1, 1, 1)
+
+	open_gl.gl.gl_enable (open_gl.gl_constants.esdl_gl_blend )
+	open_gl.gl.gl_tex_envi( 
+		open_gl.gl_constants.esdl_gl_texture_env,
+		open_gl.gl_constants.esdl_gl_texture_env_mode,
+		open_gl.gl_constants.esdl_gl_blend )
+		
+	open_gl.gl.gl_blend_func( 
+		open_gl.gl_constants.esdl_gl_dst_color, 
+		open_gl.gl_constants.esdl_gl_zero )
+
+--		open_gl.gl_constants.esdl_gl_dst_color, 
+--		open_gl.gl_constants.esdl_gl_one )
+		
 			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_texture_2d )
-			
 			open_gl.gl.gl_begin( open_gl.gl_constants.esdl_gl_quads )
-			open_gl.gl.gl_color3f( 1, 1, 1 )
-			
+
 			open_gl.gl.gl_tex_coord4i( x_texture, y_texture, image_width_, image_height_ )
 			open_gl.gl.gl_vertex2d( x_, base_ - factor_ * (height - base) )
 
@@ -49,6 +65,8 @@ feature -- draw
 			
 			open_gl.gl.gl_end
 			open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_texture_2d )
+--			open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_alpha_test )
+	open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_blend )
 		end
 		
 

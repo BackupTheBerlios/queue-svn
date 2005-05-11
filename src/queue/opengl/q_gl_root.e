@@ -55,6 +55,12 @@ feature -- visualisation
 			
 			open_gl.gl.gl_matrix_mode( open_gl.gl_constants.esdl_gl_modelview )
 			
+			if lighting then
+				open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_lighting )
+			else
+				open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_lighting )				
+			end
+			
 			live_manager.grow
 			
 			-- draw
@@ -181,4 +187,10 @@ feature -- frustum
 feature -- values
 	lighting : BOOLEAN
 	
+	
+	set_lighting( lighting_ : BOOLEAN ) is
+		do
+			lighting := lighting_
+		end
+		
 end -- class Q_GL_ROOT

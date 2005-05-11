@@ -9,7 +9,8 @@ inherit
 	Q_GL_TRANSFORM
 	
 creation
-	make
+	make,
+	make_with_colorkey
 	
 feature {NONE} -- creation
 	make( file_ : STRING ) is
@@ -24,9 +25,25 @@ feature {NONE} -- creation
 			factory_ := shared_factory_.bitmap_factory
 			factory_.create_bitmap_from_image( file_ )
 			image := factory_.last_bitmap
-			
-			id := image.gl_texture_mipmap
+
+			id := image.gl_texture
 		end
+		
+	make_with_colorkey( file_ : STRING; red_, green_, blue_ : INTEGER ) is
+			-- creates a new texture from a file
+		require
+			file_not_void : file_ /= void
+		local
+			shared_factory_ : ESDL_SHARED_BITMAP_FACTORY
+			factory_ : ESDL_BITMAP_FACTORY
+		do
+			create shared_factory_
+			factory_ := shared_factory_.bitmap_factory
+			factory_.create_bitmap_from_image( file_ )
+			image := factory_.last_bitmap
+			image.set_colorkey( red_, green_, blue_ ) 
+			id := image.gl_texture
+		end		
 		
 feature -- Informations
 	image : ESDL_BITMAP
