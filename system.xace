@@ -17,10 +17,13 @@
 
 	<cluster name="queue" location="./src/queue">
 		<cluster name="events"/>
+		<cluster name="game"/>
+		<cluster name="math"/>
 		<cluster name="opengl">
 			<cluster name="hud"/>
 			<cluster name="primitives"/>
 		</cluster>
+		<cluster name="physics"/>
 		<cluster name="queue_tests"/>
 		<cluster name="support"/>
 	</cluster>
