@@ -24,6 +24,7 @@ feature {NONE} -- creation
 			
 			-- add here the test-cases
 			extend( create {BEN_COLOR_CUBE_TEST} )
+			extend( create {BAS_TABLE_MODEL_TEST} )
 		end
 		
 	
