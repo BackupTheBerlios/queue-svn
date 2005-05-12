@@ -77,11 +77,21 @@ feature -- eventhandling
 		
 
 feature -- childs
-	add( component_ : Q_HUD_COMPONENT ) is
+	add( component__ : Q_HUD_COMPONENT ) is
 		require
-			component_not_void : component_ /= void
-			is_not_a_toplevel_component : component_.is_toplevel = false
+			component_not_void : component__ /= void
+			is_not_a_toplevel_component : component__.is_toplevel = false
+		local
+			component_ : Q_HUD_COMPONENT
 		do
+			component_ := component__
+			
+			if component_.is_toplevel then
+				-- don't do this!
+				
+				component_ := void
+			end
+		
 			if component_.parent /= void then
 				component_.parent.remove( component_ )
 			end

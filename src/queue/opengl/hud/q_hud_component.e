@@ -178,7 +178,7 @@ feature -- Componenttree
 	is_toplevel : BOOLEAN is
 		-- a toplevel-Component cannot be added to a standard-container
 		do
-			result := true
+			result := false
 		end
 		
 		

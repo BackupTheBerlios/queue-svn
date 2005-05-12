@@ -29,7 +29,7 @@ feature{NONE} -- creation
 		
 	
 feature
-	is_toplevel : BOOLEAN is false
+	is_toplevel : BOOLEAN is true
 
 	root_pane : Q_HUD_ROOT_PANE is
 		do
