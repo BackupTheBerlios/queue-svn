@@ -259,6 +259,6 @@ feature {NONE} -- implementation
 					   ARRAY[INTEGER]
 					  ]
 				 ]
-			-- Faces, described with indizes to the vertices,
-			-- normals and texture coordinates
+			-- Faces, described by indizes to the vertices,
+			-- texture coordinates and normals
 end
