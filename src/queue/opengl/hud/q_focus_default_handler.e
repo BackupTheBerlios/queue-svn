@@ -64,6 +64,7 @@ feature -- focus
 			result := event_.key = event_.sdlk_right or 
 				event_.key = event_.sdlk_down or
 				(event_.key = event_.sdlk_tab and not event_.is_shift_pressed)
+				or event_.key = event_.sdlk_return
 		end
 		
 	is_previous_key( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is

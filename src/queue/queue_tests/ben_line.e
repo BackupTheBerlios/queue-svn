@@ -1,43 +1,47 @@
 indexing
-	description: "Test showing a light"
+	description: "Blupp"
 
 class
-	BEN_LIGHT_TEST
-
+	BEN_LINE
 inherit
 	Q_TEST_CASE
+	Q_GL_OBJECT
 
-feature
-	name : STRING is "Lights"	
+feature -- to be implemented
+	draw( open_gl : Q_GL_DRAWABLE ) is
+		local
+			gl : GL_FUNCTIONS
+		do
+			gl := open_gl.gl
+			
+			gl.gl_begin( open_gl.gl_constants.esdl_gl_lines )
+
+			gl.gl_color3f( 1, 1, 1 )
+
+			gl.gl_vertex3d( 0, 0, 0 )
+			gl.gl_vertex3d( 200, 200, 0 )
+
+			gl.gl_vertex3d( 0, 200, 0 )
+			gl.gl_vertex3d( 200, 0, 0 )
+			
+			gl.gl_end()
+		end
+		
+
+	name : STRING is "Line"
 		
 	init is
 			-- Invoked when this test ist choosen.
 		do
 		end
 		
-	lighting : BOOLEAN is true
-
+	lighting : BOOLEAN is false
+		
 	object : Q_GL_OBJECT is
-		local
-			group_ : Q_GL_GROUP[ Q_GL_OBJECT ]
-			light_ : Q_GL_LIGHT
+			-- The Object to be displayed. This can be void, if the test 
+			-- wants to do something of his own
 		do
-			create light_.make( 0 )
-			create group_.make
-
-			group_.extend( create {Q_GL_WHITE_CUBE}.make_sized( 20 ) )
-			group_.extend( light_ )
-			
-			light_.set_ambient( 0, 0, 1, 1 )
-			light_.set_specular( 0, 0, 0, 1 )
-			light_.set_diffuse( 0, 1, 0, 1 )
-			light_.set_position( 15, 20, 15 )
-			
-			light_.set_spot_cut_off ( 40 )
-			light_.set_spot_direction ( 0, -1, -0.5 )
-			light_.set_spot_exponent ( 0 )
-			
-			result := group_
+			result := current
 		end
 	
 	hud : Q_HUD_COMPONENT is
@@ -51,14 +55,14 @@ feature
 			-- A vector, the maximal coordinates of the object.
 			-- This method is only invoked if object does not return void
 		do
-			create result.make( 10, 10, 10 )
+			create result.make( 200, 200, 0 )
 		end
 		
 	min_bound : Q_VECTOR_3D is
 			-- A vector, the minimal coordinates of the object.
 			-- This method is only invoked if object does not return void
 		do
-			create result.make( -10, -10, -10 )
+			create result.make( 0, 0, 0 )
 		end
 		
 	initialized( root_ : Q_GL_ROOT ) is
@@ -66,5 +70,7 @@ feature
 			-- can change some settings...
 		do
 		end
+		
 
-end -- class BEN_LIGHT_TEST
+
+end -- class BEN_LIGHT

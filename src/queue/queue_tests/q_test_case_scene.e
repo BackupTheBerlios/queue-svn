@@ -187,8 +187,6 @@ feature {NONE} -- values
 				pos_.scaled( 0.5 )
 				dir_.scaled( 1.0 )
 				
-				pos_ := pos_ + dir_
-				
 				camera_.set_x( pos_.x )
 				camera_.set_y( pos_.y )
 				camera_.set_z( pos_.z )
@@ -196,6 +194,7 @@ feature {NONE} -- values
 				camera_.set_alpha( -45 )
 				camera_.set_beta( -45 )
 				
+				camera_.zoom( -dir_.length )
 				navigation.set_rotation_distance( dir_.length )
 			end
 			

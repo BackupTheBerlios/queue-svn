@@ -10,7 +10,8 @@ class
 inherit
 	Q_HUD_COMPONENT
 	redefine
-		process_key_down
+		process_key_down,
+		draw_foreground
 	end
 
 creation
@@ -23,11 +24,14 @@ feature {NONE} -- creation
 			create children.make( 20 )
 			set_enabled( true )
 			set_focusable( false )
+			
+			set_background( void )
+			set_foreground( create {Q_GL_COLOR}.make_black )
 		end
 		
 
 feature -- visualisation
-	draw( open_gl : Q_GL_DRAWABLE ) is
+	draw_foreground( open_gl : Q_GL_DRAWABLE ) is
 		local
 			component_ : Q_HUD_COMPONENT
 		do

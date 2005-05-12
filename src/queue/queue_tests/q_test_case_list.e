@@ -23,10 +23,14 @@ feature {NONE} -- creation
 			list_make( 10 )
 			
 			-- add here the test-cases
+			extend( create {BAS_TABLE_MODEL_TEST} )
+			
 			extend( create {BEN_LIGHT_TEST} )
 			extend( create {BEN_HUD_FONT_TEST} )
 			extend( create {BEN_COLOR_CUBE_TEST} )
-			extend( create {BAS_TABLE_MODEL_TEST} )
+			extend( create {BEN_TEXTFIELD_TEST} )
+			extend( create {BEN_LINE} )
+			extend( create {BEN_CHECKBOX_TEST} )
 		end
 		
 	

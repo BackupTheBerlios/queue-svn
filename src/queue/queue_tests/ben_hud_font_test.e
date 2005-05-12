@@ -46,7 +46,6 @@ feature
 			label_.set_font ( font_ )
 			label_.set_font_size( 0.5 )
 			label_.set_alignement_x( 0.3 )
-			label_.set_font_color( create {Q_GL_COLOR}.make_white )
 			label_.set_background( create {Q_GL_COLOR}.make_orange  )
 			
 			result := label_

@@ -7,6 +7,9 @@ class
 
 inherit
 	Q_HUD_TEXTED
+	rename
+		background as background_normal,
+		set_background as set_background_normal
 	redefine
 		process_mouse_button_down,
 		process_mouse_button_up,
@@ -14,7 +17,7 @@ inherit
 		process_mouse_exit,
 		process_key_down,
 		process_component_removed,
-		draw_text
+		draw_background
 	end
 	
 creation
@@ -29,63 +32,31 @@ feature {NONE} -- creation
 			set_focusable( true )
 			set_enabled( true )
 			set_command( "no command" )
-			set_font_color( create {Q_GL_COLOR}.make_black )
 			
 			set_alignement_x( 0.5 )
 			set_alignement_y( 0.5 )
-			
-			create background_normal.make_orange
-			create background_pressed.make_red
-			create background_rollover.make_yellow
-			create focus_border.make_black
+
+			set_background_normal( create {Q_GL_COLOR}.make_orange )	
+			set_background_pressed( create {Q_GL_COLOR}.make_red )
+			set_background_rollover( create {Q_GL_COLOR}.make_yellow )
 		end
 		
 
 feature -- drawing
-	background_normal, background_pressed, background_rollover, focus_border : Q_GL_COLOR
-	
-	draw( open_gl : Q_GL_DRAWABLE ) is
+	background_pressed, background_rollover : Q_GL_COLOR
+		
+	set_background_pressed( color_ : Q_GL_COLOR ) is
+		require
+			color_not_void : color_ /= void
 		do
-			draw_background( open_gl )
-			draw_foreground( open_gl )
+			background_pressed := color_
 		end
 		
-	
-	draw_text( text_ : STRING; x_, base_, ascent_, descent_ : DOUBLE; open_gl : Q_GL_DRAWABLE ) is
-		local
-			bx_, by_, bw_, bh_ : DOUBLE
+	set_background_rollover( color_ : Q_GL_COLOR ) is
+		require
+			color_not_void : color_ /= void
 		do
-			precursor( text_, x_, base_, ascent_, descent_, open_gl )
-			if focused then
-				focus_border.set( open_gl )
-				
-				bx_ := x_ - font_size / 10
-				by_ := base_ - ascent_ - font_size / 10
-				bw_ := font_size / 5 + font.string_width( text_, font_size )
-				bh_ := font_size / 5 + ascent_ + descent_
-				
-				if bx_ < 0 then bx_ := 0 end
-				if by_ < 0 then by_ := 0 end
-				
-				if bw_ > width then
-					bw_ := width
-					bx_ := 0
-				end
-				
-				if bh_ > height then
-					bh_ := height
-					by_ := 0
-				end
-				
-				open_gl.gl.gl_begin( open_gl.gl_constants.esdl_gl_line_loop )
-				
-				open_gl.gl.gl_vertex2d( bx_, by_ )
-				open_gl.gl.gl_vertex2d( bx_, by_ + bh_ )
-				open_gl.gl.gl_vertex2d( bx_ + bw_, by_ + bh_ )
-				open_gl.gl.gl_vertex2d( bx_ + bw_, by_ )
-				
-				open_gl.gl.gl_end
-			end
+			background_rollover := color_
 		end
 		
 	draw_background( open_gl : Q_GL_DRAWABLE ) is

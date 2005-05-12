@@ -74,6 +74,15 @@ feature -- modification
 			set_z( z + vector_.z )
 		end
 	
+	append( x_, y_, z_ : DOUBLE ) is
+			-- Adds another vector to this
+		do
+			set_x( x + x_ )
+			set_y( y + y_ )
+			set_z( z + z_ )
+		end
+		
+	
 	sub( vector_ : Q_VECTOR_3D ) is
 			-- subtracts another vector from this
 		do

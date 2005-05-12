@@ -22,8 +22,38 @@ feature -- creation
 			set_enabled( true )
 			set_lightweight( true )
 			set_focusable( false )
+			
+			set_background( create {Q_GL_COLOR}.make_gray )
+			set_foreground( create {Q_GL_COLOR}.make_black )
+		end
+
+feature -- drawing
+	draw( open_gl : Q_GL_DRAWABLE ) is
+		do
+			draw_background( open_gl )
+			draw_foreground( open_gl )
 		end
 		
+
+	draw_foreground( open_gl : Q_GL_DRAWABLE ) is
+			-- draws the foreground
+		deferred
+		end
+		
+
+	draw_background( open_gl : Q_GL_DRAWABLE ) is
+		do
+			if background /= void then
+				background.set( open_gl )
+
+				open_gl.gl.gl_begin( open_gl.gl_constants.esdl_gl_quads )
+				open_gl.gl.gl_vertex2d( 0, 0 )
+				open_gl.gl.gl_vertex2d( width, 0 )
+				open_gl.gl.gl_vertex2d( width, height )
+				open_gl.gl.gl_vertex2d( 0, height )
+				open_gl.gl.gl_end		
+			end
+		end		
 
 feature -- eventhandling
 	enabled : BOOLEAN
@@ -74,14 +104,14 @@ feature{Q_HUD_ROOT_PANE, Q_HUD_COMPONENT} -- eventhandling
 			-- invoked when a keyevent happens, and this component has the focus and is enabled
 			-- returns true if the event is consumed, false if the parent should be invoked with the event
 		do
-			result := true
+			result := false
 		end
 
 	process_key_up( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
 			-- invoked when a keyevent happens, and this component has the focus and is enabled
 			-- returns true if the event is consumed, false if the parent should be invoked with the event
 		do
-			result := true
+			result := false
 		end
 		
 	process_mouse_enter( x_, y_ : DOUBLE ) is
@@ -101,21 +131,21 @@ feature{Q_HUD_ROOT_PANE, Q_HUD_COMPONENT} -- eventhandling
 			-- invoked when a Mousebutton is pressed, and the Mouse is over this Component
 			-- returns true if the event is consumed, false if the parent should be invoked with the event			
 		do
-			result := true
+			result := false
 		end
 		
 	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
 			-- invoked when a Mousebutton is released, witch was earlier pressed over this Component
 			-- returns true if the event is consumed, false if the parent should be invoked with the event
 		do
-			result := true
+			result := false
 		end
 		
 	process_mouse_moved( event_ : ESDL_MOUSEMOTION_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
 			-- invoked the mouse is moved over this component, but not if a mousebutton was pressed over another component
 			-- returns true if the event is consumed, false if the parent should be invoked with the event
 		do
-			result := true
+			result := false
 		end
 			
 	process_component_added( parent_ : Q_HUD_CONTAINER ) is
@@ -157,6 +187,22 @@ feature{Q_HUD_CONTAINER} -- Only available for the parent
 		do
 			parent := parent_
 		end
+		
+feature -- Color
+	background, foreground : Q_GL_COLOR
+	
+	set_background( background_ : Q_GL_COLOR ) is
+			-- sets the background-color. A value of void means, that no
+			-- background will be drawn
+		do
+			background := background_
+		end
+	
+	set_foreground( foreground_ : Q_GL_COLOR ) is
+		do
+			foreground := foreground_
+		end
+		
 		
 feature -- position and size
 	x : DOUBLE

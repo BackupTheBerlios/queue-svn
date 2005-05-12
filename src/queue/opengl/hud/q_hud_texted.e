@@ -13,21 +13,31 @@ feature -- drawing
 		local
 			ascent_, descent_ : DOUBLE
 			string_ : STRING
+			x_, y_, width_, height_ : DOUBLE
 		do			
 			ascent_ := font.max_ascent( font_size )
 			descent_ := font.max_descent( font_size )
 
-			if ascent_ + descent_ > height then
-				draw_text( "_", 0, height/2, ascent_, descent_, open_gl )
+			if insets = void then
+				x_ := 0
+				y_ := 0
+				width_ := width
+				height_ := height
 			else
-				string_ := font.compact ( text, font_size, width )
-				if font_color /= void then
-					font_color.set( open_gl )					
-				end
+				x_ := insets.left * width
+				y_ := insets.top * height
+				width_ := (1 - insets.left - insets.right) * width
+				height_ := (1 - insets.top - insets.bottom) * height
+			end
 
+			if ascent_ + descent_ > height_ then
+				draw_text( "_", 0, y_ + height_/2, ascent_, descent_, open_gl )
+			else
+				string_ := font.compact ( text, font_size, width_ )
+		
 				draw_text( string_,
-					alignement_x * ( width - font.string_width( string_, font_size ) ),
-					(  alignement_y)*(height - descent_) +
+					x_ + alignement_x *( width_ - font.string_width( string_, font_size ) ),
+					y_ + alignement_y *( height_ - descent_) +
 					(1-alignement_y)*( ascent_ ), ascent_, descent_, open_gl )
 			end
 		end
@@ -37,9 +47,45 @@ feature -- drawing
 			-- font.max_ascent/max_descent would give back
 		do
 			font.draw_string(text_, x_, base_, font_size, open_gl )
+			if focused then
+				draw_focus_of_text( text_, x_, base_, ascent_, descent_, open_gl )
+			end
 		end
 		
-
+	draw_focus_of_text( text_ : STRING; x_, base_, ascent_, descent_ : DOUBLE; open_gl : Q_GL_DRAWABLE ) is
+		local
+			bx_, by_, bw_, bh_ : DOUBLE
+		do
+			foreground.set( open_gl )
+		
+			bx_ := x_ - font_size / 10
+			by_ := base_ - ascent_ - font_size / 10
+			bw_ := font_size / 5 + font.string_width( text_, font_size )
+			bh_ := font_size / 5 + ascent_ + descent_
+			
+			if bx_ < 0 then bx_ := 0 end
+			if by_ < 0 then by_ := 0 end
+				
+			if bw_ > width then
+				bw_ := width
+				bx_ := 0
+			end
+				
+			if bh_ > height then
+				bh_ := height
+				by_ := 0
+			end
+				
+			open_gl.gl.gl_begin( open_gl.gl_constants.esdl_gl_line_loop )
+				
+			open_gl.gl.gl_vertex2d( bx_, by_ )
+			open_gl.gl.gl_vertex2d( bx_, by_ + bh_ )
+			open_gl.gl.gl_vertex2d( bx_ + bw_, by_ + bh_ )
+			open_gl.gl.gl_vertex2d( bx_ + bw_, by_ )
+			
+			open_gl.gl.gl_end
+		end
+		
 feature -- values
 	text : STRING
 		-- String to display
@@ -50,10 +96,9 @@ feature -- values
 	font_size : DOUBLE
 		-- Size of the font
 		
-	font_color : Q_GL_COLOR
-		-- color of the font
-	
 	alignement_x, alignement_y : DOUBLE
+
+	insets : Q_HUD_INSETS
 
 	set_text( text_ : STRING) is
 			-- Sets the text
@@ -90,12 +135,12 @@ feature -- values
 			alignement_y := alignement_
 		end
 		
-	set_font_color( font_color_ : Q_GL_COLOR ) is
-			-- sets the default-color for the font, a value of void means,
-			-- that the color should not be changed
-			-- There may be some fonts, who dont support different colors.
+	set_insets( insets_ : Q_HUD_INSETS ) is
+			-- Sets the insets. No text will be drawen outside this insts.
+			-- The insets are relativ to the size of this component
+			-- A value of void means, that no insets are used
 		do
-			font_color := font_color_
+			insets := insets_
 		end
-		
+	
 end -- class Q_HUD_TEXTED
