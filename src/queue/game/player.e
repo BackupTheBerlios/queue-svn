@@ -9,7 +9,7 @@ deferred class
 
 feature -- Interface
 
-	next_shot(situation_ : Q_TABLE): SHOT is
+	next_shot(situation_ : Q_TABLE): Q_SHOT is
 			-- returns the shot the player wants to play next
 		require
 			situation_exists : situation_ /= Void

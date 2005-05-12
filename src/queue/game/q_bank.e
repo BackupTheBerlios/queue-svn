@@ -8,7 +8,7 @@ class
 	Q_BANK
 
 inherit
-	Q_PHYS_LINE
+	Q_LINE_2D
 
 feature -- interface
 

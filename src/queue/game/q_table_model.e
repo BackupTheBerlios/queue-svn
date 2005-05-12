@@ -1,18 +1,19 @@
 indexing
-	description: "Objects that represent an artificial intelligence (AI) player"
+	description: "Objects that represent a 3d-model of a table"
 	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
-	Q_AI_PLAYER
+class
+	Q_TABLE_MODEL
 
-inherit
-	Q_PLAYER
-
+feature -- Interface
+	
+	
+	
 feature {NONE} -- Implementation
 
 invariant
 	invariant_clause: True -- Your invariant here
 
-end -- class AI_PLAYER
+end -- class Q_TABLE_MODEL

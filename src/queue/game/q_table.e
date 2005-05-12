@@ -11,11 +11,11 @@ create make
 	
 feature -- Interface
 
-	balls:ARRAY[BALL] -- all balls of the table
-	banks:ARRAY[BANK] -- all banks of the table
-	holes:ARRAY[HOLE] -- all holes of the table
+	balls:ARRAY[Q_BALL] -- all balls of the table
+	banks:ARRAY[Q_BANK] -- all banks of the table
+	holes:ARRAY[Q_HOLE] -- all holes of the table
 	
-	set_balls(balls_ : ARRAY[BALL]) is
+	set_balls(balls_ : ARRAY[Q_BALL]) is
 			-- sets the balls of this table
 		require
 			balls_exist: balls_ /= Void
@@ -25,7 +25,7 @@ feature -- Interface
 			balls = balls_
 		end
 		
-	set_banks(banks_ : ARRAY[BANK]) is
+	set_banks(banks_ : ARRAY[Q_BANK]) is
 			-- sets the banks of this table
 		require
 			banks_exist: banks_ /= Void	
@@ -35,7 +35,7 @@ feature -- Interface
 			banks = banks_
 		end
 		
-	set_holes(holes_ : ARRAY[HOLE]) is
+	set_holes(holes_ : ARRAY[Q_HOLE]) is
 			-- sets the holes of this table
 		require
 			holes_exist: holes_ /= Void
@@ -45,7 +45,7 @@ feature -- Interface
 			holes = holes_
 		end
 	
-	make(balls_:ARRAY[BALL]; banks_:ARRAY[BANK]; holes_:ARRAY[HOLE]) is
+	make(balls_:ARRAY[Q_BALL]; banks_:ARRAY[Q_BANK]; holes_:ARRAY[Q_HOLE]) is
 			-- creates a table
 		require
 			balls_exist: balls_ /= Void
