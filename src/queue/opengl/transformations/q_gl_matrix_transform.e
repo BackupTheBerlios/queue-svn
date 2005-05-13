@@ -21,9 +21,7 @@ feature -- transform
 	transform( open_gl : Q_GL_DRAWABLE ) is
 		do
 			open_gl.gl.gl_push_matrix
-			--matrix.set( open_gl )
-			open_gl.gl.gl_translated( matrix.m_41, matrix.m_42, matrix.m_43 )
-			
+			matrix.set( open_gl )			
 		end
 		
 	untransform( open_gl : Q_GL_DRAWABLE ) is

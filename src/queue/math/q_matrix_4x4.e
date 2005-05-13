@@ -71,7 +71,7 @@ feature -- matrix-modes
 	rotate( vx_, vy_, vz_, angle_ : DOUBLE ) is
 			-- Sets the top left 3x3 Submatrix to a matrix describig 
 			-- a rotation around the v-Vector and with an angle
-			-- given in radians.
+			-- given in radians (clockwise).
 		local
 			s_, c_, u_ : DOUBLE
 		do
@@ -83,12 +83,12 @@ feature -- matrix-modes
 			set_m_21( vx_*vy_*u_ + vz_*s_ )
 			set_m_31( vx_*vz_*u_ - vy_*s_ )
 			
-			set_m_21( vy_*vx_*u_ - vz_*s_ )
+			set_m_12( vy_*vx_*u_ - vz_*s_ )
 			set_m_22( vy_*vy_*u_ + c_ )
-			set_m_23( vy_*vz_*u_ + vx_*s_ )
+			set_m_32( vy_*vz_*u_ + vx_*s_ )
 			
-			set_m_31( vz_*vx_*u_ + vy_*s_ )
-			set_m_32( vz_*vy_*u_ - vx_*s_ )
+			set_m_13( vz_*vx_*u_ + vy_*s_ )
+			set_m_23( vz_*vy_*u_ - vx_*s_ )
 			set_m_33( vz_*vz_*u_ + c_ )
 		end
 		
@@ -128,30 +128,33 @@ feature -- openGL-interface
 			open_gl_not_void : open_gl /= void
 		local
 			array_ : ARRAY[DOUBLE]
+			intern_ : ANY
 		do
 			create array_.make(0, 15 )
 			
 			array_.put( m_11,  0 )
-			array_.put( m_12,  1 )
-			array_.put( m_13,  2 )
-			array_.put( m_14,  3 )
+			array_.put( m_21,  1 )
+			array_.put( m_31,  2 )
+			array_.put( m_41,  3 )
 			
-			array_.put( m_21,  4 )
+			array_.put( m_12,  4 )
 			array_.put( m_22,  5 )
-			array_.put( m_23,  6 )
-			array_.put( m_24,  7 )
+			array_.put( m_32,  6 )
+			array_.put( m_42,  7 )
 			
-			array_.put( m_31,  8 )
-			array_.put( m_32,  9 )
+			array_.put( m_13,  8 )
+			array_.put( m_23,  9 )
 			array_.put( m_33, 10 )
-			array_.put( m_34, 11 )
+			array_.put( m_43, 11 )
 			
-			array_.put( m_41, 12 )
-			array_.put( m_42, 13 )
-			array_.put( m_43, 14 )
+			array_.put( m_14, 12 )
+			array_.put( m_24, 13 )
+			array_.put( m_34, 14 )
 			array_.put( m_44, 15 )
 			
-			open_gl.gl.gl_load_matrixd( $array_ )
+			intern_ := array_.to_c
+--			open_gl.gl.gl_load_matrixd( $intern_ )
+			open_gl.gl.gl_mult_matrixd ( $intern_ )
 		end
 		
 feature{NONE} -- math

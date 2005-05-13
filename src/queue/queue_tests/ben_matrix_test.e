@@ -38,8 +38,11 @@ feature
 				create cube_.make_sized( 5 )
 				create transform_.make
 				
-		--		transform_.matrix.rotate( 0, 1, 0, index_ / (count_-1) * 3.14 / 2 )
-				transform_.matrix.translated( index_ * 7, 0, 00 )
+				transform_.matrix.rotate( 1, 1, 1, index_ / (count_-1) * 3.14 * 2 )
+--				transform_.matrix.rotate( 0, 1, 0, index_ / (count_-1) * 3.14 / 2 )				
+--				transform_.matrix.rotate( 0, 0, 1, index_ / (count_-1) * 3.14 / 2 )
+				
+				transform_.matrix.translated( index_ * 7, 0, -10 )
 				
 				transform_group_.set_transform( transform_ )
 				transform_group_.extend( cube_ )
@@ -49,6 +52,15 @@ feature
 				
 				index_ := index_ + 1
 			end
+			
+			-- add a axis
+			create transform_.make
+			create transform_group_.make
+			transform_.matrix.translated( 0, 10, 0 )
+			transform_group_.set_transform( transform_ )
+			transform_group_.extend( create {Q_GL_AXIS} )
+			
+			group_.extend( transform_group_ )
 			
 			result := group_
 		end
@@ -64,14 +76,14 @@ feature
 			-- A vector, the maximal coordinates of the object.
 			-- This method is only invoked if object does not return void
 		do
-			create result.make( 10, 10, 10 )
+			create result.make( 50, 0, 0 )
 		end
 		
 	min_bound : Q_VECTOR_3D is
 			-- A vector, the minimal coordinates of the object.
 			-- This method is only invoked if object does not return void
 		do
-			create result.make( -10, -10, -10 )
+			create result.make( 20, 0, 0 )
 		end
 		
 	initialized( root_ : Q_GL_ROOT ) is
