@@ -25,6 +25,7 @@ feature {NONE} -- Initialization
 			video_subsystem.set_video_surface_height (height)
 			video_subsystem.set_video_bpp (resolution)
 			video_subsystem.set_opengl (true)
+			
 			initialize_screen
 			set_application_name ("Queue OpenGL Proof of Concept")
 			

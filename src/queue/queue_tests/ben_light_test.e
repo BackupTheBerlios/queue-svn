@@ -20,22 +20,31 @@ feature
 	object : Q_GL_OBJECT is
 		local
 			group_ : Q_GL_GROUP[ Q_GL_OBJECT ]
-			light_ : Q_GL_LIGHT
+			light_1_, light_2_ : Q_GL_LIGHT
 		do
-			create light_.make( 0 )
+			create light_1_.make( 0 )
+			create light_2_.make( 1 )
 			create group_.make
 
 			group_.extend( create {Q_GL_WHITE_CUBE}.make_sized( 20 ) )
-			group_.extend( light_ )
+			group_.extend( light_1_ )
+			group_.extend( light_2_ )
 			
-			light_.set_ambient( 0, 0, 1, 1 )
-			light_.set_specular( 0, 0, 0, 1 )
-			light_.set_diffuse( 0, 1, 0, 1 )
-			light_.set_position( 15, 20, 15 )
+--			light_.set_ambient( 0, 0, 1, 1 )
+			light_1_.set_specular( 0, 0, 0, 1 )
+			light_1_.set_diffuse( 0, 1, 0, 1 )
+			light_1_.set_position( 15, 20, 15 )
 			
-			light_.set_spot_cut_off ( 40 )
-			light_.set_spot_direction ( 0, -1, -0.5 )
-			light_.set_spot_exponent ( 0 )
+			light_1_.set_spot_cut_off ( 40 )
+			light_1_.set_spot_direction ( 0, -1, -0.5 )
+			light_1_.set_spot_exponent ( 0 )
+			
+			light_2_.set_spot_cut_off ( 180 )
+			light_2_.set_diffuse ( 0, 0, 1, 0 )
+			light_2_.set_specular( 1, 0, 0, 0 )
+			light_2_.set_ambient (  0.5, 0.5, 0.5, 0.5 )
+			light_2_.set_direction( -1, -1, -0.5 )
+			light_2_.set_attenuation ( 1, 0, 0 )
 			
 			result := group_
 		end
