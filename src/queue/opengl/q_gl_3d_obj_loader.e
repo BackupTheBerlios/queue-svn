@@ -87,7 +87,7 @@ feature  -- Commands
 			end
 		end
 		
-	create_flat_model : Q_GL_FLAT_MODEL is
+	create_flat_model : Q_GL_GROUP[Q_GL_FLAT_MODEL] is
 			-- Create a flat object.
 		local
 			index_, inner_index_:INTEGER
@@ -95,8 +95,10 @@ feature  -- Commands
 			vertex_:Q_GL_VERTEX
 			
 			curr_array_:ARRAY[INTEGER]
+			model_ : Q_GL_FLAT_MODEL
 		do
-			create result.make(faces.count*3)
+			create result.make
+			create model_.make(faces.count*3)
 			
 			from
 				index_ := 0
@@ -139,11 +141,13 @@ feature  -- Commands
 										   )
 					end
 					
-					result.vertices.force (vertex_, 3*index_+inner_index_)
+					model_.vertices.force (vertex_, 3*index_+inner_index_)
 					inner_index_ := inner_index_ + 1
 				end
 				index_ := index_ + 1
 			end
+			
+			result.extend (model_)
 		end
 	
 	create_index_model : Q_GL_INDEX_MODEL is

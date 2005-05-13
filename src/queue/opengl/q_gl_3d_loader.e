@@ -12,7 +12,7 @@ feature
 		deferred
 		end
 
-	create_flat_model : Q_GL_FLAT_MODEL is
+	create_flat_model : Q_GL_GROUP[Q_GL_FLAT_MODEL] is
 		deferred
 		end		
 	

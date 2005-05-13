@@ -19,15 +19,15 @@ feature
 	object : Q_GL_OBJECT is
 		local 
 			group : Q_GL_GROUP[Q_GL_OBJECT]
-			loader : Q_GL_3D_OBJ_LOADER
-			model : Q_GL_FLAT_MODEL
+			loader : Q_GL_3D_ASE_LOADER
+			model : Q_GL_GROUP[Q_GL_MODEL]
 			
 			light_1, light_2 :Q_GL_LIGHT
 		do
 			create group.make
 			create loader.make
 			
-			loader.load_file ("model/pool.obj")
+			loader.load_file ("model/pool.ase")
 			model := loader.create_flat_model
 			
 			group.force(model)

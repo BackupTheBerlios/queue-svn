@@ -60,9 +60,9 @@ feature  -- Commands
 						-- ignore those for the moment
 						read_subclause(ase_file_)				
 					elseif tokenizer_.item.is_equal ("*GEOMOBJECT") then
-						-- ignore those for the moment
 						read_geometric_object(ase_file_)				
 					else
+						-- a not recognized line
 						io.put_string (ase_file_.last_string)
 						io.put_new_line
 					end
@@ -72,16 +72,28 @@ feature  -- Commands
 			end
 		end
 		
-	create_flat_model : Q_GL_FLAT_MODEL is
+	create_flat_model : Q_GL_GROUP[Q_GL_FLAT_MODEL] is
 			-- Create a flat object.
+		local
+			index_ : INTEGER
 		do
+			create result.make
+			
+			from
+				index_ := geometric_objects.lower
+			until
+				index_ > geometric_objects.upper
+			loop
+				result.extend (geometric_objects.item(index_).create_flat_model)
+				index_ := index_ + 1
+			end
 		end
 	
 	create_index_model : Q_GL_INDEX_MODEL is
 		do
 		end
 		
-feature {NONE} -- implementation
+feature {NONE} -- Implementation
 	read_comment(input_: STRING_TOKENIZER) is
 			-- reads a comment, and dumps it :)
 			-- if anyone really wants them rewrite this.
@@ -121,7 +133,9 @@ feature {NONE} -- implementation
 	read_geometric_object(file_: PLAIN_TEXT_FILE) is
 			-- parses a *GEOMOBJECTS clause
 		do
-			geometric_objects.force (create {Q_GL_3D_ASE_GEOMOBJ}.make (file_), geometric_objects.count)
+			geometric_objects.force (create {Q_GL_3D_ASE_GEOMOBJ}.make (file_), geometric_object_count)
+			
+			geometric_object_count := geometric_object_count + 1
 		end
 		
 		
@@ -129,4 +143,6 @@ feature -- access
 	file_version: INTEGER
 	
 	geometric_objects : ARRAY[Q_GL_3D_ASE_GEOMOBJ]
+	
+	geometric_object_count : INTEGER
 end
