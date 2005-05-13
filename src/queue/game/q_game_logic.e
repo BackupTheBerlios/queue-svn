@@ -29,7 +29,8 @@ feature -- Interface
 		
 			-- Create first scene.
 			create scene_.make_scene( video_subsystem )
-
+			scene_.initialize_scene
+			
 			-- Create the event_queue
 			create event_queue.make(scene_.event_loop, video_subsystem)
 			
