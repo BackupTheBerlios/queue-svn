@@ -22,7 +22,7 @@
 		<cluster name="opengl">
 			<cluster name="hud"/>
 			<cluster name="primitives"/>
-			<cluster name="transformations">
+			<cluster name="transformations"/>
 		</cluster>
 		<cluster name="physics"/>
 		<cluster name="queue_tests"/>
