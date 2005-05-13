@@ -34,6 +34,15 @@ feature{NONE} -- creation
 			make( vector_.x, vector_.y, vector_.z )
 		end
 		
+feature -- openGL interface
+	set( open_gl : Q_GL_DRAWABLE ) is
+			-- sets this vector as vertex3d
+		require
+			open_gl_not_void : open_gl /= void
+		do
+			open_gl.gl.gl_vertex3d( x, y, z )
+		end
+		
 
 feature -- coordinates
 	x, y, z : DOUBLE

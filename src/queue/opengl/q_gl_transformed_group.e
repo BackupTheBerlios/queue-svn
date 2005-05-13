@@ -11,6 +11,10 @@ inherit
 		draw
 	end
 
+
+creation
+	make
+
 feature -- all
 	transform : Q_GL_TRANSFORM
 	

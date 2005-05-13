@@ -111,7 +111,7 @@ feature{NONE} -- hud
 					menu_.add( button_ )
 				end
 				
-				if index_ < cases.count then
+				if index_ <= cases.count then
 					-- forward-button
 					
 					command_ := "m"
