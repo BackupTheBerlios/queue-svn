@@ -68,16 +68,30 @@ feature -- matrix-modes
 		end
 		
 
-	rotate( vx_, vy_, vz_, angle_ : DOUBLE ) is
+	rotate( vx__, vy__, vz__, angle_ : DOUBLE ) is
 			-- Sets the top left 3x3 Submatrix to a matrix describig 
 			-- a rotation around the v-Vector and with an angle
 			-- given in radians (clockwise).
+			
+			-- for more informations, please visit
+			-- http://www.opengl.org/documentation/specs/man_pages/hardcopy/GL/html/gl/rotate.html
+			-- http://www.makegames.com/3drotation/
+		require
+			not_0_vector : vx__ /= 0 or vy__ /= 0 or vz__ /= 0
 		local
 			s_, c_, u_ : DOUBLE
+			length_, vx_, vy_, vz_ : DOUBLE
 		do
+			length_ := math.sqrt( vx__*vx__ + vy__*vy__ + vz__*vz__ )
+			
+			vx_ := vx__ / length_
+			vy_ := vy__ / length_
+			vz_ := vz__ / length_
+			
 			s_ := math.sine( angle_ )
 			c_ := math.cosine( angle_ )
 			u_ := 1 - c_
+
 			
 			set_m_11( vx_*vx_*u_ + c_ )
 			set_m_21( vx_*vy_*u_ + vz_*s_ )
@@ -91,10 +105,59 @@ feature -- matrix-modes
 			set_m_23( vz_*vy_*u_ - vx_*s_ )
 			set_m_33( vz_*vz_*u_ + c_ )
 		end
+	
+	orthonormalize_3x3 is
+			-- Orthonormalises the Vectors (m_1i, m_2i, m_3i) for i = 1, 2, 3
+			-- If the current matrix is a bijective projection, afterwards this 
+			-- matrix will be a projection on witch followings holds:
+			-- <a, b> = <M*a, M*b> for all vectors a, b and M = current
+			-- morover: |a| = |M*a| for all vectors a and M = current
+			
+			-- this is an implementation of Gram-Schmidt
+		local
+			a1_, a2_, a3_ : Q_VECTOR_3D
+			b1_, b2_, b3_ : Q_VECTOR_3D
+		do
+			create a1_.make( m_11, m_21, m_31 )
+			create a2_.make( m_12, m_22, m_32 )
+			create a3_.make( m_13, m_23, m_33 )
+			
+			b1_ := a1_.normalice
+			
+			b2_ := a2_ - b1_.scale( b1_.scalar_product( a2_ ) )
+			b2_.normaliced
+			
+			b3_ := a3_ - b1_.scale( b1_.scalar_product( a3_ )) - b2_.scale ( b2_.scalar_product( a3_ ) )
+			b3_.normaliced
+			
+			set_column_vector_3d( 1, b1_ )
+			set_column_vector_3d( 2, b2_ )
+			set_column_vector_3d( 3, b3_ )
+		end
 		
 
 feature -- operations
-
+	mul, infix "*" (matrix_ : Q_MATRIX_4X4 ) : Q_MATRIX_4X4 is
+			-- Multiplicates this matrix with another matrix and returns the result as a new matrix
+			
+		local
+			row_, column_, index_ : INTEGER
+			temp_ : DOUBLE
+		do
+			create result.make
+			
+			from row_ := 1 until row_ > 4 loop
+				from column_ := 1 until column_ > 4 loop
+					temp_ := 0
+					from index_ := 1 until index_ > 4 loop
+						temp_ := temp_ + m( row_, index_ ) * matrix_.m( index_, column_ )
+					end
+					result.set_m( row_, column_, temp_ )
+				end
+			end
+		end
+		
+	
 feature -- elements
 	m_11, m_12, m_13, m_14 : DOUBLE
 	m_21, m_22, m_23, m_24 : DOUBLE
@@ -121,6 +184,121 @@ feature -- elements
 	set_m_43( m_ : DOUBLE ) is do m_43 := m_ end
 	set_m_44( m_ : DOUBLE ) is do m_44 := m_ end
 	
+	m( row_, column_ : INTEGER ) : DOUBLE is
+		require
+			row_ >= 1 and row_ <= 4
+			column_ >= 1 and column_ <= 4
+		do
+			inspect row_
+				when 1 then
+					inspect column_
+						when 1 then
+							result := m_11
+						when 2 then
+							result := m_12
+						when 3 then
+							result := m_13
+						when 4 then
+							result := m_14
+					end
+				when 2 then
+					inspect column_
+						when 1 then
+							result := m_21
+						when 2 then
+							result := m_22
+						when 3 then
+							result := m_23
+						when 4 then
+							result := m_24
+					end					
+				when 3 then
+					inspect column_
+						when 1 then
+							result := m_31
+						when 2 then
+							result := m_32
+						when 3 then
+							result := m_33
+						when 4 then
+							result := m_34
+					end			
+				when 4 then					
+					inspect column_
+						when 1 then
+							result := m_41
+						when 2 then
+							result := m_42
+						when 3 then
+							result := m_43
+						when 4 then
+							result := m_44
+					end				
+			end
+		end
+		
+	
+	set_m( row_, column_ : INTEGER; m_ : DOUBLE ) is
+		require
+			row_ >= 1 and row_ <= 4
+			column_ >= 1 and column_ <= 4
+		do
+			inspect row_
+				when 1 then
+					inspect column_
+						when 1 then
+							set_m_11( m_ )
+						when 2 then
+							set_m_12( m_ )
+						when 3 then
+							set_m_13( m_ )
+						when 4 then
+							set_m_14( m_ )
+					end
+				when 2 then
+					inspect column_
+						when 1 then
+							set_m_21( m_ )
+						when 2 then
+							set_m_22( m_ )
+						when 3 then
+							set_m_23( m_ )
+						when 4 then
+							set_m_24( m_ )
+					end					
+				when 3 then
+					inspect column_
+						when 1 then
+							set_m_31( m_ )
+						when 2 then
+							set_m_32( m_ )
+						when 3 then
+							set_m_33( m_ )
+						when 4 then
+							set_m_34( m_ )
+					end			
+				when 4 then					
+					inspect column_
+						when 1 then
+							set_m_41( m_ )
+						when 2 then
+							set_m_42( m_ )
+						when 3 then
+							set_m_43( m_ )
+						when 4 then
+							set_m_44( m_ )
+					end				
+			end
+		end
+		
+	set_column_vector_3d( column_ : INTEGER; vector_ : Q_VECTOR_3D ) is
+		do
+			set_m( 1, column_, vector_.x )
+			set_m( 2, column_, vector_.y )
+			set_m( 3, column_, vector_.z )
+		end
+		
+		
 feature -- openGL-interface
 	set( open_gl : Q_GL_DRAWABLE ) is
 			-- sets this matrix
@@ -153,7 +331,6 @@ feature -- openGL-interface
 			array_.put( m_44, 15 )
 			
 			intern_ := array_.to_c
---			open_gl.gl.gl_load_matrixd( $intern_ )
 			open_gl.gl.gl_mult_matrixd ( $intern_ )
 		end
 		

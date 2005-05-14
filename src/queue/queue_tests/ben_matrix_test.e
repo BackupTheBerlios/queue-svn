@@ -30,7 +30,7 @@ feature
 			
 			from
 				index_ := 0
-				count_ := 10
+				count_ := 100
 			until
 				index_ = count_
 			loop
@@ -43,6 +43,8 @@ feature
 --				transform_.matrix.rotate( 0, 0, 1, index_ / (count_-1) * 3.14 / 2 )
 				
 				transform_.matrix.translated( index_ * 7, 0, -10 )
+				
+				transform_.matrix.orthonormalize_3x3
 				
 				transform_group_.set_transform( transform_ )
 				transform_group_.extend( cube_ )
@@ -76,7 +78,7 @@ feature
 			-- A vector, the maximal coordinates of the object.
 			-- This method is only invoked if object does not return void
 		do
-			create result.make( 50, 0, 0 )
+			create result.make( 500, 0, 0 )
 		end
 		
 	min_bound : Q_VECTOR_3D is
