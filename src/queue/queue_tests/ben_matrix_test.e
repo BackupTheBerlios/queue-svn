@@ -42,7 +42,7 @@ feature
 --				transform_.matrix.rotate( 0, 1, 0, index_ / (count_-1) * 3.14 / 2 )				
 --				transform_.matrix.rotate( 0, 0, 1, index_ / (count_-1) * 3.14 / 2 )
 				
-				transform_.matrix.translated( index_ * 7, 0, -10 )
+				transform_.matrix.translate( index_ * 7, 0, -10 )
 				
 				transform_.matrix.orthonormalize_3x3
 				
@@ -58,7 +58,7 @@ feature
 			-- add a axis
 			create transform_.make
 			create transform_group_.make
-			transform_.matrix.translated( 0, 10, 0 )
+			transform_.matrix.translate( 0, 10, 0 )
 			transform_group_.set_transform( transform_ )
 			transform_group_.extend( create {Q_GL_AXIS} )
 			

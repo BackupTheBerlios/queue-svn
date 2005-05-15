@@ -14,7 +14,7 @@ creation
 feature{NONE} -- creation
 	make is
 		do
-			create matrix.make
+			create matrix.identity
 		end
 		
 feature -- transform

@@ -5,15 +5,21 @@ indexing
 class
 	Q_MATRIX_4X4
 	
+inherit
+	ANY
+	redefine
+		default_create, copy
+	end
+	
 creation
-	make
+	default_create, zero, identity, copy
 	
 feature {NONE} -- creation
-	make is
+	default_create is
 		do
-			identity
+			precursor
+			zero
 		end
-		
 
 feature -- matrix-modes
 	zero is
@@ -52,7 +58,7 @@ feature -- matrix-modes
 			m_44 := 1.0
 		end
 
-	translated( dx_, dy_, dz_ : DOUBLE ) is
+	translate( dx_, dy_, dz_ : DOUBLE ) is
 			-- changes the translation of this matrix.
 			-- Other values will not be influenced
 		do
@@ -60,6 +66,23 @@ feature -- matrix-modes
 			m_24 := dy_
 			m_34 := dz_
 		end
+
+	scale( sx_, sy_, sz_ : DOUBLE ) is
+			-- Changes this matrix into a matrix witch scales vectors.
+			-- the translation-part will not be influenced
+		do
+			m_11 := sx_
+			m_22 := sy_
+			m_33 := sz_
+			
+			m_12 := 0
+			m_13 := 0
+			m_21 := 0
+			m_23 := 0
+			m_31 := 0
+			m_32 := 0
+		end
+		
 
 	rotate_vector( vector_ : Q_VECTOR_3D; angle_ : DOUBLE ) is
 			-- see "rotate"
@@ -134,9 +157,21 @@ feature -- matrix-modes
 			set_column_vector_3d( 2, b2_ )
 			set_column_vector_3d( 3, b3_ )
 		end
-		
 
 feature -- operations
+	copy( matrix_ : like current ) is
+			-- copies the values of another matrix into this one
+		local
+			row_, column_ : INTEGER
+		do
+			from row_ := 1 until row_ > 4 loop
+				from column_ := 1 until column_ > 4 loop
+					set_m( row_, column_, matrix_.m( row_, column_ ))
+				end
+			end
+		end
+		
+
 	mul, infix "*" (matrix_ : Q_MATRIX_4X4 ) : Q_MATRIX_4X4 is
 			-- Multiplicates this matrix with another matrix and returns the result as a new matrix
 			
@@ -144,7 +179,7 @@ feature -- operations
 			row_, column_, index_ : INTEGER
 			temp_ : DOUBLE
 		do
-			create result.make
+			create result
 			
 			from row_ := 1 until row_ > 4 loop
 				from column_ := 1 until column_ > 4 loop
@@ -157,6 +192,43 @@ feature -- operations
 			end
 		end
 		
+	sum, infix "+" (matrix_ : Q_MATRIX_4X4 ) : Q_MATRIX_4X4 is
+			-- Create a new matrix with the sum of this and another matrix
+		do
+			create result.copy( current )
+			result.add( matrix_ )
+		end
+		
+	add( matrix_ : Q_MATRIX_4X4 ) is
+			-- Adds the value of another matrix to this
+		local
+			row_, column_ : INTEGER
+		do
+			from row_ := 1 until row_ > 4 loop
+				from column_ := 1 until column_ > 4 loop
+					set_m( row_, column_, m(row_, column_) + matrix_.m( row_, column_ ))
+				end
+			end
+		end
+		
+	diff, infix "-" (matrix_ : Q_MATRIX_4X4 ) : Q_MATRIX_4X4 is
+			-- Creates a new matrix containing the differenz between this and another matrix
+		do
+			create result.copy( current )
+			result.sub( matrix_ )
+		end
+
+	sub( matrix_ : Q_MATRIX_4X4 ) is
+			-- Subtracts another matrix from this
+		local
+			row_, column_ : INTEGER
+		do
+			from row_ := 1 until row_ > 4 loop
+				from column_ := 1 until column_ > 4 loop
+					set_m( row_, column_, m(row_, column_) - matrix_.m( row_, column_ ))
+				end
+			end
+		end		
 	
 feature -- elements
 	m_11, m_12, m_13, m_14 : DOUBLE
@@ -333,7 +405,7 @@ feature -- openGL-interface
 			intern_ := array_.to_c
 			open_gl.gl.gl_mult_matrixd ( $intern_ )
 		end
-		
+
 feature{NONE} -- math
 	math : DOUBLE_MATH is
 		once
