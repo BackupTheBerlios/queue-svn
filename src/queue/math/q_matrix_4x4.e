@@ -169,8 +169,7 @@ feature -- operations
 					set_m( row_, column_, matrix_.m( row_, column_ ))
 				end
 			end
-		end
-		
+		end		
 
 	mul, infix "*" (matrix_ : Q_MATRIX_4X4 ) : Q_MATRIX_4X4 is
 			-- Multiplicates this matrix with another matrix and returns the result as a new matrix
@@ -191,6 +190,23 @@ feature -- operations
 				end
 			end
 		end
+		
+	mul_vector_3( vector_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
+		do
+			create result.make(
+				vector_.x * m_11 + vector_.y * m_12 + vector_.z * m_13,
+				vector_.x * m_21 + vector_.y * m_22 + vector_.z * m_23,
+				vector_.x * m_31 + vector_.y * m_32 + vector_.z * m_33 )
+		end
+
+	mul_vector_4( vector_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
+		do
+			create result.make(
+				vector_.x * m_11 + vector_.y * m_12 + vector_.z * m_13 + m_14,
+				vector_.x * m_21 + vector_.y * m_22 + vector_.z * m_23 + m_24,
+				vector_.x * m_31 + vector_.y * m_32 + vector_.z * m_33 + m_34 )
+		end
+
 		
 	sum, infix "+" (matrix_ : Q_MATRIX_4X4 ) : Q_MATRIX_4X4 is
 			-- Create a new matrix with the sum of this and another matrix
@@ -228,8 +244,107 @@ feature -- operations
 					set_m( row_, column_, m(row_, column_) - matrix_.m( row_, column_ ))
 				end
 			end
-		end		
+		end	
+		
+	inverted : Q_MATRIX_4X4 is
+			-- creates the invers matrix
+		local
+			matrix_ : Q_MATRIX_4X4
+			vector_ : Q_VECTOR_4D
+			index_ : INTEGER
+		do
+			create matrix_.copy( current )
+			create result.zero
+			
+			from
+				index_ := 1
+				create vector_
+			until
+				index_ > 4
+			loop
+				vector_.set_x( 0 )
+				vector_.set_y( 0 )
+				vector_.set_z( 0 )
+				vector_.set_t( 0 )
+				vector_.set( index_, 1 )
+				
+				vector_ := matrix_.solve_on_current( vector_ )
+				
+				result.set_m( index_, 1, vector_.x )
+				result.set_m( index_, 2, vector_.y )
+				result.set_m( index_, 3, vector_.z )
+				result.set_m( index_, 4, vector_.t )
+				
+				index_ := index_+1
+			end
+		end
 	
+	scaled_row_sum( source_, destination_ : INTEGER; scale_ : DOUBLE ) is
+			-- Writes the sum of "source*scale + destination" into destination.
+		local
+			index_ : INTEGER
+		do
+			from index_ := 1 until index_ > 4 loop
+				set_m( destination_, index_, m( source_, index_ ) * scale_ + m( destination_, index_ ))
+				index_ := index_+1
+			end
+		end
+
+	solve_on_current( b_ : Q_VECTOR_4D ) : Q_VECTOR_4D is
+			-- Searches a vector a so that "M*a = b"
+			-- if there is no unique solution for this system, void will be returned
+			--
+			-- THIS WILL CHANGE THE ORDER OF THE ELEMENTS OF THIS MATRIX AND OF VECTOR B
+		local
+			column_, row_ : INTEGER
+			pivot_m_, pivot_b_, scale_ : DOUBLE
+		do
+			create result
+			
+			-- create triangluar matrix
+			from column_ := 1 until column_ > 4 loop
+				from
+					row_ := column_
+				until
+					row_ > 4 or
+					m( row_, column_ ) /= 0
+				loop
+					row_ := row_ + 1
+				end
+				
+				-- row/column is now the pivot-element
+				-- swap rows, so that pivot is at column/column
+				if row_ /= column_ then
+					swap_rows( row_, column_ )
+					b_.swap( row_, column_ )
+				end
+
+				-- calculate the row-vectors under column, so they have more 0s
+				from
+					row_ := column_+1
+					pivot_m_ := m( column_, column_ )
+					pivot_b_ := b_.get( column_ )
+				until
+					row_ > 4 
+				loop
+					scale_ := -m( row_, column_ ) / pivot_m_
+					scaled_row_sum( column_, row_, scale_ )
+					b_.set( row_, b_.get( row_ ) + scale_ * pivot_b_ )
+					
+					row_ := row_ + 1
+				end
+			end
+			
+			-- calculate the result
+			result.set_t( (b_.t) 									 / m_44 )
+			result.set_z( (b_.z - b_.t*m_34) 						 / m_33 )
+			result.set_y( (b_.y - b_.t*m_24 - b_.z*m_23) 			 / m_22 )
+			result.set_x( (b_.x - b_.t*m_14 - b_.z*m_13 - b_.y*m_12) / m_11 )
+		rescue
+			result := void
+		end
+
+
 feature -- elements
 	m_11, m_12, m_13, m_14 : DOUBLE
 	m_21, m_22, m_23, m_24 : DOUBLE
@@ -370,6 +485,33 @@ feature -- elements
 			set_m( 3, column_, vector_.z )
 		end
 		
+	swap_rows( row_a_, row_b_ : INTEGER ) is
+			-- switches two rows
+		local
+			t_ : DOUBLE
+			index_ : INTEGER
+		do
+			from index_ := 1 until index_ > 4 loop
+				t_ := m( row_a_, index_ )
+				set_m( row_a_, index_, m( row_b_, index_ ))
+				set_m( row_b_, index_, t_ )
+				index_ := index_ + 1
+			end
+		end
+	
+	swap_columns( column_a_, column_b_ : INTEGER ) is
+			-- switches two columns
+		local
+			t_ : DOUBLE
+			index_ : INTEGER
+		do
+			from index_ := 1 until index_ > 4 loop
+				t_ := m( index_, column_a_ )
+				set_m( index_, column_a_, m( index_, column_b_ ))
+				set_m( index_, column_b_, t_ )
+				index_ := index_ + 1
+			end
+		end	
 		
 feature -- openGL-interface
 	set( open_gl : Q_GL_DRAWABLE ) is

@@ -46,6 +46,13 @@ feature -- Eventhandling
 	mouse_button_pressed : BOOLEAN
 		-- mouse buttons witch are currently pressed
 	
+	mouse_direction( x_, y_ : DOUBLE ) : Q_VECTOR_3D is
+			-- Gives the direction in witch the mouse points at the location x_/y_
+		do
+			create result.make( 0, 0, -1 )
+		end
+		
+	
 	request_focused_component( component_ : Q_HUD_COMPONENT ) is
 			-- Tries to set the given component as the component with the focus.
 			-- This action may be abordet, if currently the mouse is pressed
@@ -160,13 +167,16 @@ feature -- Eventhandling
 	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; screen_width_, screen_height_ : INTEGER ) is
 		local
 			component_ : Q_HUD_COMPONENT
+			
+			mouse_positions_ : STACK[ Q_VECTOR_2D ]
+			mouse_ : Q_VECTOR_2D
+			
 			x_, y_ : DOUBLE
-			cx_, cy_ : DOUBLE
 		do
 			-- relative position of the mouse
 			x_ := event_.proportional_position.x / screen_width_
 			y_ := event_.proportional_position.y / screen_height_
-
+			
 			-- if no button was pressed: find component, and set the focus		
 			if not mouse_button_pressed then
 				component_select_and_focus( x_, y_ )
@@ -177,30 +187,29 @@ feature -- Eventhandling
 
 			-- send the event			
 			if selected_component /= void then
+				mouse_positions_ := mouse_positions(
+					x_, y_,	selected_component )				
+				
 				mouse_button_pressed := true
 				
 				from
-					component_ := selected_component
-				
-					cx_ := absolut_x_location( component_ )
-					cy_ := absolut_y_location( component_ )					
+					component_ := selected_component				
 				until
 					component_ = void
 				loop
+					mouse_ := mouse_positions_.item
+					mouse_positions_.remove
+					
 					if component_.enabled then
-						if component_.process_mouse_button_down ( event_, x_ - cx_, y_ - cy_ ) 
+						if component_.process_mouse_button_down ( event_, mouse_.x, mouse_.y ) 
 								or not component_.lightweight then
 									
 							component_ := void
 						else
-							cx_ := cx_ - component_.x
-							cy_ := cy_ - component_.y
 							component_ := component_.parent
 						end
 					else
 						if component_.lightweight then
-							cx_ := cx_ - component_.x
-							cy_ := cy_ - component_.y
 							component_ := component_.parent
 						else
 							component_ := void
@@ -216,36 +225,35 @@ feature -- Eventhandling
 	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; screen_width_, screen_height_ : INTEGER ) is
 		local
 			component_ : Q_HUD_COMPONENT
-			x_, y_, cx_, cy_ : DOUBLE
+			mouse_ : Q_VECTOR_2D
+			mouse_positions_ : STACK[ Q_VECTOR_2D ]
 		do
 			-- ensure, the selected component is still enabled
 			ensure_selected_component			
 			mouse_button_pressed := false
 
 			if selected_component /= void then
-				x_ := event_.proportional_position.x / screen_width_
-				y_ := event_.proportional_position.y / screen_height_
-				
-				cx_ := absolut_x_location( selected_component )
-				cy_ := absolut_y_location( selected_component )				
+				mouse_positions_ := mouse_positions ( 
+					event_.proportional_position.x / screen_width_,
+					event_.proportional_position.y / screen_height_,
+					selected_component )
 				
 				from
 					component_ := selected_component
 				until
 					component_ = void
 				loop
+					mouse_ := mouse_positions_.item
+					mouse_positions_.remove
+					
 					if component_.enabled then
-						if component_.process_mouse_button_up ( event_, x_ - cx_, y_ - cy_ ) or not component_.lightweight then
+						if component_.process_mouse_button_up ( event_, mouse_.x, mouse_.y ) or not component_.lightweight then
 							component_ := void
 						else
-							cx_ := cx_ - component_.x
-							cy_ := cy_ - component_.y
 							component_ := component_.parent
 						end
 					else
 						if component_.lightweight then
-							cx_ := cx_ - component_.x
-							cy_ := cy_ - component_.y
 							component_ := component_.parent							
 						else
 							component_ := void
@@ -258,7 +266,10 @@ feature -- Eventhandling
 	process_mouse_motion( event_ : ESDL_MOUSEMOTION_EVENT; screen_width_, screen_height_ : INTEGER ) is
 		local
 			component_ : Q_HUD_COMPONENT
-			x_, y_, cx_, cy_ : DOUBLE
+			x_, y_ : DOUBLE
+			
+			mouse_ : Q_VECTOR_2D
+			mouse_positions_ : STACK[ Q_VECTOR_2D ]
 		do
 			x_ := event_.proportional_position.x / screen_width_
 			y_ := event_.proportional_position.y / screen_height_
@@ -271,27 +282,25 @@ feature -- Eventhandling
 			-- ensure, the selected component is still enabled
 			ensure_selected_component
 			
-			if selected_component /= void then					
-				cx_ := absolut_x_location( component_ )
-				cy_ := absolut_x_location( component_ )	
-				
+			if selected_component /= void then	
+				mouse_positions_ := mouse_positions( x_, y_, selected_component ) 
+
 				from
 					component_ := selected_component
 				until
 					component_ = void
 				loop
+					mouse_ := mouse_positions_.item
+					mouse_positions_.remove
+					
 					if component_.enabled then
-						if component_.process_mouse_moved( event_, x_, y_ ) or not component_.lightweight then
+						if component_.process_mouse_moved( event_, mouse_.x, mouse_.y ) or not component_.lightweight then
 							component_ := void
 						else
-							cx_ := cx_ - component_.x
-							cy_ := cy_ - component_.y
 							component_ := component_.parent
 						end
 					else
 						if component_.lightweight then
-							cx_ := cx_ - component_.x
-							cy_ := cy_ - component_.y
 							component_ := component_.parent							
 						else
 							component_ := void
@@ -299,47 +308,132 @@ feature -- Eventhandling
 					end
 				end	
 			end
+		end			
+	
+	mouse_positions( x_, y_ : DOUBLE; component__ : Q_HUD_COMPONENT ) : STACK[ Q_VECTOR_2D ] is
+			-- Calculates the position of the mouse for all components.
+			-- the top-component will be "component_", and the base will be "current"
+		local
+			components_ : STACK[ Q_HUD_COMPONENT ]
+			component_ : Q_HUD_COMPONENT
+
+			vector_ : Q_VECTOR_2D
+			direction_ : Q_VECTOR_3D
+		do
+			components_ := create {ARRAYED_STACK[ Q_HUD_COMPONENT ]}.make( 5 )
+			
+			from
+				component_ := component__
+			until
+				component_ = current
+			loop
+				components_.put( component_ )
+				component_ := component_.parent
+			end
+			
+			result := create {ARRAYED_STACK[ Q_VECTOR_2D ]}.make( components_.count+1 )
+			result.put( create {Q_VECTOR_2D}.make( x_, y_ ) )
+			
+			from
+				direction_ := mouse_direction( x_, y_ )
+			until
+				components_.is_empty
+			loop
+				component_ := components_.item
+				components_.remove
+				vector_ := result.item
+				
+				result.put( component_.convert_point( vector_.x, vector_.y, direction_ ) )
+				direction_ := component_.convert_direction( direction_ )
+			end
 		end
 		
+	removed( component_ : Q_HUD_COMPONENT ) is
+		-- called from the container, if a component is removed
+	
+		local
+			child_ : Q_HUD_COMPONENT
+		do
+			from child_ := component_ until child_ = void loop
+				if child_ = selected_component then
+					selected_component := void
+				end
+				
+				if child_ = focused_component then
+					focused_component := void
+				end
+				
+				child_ := child_.parent
+			end
+			
+			if selected_component /= void then
+				from child_ := selected_component until child_ = void loop
+					if child_ = component_ then
+						selected_component := void
+					end
+					child_ := child_.parent
+				end
+			end
+			
+			if focused_component /= void then
+				from child_ := focused_component until child_ = void loop
+					if child_ = component_ then
+						selected_component := void
+					end
+					child_ := child_.parent
+				end
+			end
+		end
 		
+	
 feature{NONE} -- assistants
-	absolut_x_location( child_ : Q_HUD_COMPONENT ) : DOUBLE is
+	absolut_location( x_, y_ : DOUBLE; child__ : Q_HUD_COMPONENT ) : Q_VECTOR_2D is
 		local
-			parent_ : Q_HUD_COMPONENT
+			stack_ : STACK[ Q_HUD_COMPONENT ]
+			child_ : Q_HUD_COMPONENT
+			
+			direction_ : Q_VECTOR_3D
+			location_ : Q_VECTOR_2D
 		do
+			child_ := child__
+			
+			stack_ := create {ARRAYED_STACK[ Q_HUD_COMPONENT ]}.make( 10 )
+			
 			from
-				parent_ := child_
-				result := 0
+				
 			until
-				parent_ = void
+				child_ = current
 			loop
-				result := result + parent_.x
-				parent_ := parent_.parent
+				stack_.put( child_ )
+				child_ := child_.parent
 			end
+			
+			-- now the path from this location to the child is saved
+			
+			from
+				create location_.make( x_, y_ )
+				direction_ := mouse_direction( x_, y_ )
+			until
+				stack_.is_empty
+			loop
+				location_ := stack_.item.convert_point( location_.x, location_.y, direction_ )
+				direction_ := stack_.item.convert_direction( direction_ )
+				
+				stack_.remove
+			end
+			
+			result := location_
 		end
 		
-	absolut_y_location( child_ : Q_HUD_COMPONENT ) : DOUBLE is
-		local
-			parent_ : Q_HUD_COMPONENT
-		do
-			from
-				parent_ := child_
-				result := 0
-			until
-				parent_ = void
-			loop
-				result := result + parent_.y
-				parent_ := parent_.parent
-			end
-		end
 
 	component_select( x_, y_ : DOUBLE ) is
 		local
 			old_selected_component_ : Q_HUD_COMPONENT
+			location_ : Q_VECTOR_2D
 		do
 			from
 				old_selected_component_ := selected_component
-				selected_component := tree_child_at(x_, y_ )	
+				selected_component := tree_child_at( x_, y_, mouse_direction( x_, y_ ))	
 			until
 				selected_component = void or else selected_component.enabled
 			loop
@@ -355,15 +449,13 @@ feature{NONE} -- assistants
 			
 			if old_selected_component_ /= selected_component then
 				if old_selected_component_ /= void then
-					old_selected_component_.process_mouse_exit( 
-						x_ - absolut_x_location ( old_selected_component_),
-						y_ - absolut_y_location ( old_selected_component_) )
+					location_ := absolut_location( x_, y_, old_selected_component_ )
+					old_selected_component_.process_mouse_exit( location_.x, location_.y )
 				end
 				
 				if selected_component /= void then
-						selected_component.process_mouse_enter( 
-						x_ - absolut_x_location ( selected_component),
-						y_ - absolut_y_location ( selected_component) )				
+					location_ := absolut_location(x_, y_, selected_component )
+					selected_component.process_mouse_enter( location_.x, location_.y )
 				end
 			end
 		end

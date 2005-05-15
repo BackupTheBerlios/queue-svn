@@ -58,7 +58,7 @@ feature -- eventhandling
 			focus_handler := handler_
 		end
 		
-
+feature{Q_HUD_CONTAINER} -- eventhandling
 	process_key_down( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
 		local
 			component_, focused_component_ : Q_HUD_COMPONENT
@@ -74,7 +74,38 @@ feature -- eventhandling
 				end
 			end
 		end
+
+	tell_added( component_ : Q_HUD_COMPONENT; parent_ : Q_HUD_CONTAINER; child_ : Q_HUD_COMPONENT ) is
+			-- Tells the component_, that a child was added, and tells the same to all childs of the component
+		local
+			container_ : Q_HUD_CONTAINER
+			index_ : INTEGER
+		do
+			component_.process_component_added( parent_, child_ )
+			container_ ?= component_
+			if container_ /= void then
+				from index_ := 0 until index_ = container_.child_count loop
+					tell_added( container_.get_child( index_ ), parent_, child_ )
+					index_ := index_+1
+				end
+			end
+		end
 		
+	tell_removed( component_ : Q_HUD_COMPONENT; parent_ : Q_HUD_CONTAINER; child_ : Q_HUD_COMPONENT ) is
+			-- Tells the component_, that a child was removed, and tells the same to all childs of the component
+		local
+			container_ : Q_HUD_CONTAINER
+			index_ : INTEGER
+		do
+			component_.process_component_removed( parent_, child_ )
+			container_ ?= component_
+			if container_ /= void then
+				from index_ := 0 until index_ = container_.child_count loop
+					tell_removed( container_.get_child( index_ ), parent_, child_ )
+					index_ := index_+1
+				end
+			end
+		end
 
 feature -- childs
 	add( component__ : Q_HUD_COMPONENT ) is
@@ -97,8 +128,8 @@ feature -- childs
 			end
 			
 			component_.set_parent( current )
-			component_.process_component_added( current )
 			children.extend( component_ )
+			tell_added( component_, current, component_ )
 		end
 		
 	remove( component_ : Q_HUD_COMPONENT ) is
@@ -114,7 +145,11 @@ feature -- childs
 				children.remove
 				
 				component_.set_parent( void )
-				component_.process_component_removed( current )
+				tell_removed( component_, current, component_ )
+				
+				if root_pane /= void then
+					root_pane.removed( component_ )
+				end
 			end
 		end
 		
@@ -155,13 +190,16 @@ feature -- childs
 		end
 		
 	
-	tree_child_at( x_, y_ : DOUBLE ) : Q_HUD_COMPONENT is
+	tree_child_at( x_, y_ : DOUBLE; direction_ : Q_VECTOR_3D ) : Q_HUD_COMPONENT is
 			-- searches the whole tree, until the component under the
-			-- given point is found.
+			-- given point is found. "direction_" is the direction under witch 
+			-- more components should be searched, if they are not planar. The direction
+			-- is in the coordinate-system of this component.
 			-- returns this, a child or void
 		local
 			child_ : Q_HUD_COMPONENT
 			container_ : Q_HUD_CONTAINER
+			position_ : Q_VECTOR_2D
 		do
 			from
 				result := void
@@ -170,11 +208,12 @@ feature -- childs
 				children.after or (result /= void)
 			loop
 				child_ := children.item
+				position_ := child_.convert_point( x_, y_, direction_ )
 				
-				if child_.inside( x_ - child_.x, y_ - child_.y ) then
+				if child_.inside( position_.x, position_.y ) then
 					container_ ?= child_
 					if container_ /= void then
-						result := container_.tree_child_at( x_ - child_.x, y_ - child_.y )
+						result := container_.tree_child_at( position_.x, position_.y, container_.convert_direction( direction_ ))
 					else
 						result := child_
 					end

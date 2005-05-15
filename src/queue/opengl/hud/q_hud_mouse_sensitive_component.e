@@ -28,7 +28,7 @@ feature{Q_HUD_MOUSE_SENSITIVE_COMPONENT} -- event-handling
 		end
 		
 
-	process_component_removed( parent_ : Q_HUD_CONTAINER ) is
+	process_component_removed( parent_ : Q_HUD_CONTAINER; child_ : Q_HUD_COMPONENT ) is
 		do
 			pressed := false
 			mouse_over := false

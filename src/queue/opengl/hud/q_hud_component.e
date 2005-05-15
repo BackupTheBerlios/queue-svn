@@ -148,13 +148,13 @@ feature{Q_HUD_ROOT_PANE, Q_HUD_COMPONENT} -- eventhandling
 			result := false
 		end
 			
-	process_component_added( parent_ : Q_HUD_CONTAINER ) is
-			-- invoked, when this component is set to a new parentcontainer
+	process_component_added( parent_ : Q_HUD_CONTAINER; child_ : Q_HUD_COMPONENT ) is
+			-- invoked, when this component or one of its parents, is added
 		do
 		end
 	
-	process_component_removed( parent_ : Q_HUD_CONTAINER ) is
-			-- invoked, when this component is removed from a parentcontainer
+	process_component_removed( parent_ : Q_HUD_CONTAINER; child_ : Q_HUD_COMPONENT ) is
+			-- invoked, when this component or one of its parents, is removed
 		do
 		end
 		
@@ -203,19 +203,37 @@ feature -- Color
 			foreground := foreground_
 		end
 		
-		
-feature -- position and size
-	x : DOUBLE
-	y : DOUBLE
-	width : DOUBLE
-	height : DOUBLE
-	
+feature -- 3D
 	inside( x_, y_ : DOUBLE ) : BOOLEAN is
 			-- true, if the point is inside this component, false otherwise
 		do
 			result := x_ >= 0 and y_ >= 0 and x_ <= width and y_ <= height
 		end
 		
+	convert_direction( direction_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
+			-- Convertes a direction from the parents-coordinatesystem
+			-- to the system of this component
+		do
+			result := direction_
+		end
+		
+	
+	convert_point( x_, y_ : DOUBLE; direction_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
+			-- Convertes a given point on the parent-component into a
+			-- point on this component
+			-- x_, y_ is the position of the point on the parent,
+			-- direction_ is the direction of the mouse-line in the parents-coordinatesystem
+		do
+			create result
+			result.set_x( x_ - x )
+			result.set_y( y_ - y )
+		end
+		
+feature -- position and size
+	x : DOUBLE
+	y : DOUBLE
+	width : DOUBLE
+	height : DOUBLE
 	
 	set_x( x_ : DOUBLE ) is
 		do

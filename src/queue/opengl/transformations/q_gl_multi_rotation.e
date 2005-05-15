@@ -19,8 +19,7 @@ creation
 feature{NONE} -- creation
 	make is
 		do
-			create matrix.make
-			matrix.identity
+			create matrix.identity
 			count := 0
 		end
 		
@@ -55,8 +54,7 @@ feature -- Transformation
 		local
 			matrix_ : Q_MATRIX_4X4
 		do
-			create matrix_.make
-			matrix_.identity
+			create matrix_.identity
 			matrix_.rotate_vector( axis_, angle_ )
 			matrix := matrix.mul( matrix_ )
 			
