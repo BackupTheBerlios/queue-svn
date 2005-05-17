@@ -18,20 +18,22 @@ feature -- interface
 			create obj_list.make
 			create fun_list.make(2, 2)
 			
-			fun_list.put(agent does_collide_ball_ball, 1, 1)
-			fun_list.put(agent does_collide_ball_bank, 1, 2)
-			fun_list.put(agent does_collide_ball_bank, 2, 1)
-			fun_list.put(agent does_collide_bank_bank, 2, 2)
+			fun_list.put(agent does_collide_circle_circle, 1, 1)
+			fun_list.put(agent does_collide_circle_line, 1, 2)
+			fun_list.put(agent does_collide_circle_line, 2, 1)
+			fun_list.put(agent does_collide_always_false, 2, 2)
 			
 		end
 		
 	add_object(o: Q_OBJECT) is
 			-- Add collision detection support for object o
+		require
+			o /= void
 		do
 			obj_list.put_first (o)
 		end
 		
-	remove_object(o: Q_OBJECT) is
+	remove_object (o: Q_OBJECT) is
 			-- Remove collision detection support for object o
 		do
 			obj_list.delete (o)
@@ -55,9 +57,13 @@ feature -- interface
 				until
 					cursor2.off
 				loop
-					if does_collide(cursor1.item, cursor2.item) then
-						cursor1.item.on_collide(cursor2.item)
-						cursor2.item.on_collide(cursor1.item)
+					if does_collide (cursor1.item.bounding_object, cursor2.item.bounding_object) then
+						cursor1.item.on_collide (cursor2.item)
+						cursor2.item.on_collide (cursor1.item)
+						
+						if response_handler /= void then
+							response_handler.on_collide (cursor1.item, cursor2.item)	
+						end
 					end
 					cursor2.forth
 				end
@@ -65,13 +71,20 @@ feature -- interface
 			end
 		end
 		
-feature -- implementation
+	set_response_handler (h: Q_PHYS_COLLISION_RESPONSE_HANDLER) is
+			-- Set a new response handler or null
+		do
+			response_handler := h
+		end
+		
+		
+feature {NONE} -- implementation
 
-	does_collide(o1, o2: Q_OBJECT): BOOLEAN is
+	does_collide (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is
 			-- Collision detection between o1 and o2
 		local
-			f: FUNCTION[ANY, TUPLE[Q_OBJECT, Q_OBJECT], BOOLEAN]
-			args: TUPLE[Q_OBJECT, Q_OBJECT]
+			f: FUNCTION[ANY, TUPLE[Q_BOUNDING_OBJECT, Q_BOUNDING_OBJECT], BOOLEAN]
+			args: TUPLE[Q_BOUNDING_OBJECT, Q_BOUNDING_OBJECT]
 		do
 			f := fun_list.item (o1.typeid, o2.typeid)
 			
@@ -80,47 +93,50 @@ feature -- implementation
 			else
 				args := [o2, o1]
 			end
-			
+
 			Result := f.item (args)
 		end
 		
-	does_collide_ball_ball(o1, o2: Q_OBJECT): BOOLEAN is
-			-- Collision detection between two balls
+	does_collide_circle_circle (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is
+			-- Collision detection between two circle bounding boxes
 		local
-			b1, b2: Q_BALL
+			c1, c2: Q_BOUNDING_CIRCLE
 			dist: DOUBLE
 		do
-			b1 ?= o1
-			b2 ?= o2
+			c1 ?= o1
+			c2 ?= o2
 			
-			dist := b1.center.distance (b2.center)
+			dist := c1.center.distance (c2.center)
 			
-			Result := dist <= (b1.radius + b2.radius)
+			result := dist <= (c1.radius + c2.radius)
 		end
 		
-	does_collide_ball_bank(o1, o2: Q_OBJECT): BOOLEAN is
+	does_collide_circle_line (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is
 			-- Collision detection between ball o1 and bank o2
 		local
-			ball: Q_BALL; bank: Q_BANK
+			circle: Q_BOUNDING_CIRCLE
+			line: Q_BOUNDING_LINE
 			dist: DOUBLE
 		do
-			ball ?= o1
-			bank ?= o2
+			circle ?= o1
+			line ?= o2
 			
-			dist := bank.distance_vector (ball.center)
+			dist := line.distance_vector (circle.center)
 			
-			Result := dist <= ball.radius
+			result := dist <= circle.radius
 		end
 		
-	does_collide_bank_bank(o1, o2: Q_OBJECT): BOOLEAN is
+	does_collide_always_false (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is
 			-- Collision detection between two banks
 		once
-			-- Two banks never collide...
-			Result := False
+			-- Theres two objects never collide
+			result := false
 		end
 
 	obj_list: DS_LINKED_LIST[Q_OBJECT]
 	
-	fun_list: ARRAY2[FUNCTION[ANY, TUPLE[Q_OBJECT, Q_OBJECT], BOOLEAN]]
+	fun_list: ARRAY2[FUNCTION[ANY, TUPLE[Q_BOUNDING_OBJECT, Q_BOUNDING_OBJECT], BOOLEAN]]
 
+	response_handler: Q_PHYS_COLLISION_RESPONSE_HANDLER
+	
 end -- class Q_PHYS_COLLISION_DETECTOR
