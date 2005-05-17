@@ -1,8 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Bounding box: line"
+	author: "Andreas Kaegi"
 
 class
 	Q_BOUNDING_LINE
@@ -18,5 +16,6 @@ create
 feature -- interface
 
 	typeid: INTEGER is 2
+			-- Type id for collision detection
 	
 end -- class Q_BOUNDING_LINE

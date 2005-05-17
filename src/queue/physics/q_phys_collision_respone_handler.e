@@ -1,8 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Collision response handler, centralized design"
+	author: "Andreas Kaegi"
 
 class
 	Q_PHYS_COLLISION_RESPONSE_HANDLER
@@ -13,7 +11,8 @@ create
 feature {NONE} -- create
 
 	make is
-			-- Default creation procedure
+			-- Create repsonse handler. 
+			-- Initialize function list for the various object types.
 		do
 			create fun_list.make(2, 2)
 			
@@ -26,7 +25,7 @@ feature {NONE} -- create
 feature -- interface
 
 	on_collide (o1, o2: Q_OBJECT) is
-			-- Handle collision between two objects
+			-- Handle collision between two objects.
 		require
 			o1 /= void
 			o2 /= void
@@ -46,25 +45,34 @@ feature -- interface
 		end
 		
 	on_collide_ball_bank (o1, o2: Q_OBJECT) is
-			-- Handle bounce of ball at bank
+			-- Handle bounce of ball at bank.
 		require
 			o1 /= void
 			o2 /= void
 		local
 			ball: Q_BALL
 			bank: Q_BANK
+			line: Q_LINE_2D
+			a, p, pm, distv: Q_VECTOR_2D
 		do
 			ball ?= o1
 			bank ?= o2
+			line := bank.bounding_line
 			
-			ball.velocity.scale (-1)
+			a := ball.center		-- bounce point on bank
+			p := a - ball.velocity	-- point to "spiegeln"
+			distv := line.distance_vector (p)
+			pm := p - distv * 2		-- point "gespiegelt" at bank
 			
+			ball.set_velocity (a - pm)	-- bounced velocity
+
 		end
 		
 	on_collide_dummy (o1, o2: Q_OBJECT) is
-			-- Do nothing on collision of these two types
+			-- Do nothing on collision of these two types.
 		once
 		end
+
 
 feature {NONE} -- implementation
 

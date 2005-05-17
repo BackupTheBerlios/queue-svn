@@ -18,13 +18,14 @@ creation
 	make
 	
 feature {NONE} -- creation
+
 	make is
 		do
 			list_make( 10 )
 			
 			-- add here the test-cases
 			extend( create {BAS_TABLE_MODEL_TEST} )
-			
+			extend( create {ACE_PHYS_TEST} )
 			extend( create {BEN_LIGHT_TEST} )
 			extend( create {BEN_HUD_FONT_TEST} )
 			extend( create {BEN_COLOR_CUBE_TEST} )
@@ -36,7 +37,5 @@ feature {NONE} -- creation
 			extend( create {BEN_GAUSS_TEST} )
 			extend( create {BEN_CONTAINER_3D_TEST} )
 		end
-		
-	
 
 end -- class Q_TEST_CASE_LIST

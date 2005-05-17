@@ -1,18 +1,26 @@
 indexing
-	description: "Objects that ..."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Main class of the physics cluster. Called by the game loop."
+	author: "Andreas Kaegi"
 
 class
 	Q_SIMULATION
 
+feature -- interface
 
-feature -- Interface
+	new is
+			-- Start a new simulation.
+		do
+		end
+		
+	step (table: Q_TABLE) is
+			-- Compute one step of the current simulation.
+		require
+			ta
+		do
+			
+		end
+		
 
-feature {NONE} -- Implementation
-
-invariant
-	invariant_clause: True -- Your invariant here
+feature {NONE} -- implementation
 
 end -- class SIMULATION

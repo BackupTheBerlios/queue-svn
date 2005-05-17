@@ -1,8 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Collision detector, centralized design. (Handle all detections here, not in the bounding boxes)"
+	author: "Andreas Kaegi"
 
 class
 	Q_PHYS_COLLISION_DETECTOR
@@ -13,7 +11,8 @@ create
 feature -- interface
 
 	make is
-			-- Creation proc
+			-- Create detector. 
+			-- Initialize function list for the various bounding box types.
 		do
 			create obj_list.make
 			create fun_list.make(2, 2)
@@ -26,7 +25,7 @@ feature -- interface
 		end
 		
 	add_object(o: Q_OBJECT) is
-			-- Add collision detection support for object o
+			-- Add collision detection support for object 'o'.
 		require
 			o /= void
 		do
@@ -34,13 +33,13 @@ feature -- interface
 		end
 		
 	remove_object (o: Q_OBJECT) is
-			-- Remove collision detection support for object o
+			-- Remove collision detection support for object 'o'.
 		do
 			obj_list.delete (o)
 		end
 		
 	collision_test is
-			-- Checks if any element collides with any other element O(n*(n-1)*(n-2)*...*1)
+			-- Check if any element collides with any other element.
 		local
 			cursor1, cursor2: DS_LINKED_LIST_CURSOR [Q_OBJECT]
 		do
@@ -72,7 +71,7 @@ feature -- interface
 		end
 		
 	set_response_handler (h: Q_PHYS_COLLISION_RESPONSE_HANDLER) is
-			-- Set a new response handler or null
+			-- Set a new response handler or null.
 		do
 			response_handler := h
 		end
@@ -81,7 +80,7 @@ feature -- interface
 feature {NONE} -- implementation
 
 	does_collide (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is
-			-- Collision detection between o1 and o2
+			-- Does 'o1' collide with 'o2'?
 		local
 			f: FUNCTION[ANY, TUPLE[Q_BOUNDING_OBJECT, Q_BOUNDING_OBJECT], BOOLEAN]
 			args: TUPLE[Q_BOUNDING_OBJECT, Q_BOUNDING_OBJECT]
@@ -98,7 +97,7 @@ feature {NONE} -- implementation
 		end
 		
 	does_collide_circle_circle (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is
-			-- Collision detection between two circle bounding boxes
+			-- Does circle 'o1' collide with circle 'o2'?
 		local
 			c1, c2: Q_BOUNDING_CIRCLE
 			dist: DOUBLE
@@ -112,7 +111,7 @@ feature {NONE} -- implementation
 		end
 		
 	does_collide_circle_line (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is
-			-- Collision detection between ball o1 and bank o2
+			-- Does circle 'o1' collide with line 'o2'?
 		local
 			circle: Q_BOUNDING_CIRCLE
 			line: Q_BOUNDING_LINE
@@ -121,20 +120,23 @@ feature {NONE} -- implementation
 			circle ?= o1
 			line ?= o2
 			
-			dist := line.distance_vector (circle.center)
+			dist := line.distance (circle.center)
 			
 			result := dist <= circle.radius
 		end
 		
 	does_collide_always_false (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is
-			-- Collision detection between two banks
+			-- Does 'o1' collide with 'o2'? --> No!
 		once
-			-- Theres two objects never collide
+			-- These two objects never collide
 			result := false
 		end
 
+
+feature {NONE} -- implementation
+
 	obj_list: DS_LINKED_LIST[Q_OBJECT]
-	
+			-- 
 	fun_list: ARRAY2[FUNCTION[ANY, TUPLE[Q_BOUNDING_OBJECT, Q_BOUNDING_OBJECT], BOOLEAN]]
 
 	response_handler: Q_PHYS_COLLISION_RESPONSE_HANDLER

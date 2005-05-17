@@ -1,51 +1,85 @@
 indexing
-	description: "Objects that ..."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Physical line representation"
+	author: "Andreas Kaegi"
 
 class
 	Q_LINE_2D
 	
 create
-	make
+	make,
+	make_empty
 	
-feature -- interface
+feature {NONE} -- create
 
-	make(edge1, edge2: Q_VECTOR_2D) is
-			-- Create new line with edges e1 and e2
+	make_empty is
+			-- Create new empty line (without edges).
 		do
-			e1 := edge1
-			e2 := edge2
-			
 		end
 		
-	distance_vector(p: Q_VECTOR_2D): DOUBLE is
-			-- Calculate distance between this line and a vector (point)
+	make (edge1_, edge2_: Q_VECTOR_2D) is
+			-- Create new line with edges e1 and e2.
+		require
+			edge1 /= void
+			edge2 /= void
+		do
+			edge1 := edge1_
+			edge2 := edge2_
+			
+		end
+
+
+feature -- interface
+
+	distance_vector (p: Q_VECTOR_2D): Q_VECTOR_2D is
+			-- Distance vector of 'p' to this line (with direction to p)
+		require
+			p /= void
 		local
-			e1e2, e1p, projection: Q_VECTOR_2D
+			e1e2, e1p, proj: Q_VECTOR_2D
 			d: DOUBLE
 		do
-			-- We first calculate the projection of e1p (x) onto e1e2 (y)
+			-- We calculate the projection of e1p (x) onto e1e2 (y)
 			-- Py*x = 1 / |y|^2 * y*y'*x
 			-- y/|y| gives us the direction
 			-- y'*x / |y| gives us the length
 			
-			e1e2 := e2 - e1
-			e1p := p - e1
+			e1e2 := edge2 - edge1
+			e1p := p - edge1
 		
 			d := 1 / e1e2.scalar_product(e1e2)
 			d := d * e1e2.scalar_product(e1p)
 			
-			projection := e1e2 * d
+			proj := e1e2 * d
 			
-			-- Now let's calculate the difference vector of proj - e1p and take its length
-			Result := (e1p - projection).length;
-
+			result := e1p - proj
 		end
 		
-feature {NONE} -- implementation
+	distance (p: Q_VECTOR_2D): DOUBLE is
+			-- Distance between this line and a vector (point)
+		require
+			p /= void
+		do
+			-- Now let's calculate the difference vector of proj - e1p and take its length
+			result := distance_vector (p).length
+		end
+		
+	set_edge1 (e1: Q_VECTOR_2D) is
+			-- Set edge1.
+		require
+			edge1 /= void
+		do
+			edge1 := e1
+		end
+		
+	set_edge2 (e2: Q_VECTOR_2D) is
+			-- Set edge2.
+		require
+			edge2 /= void
+		do
+			edge2 := e2
+		end	
 
-	e1, e2: Q_VECTOR_2D
+	edge1, edge2: Q_VECTOR_2D
+			-- Edges 1 & 2
 
 end -- class Q_LINE_2D
