@@ -167,7 +167,9 @@ feature -- operations
 			from row_ := 1 until row_ > 4 loop
 				from column_ := 1 until column_ > 4 loop
 					set_m( row_, column_, matrix_.m( row_, column_ ))
+					column_ := column_ + 1
 				end
+				row_ := row_ + 1
 			end
 		end		
 
@@ -185,9 +187,12 @@ feature -- operations
 					temp_ := 0
 					from index_ := 1 until index_ > 4 loop
 						temp_ := temp_ + m( row_, index_ ) * matrix_.m( index_, column_ )
+						index_ := index_ + 1
 					end
 					result.set_m( row_, column_, temp_ )
+					column_ := column_ + 1
 				end
+				row_ := row_ + 1
 			end
 		end
 		
@@ -199,7 +204,7 @@ feature -- operations
 				vector_.x * m_31 + vector_.y * m_32 + vector_.z * m_33 )
 		end
 
-	mul_vector_4( vector_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
+	mul_vector_3_as_4( vector_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
 		do
 			create result.make(
 				vector_.x * m_11 + vector_.y * m_12 + vector_.z * m_13 + m_14,
@@ -223,7 +228,9 @@ feature -- operations
 			from row_ := 1 until row_ > 4 loop
 				from column_ := 1 until column_ > 4 loop
 					set_m( row_, column_, m(row_, column_) + matrix_.m( row_, column_ ))
+					column_ := column_ + 1
 				end
+				row_ := row_ + 1
 			end
 		end
 		
@@ -242,25 +249,25 @@ feature -- operations
 			from row_ := 1 until row_ > 4 loop
 				from column_ := 1 until column_ > 4 loop
 					set_m( row_, column_, m(row_, column_) - matrix_.m( row_, column_ ))
+					column_ := column_ + 1
 				end
+				row_ := row_ + 1
 			end
 		end	
 		
 	inverted : Q_MATRIX_4X4 is
 			-- creates the invers matrix
 		local
-			matrix_ : Q_MATRIX_4X4
 			vector_ : Q_VECTOR_4D
 			index_ : INTEGER
 		do
-			create matrix_.copy( current )
 			create result.zero
 			
 			from
 				index_ := 1
 				create vector_
 			until
-				index_ > 4
+				index_ > 4 or result = void
 			loop
 				vector_.set_x( 0 )
 				vector_.set_y( 0 )
@@ -268,13 +275,16 @@ feature -- operations
 				vector_.set_t( 0 )
 				vector_.set( index_, 1 )
 				
-				vector_ := matrix_.solve_on_current( vector_ )
+				vector_ := solve( vector_ )
 				
-				result.set_m( index_, 1, vector_.x )
-				result.set_m( index_, 2, vector_.y )
-				result.set_m( index_, 3, vector_.z )
-				result.set_m( index_, 4, vector_.t )
-				
+				if vector_ = void then
+					result := void
+				else
+					result.set_m( index_, 1, vector_.x )
+					result.set_m( index_, 2, vector_.y )
+					result.set_m( index_, 3, vector_.z )
+					result.set_m( index_, 4, vector_.t )
+				end
 				index_ := index_+1
 			end
 		end
@@ -293,8 +303,25 @@ feature -- operations
 	solve( b_ : Q_VECTOR_4D ) : Q_VECTOR_4D is
 			-- Serches a vector so that "current*result = b_"
 			-- void, if there is no such vector
+		local
+			result_ : ARRAY[ DOUBLE ]
 		do
+			create result_.make ( 1, 4 )
+			result_.put( b_.x, 1 )
+			result_.put( b_.y, 2 )
+			result_.put( b_.z, 3 )
+			result_.put( b_.t, 4 )
 			
+			result_ := math.gauss_changing( to_array, result_ )
+			if result_ = void then
+				result := void
+			else
+				create result.make( 
+					result_.item( 1 ),
+					result_.item( 2 ),
+					result_.item( 3 ),
+					result_.item( 4 ) )
+			end
 		end
 
 feature -- Transformation

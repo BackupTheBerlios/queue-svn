@@ -36,6 +36,15 @@ feature
 			result := current
 		end
 		
+	root : Q_GL_ROOT
+	
+feature{Q_GL_ROOT} 
+	set_root( root_ : Q_GL_ROOT ) is
+		do
+			root := root_
+		end
+		
+		
 feature -- Eventhandling
 	focused_component : Q_HUD_COMPONENT
 		-- the component witch has currently the focus
@@ -49,7 +58,11 @@ feature -- Eventhandling
 	mouse_direction( x_, y_ : DOUBLE ) : Q_VECTOR_3D is
 			-- Gives the direction in witch the mouse points at the location x_/y_
 		do
-			create result.make( 0, 0, -1 )
+			if root = void then
+				create result.make( 0, 0, -1 )
+			else
+				result := root.direction_in_hud( x_, y_ )
+			end
 		end
 		
 	
@@ -270,10 +283,10 @@ feature -- Eventhandling
 			
 			mouse_ : Q_VECTOR_2D
 			mouse_positions_ : STACK[ Q_VECTOR_2D ]
-		do
+		do			
 			x_ := event_.proportional_position.x / screen_width_
 			y_ := event_.proportional_position.y / screen_height_
-			
+		
 			-- perhaps another component must be selected
 			if not mouse_button_pressed then
 				component_select( x_, y_ )

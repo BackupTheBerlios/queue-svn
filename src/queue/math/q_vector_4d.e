@@ -88,6 +88,20 @@ feature -- coordinates
 		
 
 feature -- modification
+	to_vector_3d : Q_VECTOR_3D is
+			-- Just the x/y/z coordinates
+		do
+			create result.make( x, y, z )
+		end
+		
+	to_vector_2d : Q_VECTOR_2D is
+			-- Just the x/y coordinates
+		do
+			create result.make( x, y )
+		end
+		
+		
+
 	swap( index_a_, index_b_ : INTEGER ) is
 			-- 
 		local

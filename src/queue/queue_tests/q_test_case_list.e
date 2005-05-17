@@ -34,6 +34,7 @@ feature {NONE} -- creation
 			extend( create {BEN_RADIO_BUTTON_TEST} )
 			extend( create {BEN_MATRIX_TEST} )
 			extend( create {BEN_GAUSS_TEST} )
+			extend( create {BEN_CONTAINER_3D_TEST} )
 		end
 		
 	

@@ -25,7 +25,8 @@ feature -- math
 		end
 
 	gauss_solve( system_ : ARRAY2[ DOUBLE ]; b_ : ARRAY[ DOUBLE ] ) : ARRAY[ DOUBLE ] is
-			-- system_ and b_ must have the triangular form
+			-- Solves a system of equations, "system_*result = b_"
+			-- The System must have a triangular form (see gauss_triangle)
 		local
 			row_, index_ : INTEGER
 			sum_ : DOUBLE

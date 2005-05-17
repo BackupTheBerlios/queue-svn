@@ -37,6 +37,7 @@ feature{NONE} -- initialisation
 			
 			create hud.make
 			hud.set_bounds ( 0, 0, 1, 1 )
+			set_hud( hud )
 		end
 
 feature -- visualisation
@@ -134,8 +135,18 @@ feature -- parts to be displayed
 		
 	set_hud( hud_ : Q_HUD_ROOT_PANE ) is
 			-- set the Heads-Up-Display
+		require
+			no_one_elses_hud : hud_.root = void
 		do
+			if hud /= void then
+				hud.set_root( void )
+			end
+			
 			hud := hud_
+			
+			if hud /= void then
+				hud_.set_root( current )
+			end
 		end
 		
 	set_transform( transform_ : Q_GL_TRANSFORM ) is
@@ -143,6 +154,24 @@ feature -- parts to be displayed
 		do
 			transform := transform_
 		end
+
+feature -- geometrics
+	direction_in_hud( x_, y_ : DOUBLE ) : Q_VECTOR_3D is
+			-- Gets the direction under a point. All points on the
+			-- line from x_, y_ and direction (in the huds-coorinate-system)
+			-- are projected into x_, y_.
+			-- The point 0/0 is at the top-left, the point 1/1 at the bottom-right
+
+		do
+			create result.make(
+				left / (right - left) + x_,
+				bottom / (top - bottom) + y_,
+				-near)
+				
+			result.normaliced	
+		end
+		
+
 
 feature -- frustum
  -- private double left = -1, right = 1, bottom = -1, top = 1, near = 1, far = 10000;
