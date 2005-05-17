@@ -55,7 +55,9 @@ feature -- Models
 		local
 			index_, inner_index_:INTEGER
 			curr_face_:TUPLE[ARRAY[INTEGER],ARRAY[INTEGER], ARRAY[INTEGER]]
-			vertex_:Q_GL_VERTEX
+			vertex_, vertex2_, vertex3_:Q_GL_VERTEX
+			
+			v1, v2, n : Q_VECTOR_3D
 			
 			curr_array_:ARRAY[INTEGER]
 		do
@@ -105,6 +107,21 @@ feature -- Models
 					result.vertices.force (vertex_, 3*index_+inner_index_)
 					inner_index_ := inner_index_ + 1
 				end
+				
+				if not has_normals then
+					-- compute face normal
+					vertex_  := result.vertices.item (index_*3)
+					vertex2_ := result.vertices.item (index_*3 + 1)
+					vertex3_ :=result.vertices.item (index_*3 + 2)
+					create v1.make (vertex2_.x - vertex_.x, vertex2_.y - vertex_.y, vertex2_.z - vertex_.z)
+					create v2.make (vertex3_.x - vertex_.x, vertex3_.y - vertex_.y, vertex3_.z - vertex_.z)
+					
+					n := v1.cross (v2)
+					vertex_.set_normal( n.x, n.y, n.z )
+					vertex2_.set_normal( n.x, n.y, n.z )
+					vertex2_.set_normal( n.x, n.y, n.z )
+				end
+				
 				index_ := index_ + 1
 			end
 		end
