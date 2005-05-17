@@ -33,6 +33,7 @@ feature {NONE} -- creation
 			extend( create {BEN_CHECKBOX_TEST} )
 			extend( create {BEN_RADIO_BUTTON_TEST} )
 			extend( create {BEN_MATRIX_TEST} )
+			extend( create {BEN_GAUSS_TEST} )
 		end
 		
 	

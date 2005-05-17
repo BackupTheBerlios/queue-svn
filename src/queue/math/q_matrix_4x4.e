@@ -290,60 +290,39 @@ feature -- operations
 			end
 		end
 
-	solve_on_current( b_ : Q_VECTOR_4D ) : Q_VECTOR_4D is
-			-- Searches a vector a so that "M*a = b"
-			-- if there is no unique solution for this system, void will be returned
-			--
-			-- THIS WILL CHANGE THE ORDER OF THE ELEMENTS OF THIS MATRIX AND OF VECTOR B
-		local
-			column_, row_ : INTEGER
-			pivot_m_, pivot_b_, scale_ : DOUBLE
+	solve( b_ : Q_VECTOR_4D ) : Q_VECTOR_4D is
+			-- Serches a vector so that "current*result = b_"
+			-- void, if there is no such vector
 		do
-			create result
 			
-			-- create triangluar matrix
-			from column_ := 1 until column_ > 4 loop
-				from
-					row_ := column_
-				until
-					row_ > 4 or
-					m( row_, column_ ) /= 0
-				loop
-					row_ := row_ + 1
-				end
-				
-				-- row/column is now the pivot-element
-				-- swap rows, so that pivot is at column/column
-				if row_ /= column_ then
-					swap_rows( row_, column_ )
-					b_.swap( row_, column_ )
-				end
-
-				-- calculate the row-vectors under column, so they have more 0s
-				from
-					row_ := column_+1
-					pivot_m_ := m( column_, column_ )
-					pivot_b_ := b_.get( column_ )
-				until
-					row_ > 4 
-				loop
-					scale_ := -m( row_, column_ ) / pivot_m_
-					scaled_row_sum( column_, row_, scale_ )
-					b_.set( row_, b_.get( row_ ) + scale_ * pivot_b_ )
-					
-					row_ := row_ + 1
-				end
-			end
-			
-			-- calculate the result
-			result.set_t( (b_.t) 									 / m_44 )
-			result.set_z( (b_.z - b_.t*m_34) 						 / m_33 )
-			result.set_y( (b_.y - b_.t*m_24 - b_.z*m_23) 			 / m_22 )
-			result.set_x( (b_.x - b_.t*m_14 - b_.z*m_13 - b_.y*m_12) / m_11 )
-		rescue
-			result := void
 		end
 
+feature -- Transformation
+	to_array : ARRAY2[ DOUBLE ] is
+		do
+			create result.make( 4, 4 )
+			
+			result.put( m_11, 1, 1 )
+			result.put( m_12, 1, 2 )
+			result.put( m_13, 1, 3 )
+			result.put( m_14, 1, 4 )
+			
+			result.put( m_21, 2, 1 )
+			result.put( m_22, 2, 2 )
+			result.put( m_23, 2, 3 )
+			result.put( m_24, 2, 4 )
+			
+			result.put( m_31, 3, 1 )
+			result.put( m_32, 3, 2 )
+			result.put( m_33, 3, 3 )
+			result.put( m_34, 3, 4 )
+			
+			result.put( m_41, 4, 1 )
+			result.put( m_42, 4, 2 )
+			result.put( m_43, 4, 3 )
+			result.put( m_44, 4, 4 )
+		end
+		
 
 feature -- elements
 	m_11, m_12, m_13, m_14 : DOUBLE
@@ -549,7 +528,7 @@ feature -- openGL-interface
 		end
 
 feature{NONE} -- math
-	math : DOUBLE_MATH is
+	math : Q_MATH is
 		once
 			create result
 		end

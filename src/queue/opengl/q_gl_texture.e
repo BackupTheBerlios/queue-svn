@@ -20,13 +20,21 @@ feature {NONE} -- creation
 		local
 			shared_factory_ : ESDL_SHARED_BITMAP_FACTORY
 			factory_ : ESDL_BITMAP_FACTORY
+			loaded_ : Q_GL_TEXTURE
 		do
-			create shared_factory_
-			factory_ := shared_factory_.bitmap_factory
-			factory_.create_bitmap_from_image( file_ )
-			image := factory_.last_bitmap
-
-			id := image.gl_texture
+			loaded_ := loaded_bitmaps.item( file_ )
+			if loaded_ /= void then
+				image := loaded_.image
+				id := loaded_.id
+			else
+				create shared_factory_
+				factory_ := shared_factory_.bitmap_factory
+				factory_.create_bitmap_from_image( file_ )
+				image := factory_.last_bitmap
+				id := image.gl_texture
+				
+				loaded_bitmaps.put( current, file_ )
+			end
 		end
 		
 	make_with_colorkey( file_ : STRING; red_, green_, blue_ : INTEGER ) is
@@ -79,6 +87,11 @@ feature -- Transform
 			open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_texture_2d )
 		end
 		
+feature{NONE} -- Factory
+	loaded_bitmaps : HASH_TABLE[ Q_GL_TEXTURE, STRING ] is
+		once
+			create result.make( 10 )
+		end
 		
 
 end -- class Q_GL_TEXTURE
