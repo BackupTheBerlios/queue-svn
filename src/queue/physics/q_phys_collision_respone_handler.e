@@ -53,18 +53,20 @@ feature -- interface
 			ball: Q_BALL
 			bank: Q_BANK
 			line: Q_LINE_2D
-			a, p, pm, distv: Q_VECTOR_2D
+			a, p, pr, distv: Q_VECTOR_2D
 		do
 			ball ?= o1
 			bank ?= o2
 			line := bank.bounding_line
 			
-			a := ball.center		-- bounce point on bank
-			p := a - ball.velocity	-- point to "spiegeln"
+			-- calc bounce point on bank
+			distv := line.distance_vector (ball.center)
+			a := ball.center - distv		-- bounce point on bank
+			p := a - ball.velocity			-- point to reflect
 			distv := line.distance_vector (p)
-			pm := p - distv * 2		-- point "gespiegelt" at bank
+			pr := p - (distv * 2)			-- point "gespiegelt" at bank
 			
-			ball.set_velocity (a - pm)	-- bounced velocity
+			ball.set_velocity (a - pr)		-- bounced velocity
 
 		end
 		

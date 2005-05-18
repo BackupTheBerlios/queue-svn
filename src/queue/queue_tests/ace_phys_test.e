@@ -7,7 +7,7 @@ class
 
 inherit
 	Q_TEST_CASE
-
+	
 feature -- interface
 
 	name : STRING is "Physics Test"

@@ -7,9 +7,17 @@ class
 
 inherit
 	VECTOR_2D
-	redefine
-		default_create
-	end
+		redefine
+			default_create
+--		select
+--			out
+		end
+	
+	DEBUG_OUTPUT
+		undefine
+			default_create,
+			out
+		end
 
 create
 	default_create,
@@ -25,9 +33,14 @@ feature {NONE} -- create
 		do
 			make (0, 0)
 		end
-		
+
 	
 feature -- interface
+
+	debug_output: STRING is
+		do
+			result := "d: (" + x.out + ", " + y.out + ") l: " + length.out
+		end
 
 end -- class Q_VECTOR_2D
 

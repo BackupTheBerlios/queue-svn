@@ -15,59 +15,65 @@ feature {NONE} -- create
 
 	make is
 		do
-			create collision_detector.make
-			create collision_handler.make
-			create ball.make (create {Q_VECTOR_2D}.make (0, 0), 10)
-			create bank.make (create {Q_VECTOR_2D}.make (500, -300), create {Q_VECTOR_2D}.make (500, 300))
+			create simulation.make
+			create pos_list.make
 			
-			ball.set_velocity (create {Q_VECTOR_2D}.make (0.1, 0))
+			new
 			
-			collision_detector.set_response_handler (collision_handler)
-			collision_detector.add_object (ball)
-			collision_detector.add_object (bank)
-			
-			oldticks := timer_funcs.sdl_get_ticks_external
 		end
 		
 
-feature -- visualisation
+feature -- interface
 
-	step is
-			-- do a computational step
-		local
-			newticks, stepsize: INTEGER
-			
+	new is
+			-- Reinitialize scene.
 		do
-			newticks := timer_funcs.sdl_get_ticks_external
-			stepsize := newticks - oldticks
-			oldticks := newticks
+			create balls.make (1, 1)
+			create banks.make (1, 4)
 			
-			-- collision detection
-			collision_detector.collision_test
+			create ball.make (create {Q_VECTOR_2D}.make (300, 0), 10)
+			create bank1.make (create {Q_VECTOR_2D}.make (500, -300), create {Q_VECTOR_2D}.make (500, 300))
+			create bank2.make (create {Q_VECTOR_2D}.make (-50, -300), create {Q_VECTOR_2D}.make (-50, 300))
+			create bank3.make (create {Q_VECTOR_2D}.make (-50, 300), create {Q_VECTOR_2D}.make (500, 300))
+			create bank4.make (create {Q_VECTOR_2D}.make (-50, -300), create {Q_VECTOR_2D}.make (500, -300))
 			
-			-- update objects
-			ball.update_position (stepsize)
-			bank.update_position (stepsize)
+			balls.put (ball, 1)
+			banks.put (bank1, 1)
+			banks.put (bank2, 2)
+			banks.put (bank3, 3)
+			banks.put (bank4, 4)
 			
+			create table.make (balls, banks, void)
+
+			ball.set_velocity (create {Q_VECTOR_2D}.make (0.1, 0.025))
+			
+			pos_list.wipe_out
+			pos_list.put_first (create {Q_VECTOR_2D}.make_from_other (ball.center))
+			
+			simulation.new (table)
 		end
-		
+
 	draw (ogl: Q_GL_DRAWABLE) is
-			-- draws this visualisation
+			-- Draw visualisation.
 		local
 			glf: GL_FUNCTIONS
 
 		do
-			step
+			simulation.step (table)
 			
 			draw_ball (ogl, ball)
-			draw_bank (ogl, bank)
+			draw_bank (ogl, bank1)
+			draw_bank (ogl, bank2)
+			draw_bank (ogl, bank3)
+			draw_bank (ogl, bank4)
 
 		end
+		
 		
 feature {NONE} -- implementation
 
 	draw_ball(ogl: Q_GL_DRAWABLE; b: Q_BALL) is
-			--- draw ball on screen
+			--- Draw ball on screen.
 		local
 			glf: GL_FUNCTIONS
 			ball_model: Q_GL_CIRCLE_FILLED
@@ -82,17 +88,17 @@ feature {NONE} -- implementation
 		end
 		
 	draw_bank(ogl: Q_GL_DRAWABLE; b: Q_BANK) is
-			-- draw bank on screen
+			-- Draw bank on screen.
 		local
 			glf: GL_FUNCTIONS
 		do
 			glf := ogl.gl
 			
-			glf.gl_begin (ogl.gl_constants.esdl_gl_lines)
-			
 			-- don't use color3b or color3i, that does not work!
 			glf.gl_color3f(1,0,0)
-			glf.gl_line_width (10)
+			glf.gl_line_width (4)
+			
+			glf.gl_begin (ogl.gl_constants.esdl_gl_lines)
 
 			glf.gl_vertex2d (b.edge1.x, b.edge1.y)
 			glf.gl_vertex2d (b.edge2.x, b.edge2.y)
@@ -101,26 +107,16 @@ feature {NONE} -- implementation
 		end
 		
 
-
-	collision_detector: Q_PHYS_COLLISION_DETECTOR
-	collision_handler: Q_PHYS_COLLISION_RESPONSE_HANDLER
+	simulation: Q_SIMULATION
+	
+	table: Q_TABLE
+	
+	balls: ARRAY[Q_BALL]
+	banks: ARRAY[Q_BANK]
+	
 	ball: Q_BALL
-	bank: Q_BANK
+	bank1, bank2, bank3, bank4: Q_BANK
 	
-	oldticks: INTEGER
-	
-	circle: ESDL_CIRCLE
-	
-	timer_funcs: SDL_TIMER_FUNCTIONS_EXTERNAL is
-			-- sdl timer functions, directly used, sorry Benno :-p
-		once
-			create Result
-		end
-		
-	sdl_funcs: SDL_GFXPRIMITIVES_FUNCTIONS is
-			-- sdl gfxprimitives functions
-		once
-			create Result
-		end
+	pos_list: DS_LINKED_LIST[Q_VECTOR_2D]
 
 end -- class ACE_PHYS_TEST_OBJECT
