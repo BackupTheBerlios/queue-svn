@@ -9,6 +9,8 @@ class
 
 inherit 
 	Q_GL_3D_LOADER
+	
+	Q_GL_3D_GEOMOBJ
 
 create
 	make
@@ -226,43 +228,43 @@ feature {NONE} -- implementation
 			result.put (normals_, 3)
 		end
 
-	vector_count: INTEGER
+	--vector_count: INTEGER
 			-- number of vertices
 	
-	normal_count: INTEGER
+	--normal_count: INTEGER
 			-- number of normals
 	
-	texture_coordinate_count: INTEGER
+	--texture_coordinate_count: INTEGER
 			-- number texture coordinates
 			
-	has_vectors: BOOLEAN
+	--has_vectors: BOOLEAN
 		-- indicate if the file has vectors
 	
-	has_normals: BOOLEAN
+	--has_normals: BOOLEAN
 		-- indicate if the file has normals
 		
-	has_texture_cooridnates: BOOLEAN
+	--has_texture_cooridnates: BOOLEAN
 		-- indicate if the file has texture_coordinates
 	
-	face_count: INTEGER
+	--face_count: INTEGER
 			-- number of faces
 
-	vectors: ARRAY[ARRAY[DOUBLE]]
+	--vectors: ARRAY[ARRAY[DOUBLE]]
 			-- Array with all vertices
 			
-	normals: ARRAY[ARRAY[DOUBLE]]
+	--normals: ARRAY[ARRAY[DOUBLE]]
 			-- Array with all normals
 			
-	texture_coordinates: ARRAY[ARRAY[DOUBLE]]
+	--texture_coordinates: ARRAY[ARRAY[DOUBLE]]
 			-- Array with all texture coordinates
 
-	faces: ARRAY[
-				 TUPLE[
-					   ARRAY[INTEGER],
-					   ARRAY[INTEGER],
-					   ARRAY[INTEGER]
-					  ]
-				 ]
+	--faces: ARRAY[
+	--			 TUPLE[
+	--				   ARRAY[INTEGER],
+	--				   ARRAY[INTEGER],
+	--				   ARRAY[INTEGER]
+	--				  ]
+	--			 ]
 			-- Faces, described by indizes to the vertices,
 			-- texture coordinates and normals
 end
