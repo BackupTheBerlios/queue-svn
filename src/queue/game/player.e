@@ -7,21 +7,24 @@ indexing
 deferred class
 	Q_PLAYER
 
+	
 feature -- Interface
 
-	next_shot(situation_ : Q_TABLE): Q_SHOT is
-			-- returns the shot the player wants to play next
-		require
-			situation_exists : situation_ /= Void
-		deferred
+	name : STRING -- the name of the player
+	
+	set_name(name_: STRING) is
+			-- sets the name of the player
+		do
+			name := name_
 		ensure
-			result_exists : Result /=Void
+			name = name_
 		end
+
 		
 
 feature {NONE} -- Implementation
 
 invariant
-	invariant_clause: True -- Your invariant here
+	name_set : name /= Void
 
 end -- class PLAYER

@@ -1,6 +1,8 @@
 indexing
 	description: "Physical ball representation"
 	author: "Andreas Kaegi"
+	date: "$Date$"
+	revision: "$Revision$"
 
 class
 	Q_BALL
@@ -14,8 +16,33 @@ create
 	
 feature {NONE} -- create
 
+<<<<<<< .mine
+	color : INTEGER -- the color of the ball
+	number: INTEGER -- the number of the ball, 0 is the white ball
+	owner : Q_PLAYER -- the owner of the ball, null if no owner yet specified
+
+	center: Q_VECTOR_2D
+	radius: DOUBLE
+	
+	velocity: Q_VECTOR_2D
+	angular_velocity: Q_VECTOR_2D
+	
+	make(center_: Q_VECTOR_2D; radius_: DOUBLE) is
+			-- Create new ball
+=======
 	make_empty is
 			-- Create new ball with default values.
+
+
+
+
+
+
+
+
+
+
+>>>>>>> .theirs
 		do
 			create bounding_circle.make_empty
 			bounding_object := bounding_circle

@@ -24,6 +24,14 @@ feature -- Interface
 		deferred
 		end
 		
+
+	is_correct_opening (collisions_: LIST[Q_COLLISION_EVENT]): BOOLEAN is
+			-- was this sequence of collisions a legal opening for this game mode
+		require
+			collisions_ /= Void
+		deferred
+		end
+		
 		
 		
 	

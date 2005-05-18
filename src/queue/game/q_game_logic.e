@@ -18,7 +18,8 @@ feature -- Interface
 	make is
 			-- the creation procedure of the root class, creates the event_queue and others
 		local
-			scene_ : FIRST_SCENE
+			scene_ : Q_TEST_CASE_SCENE
+			eball_mode_ : Q_8BALL
 		do
 			video_subsystem.set_video_surface_width (width)
 			video_subsystem.set_video_surface_height (height)
@@ -34,15 +35,42 @@ feature -- Interface
 			-- Create the event_queue
 			create event_queue.make(scene_.event_loop, video_subsystem)
 			
+			-- Create the game mode
+			create eball_mode_.make
+			
 			-- Set and launch the first scene.
 			set_scene ( scene_ )
 			launch
+			
+			-- Start the game loop
+			game_loop
 		end
 	
 		
 
-feature {NONE} -- game logic
+feature {NONE} -- THE game loop
+	
+	game_loop is
+			-- this is the main game loop. loops as long as needed, processes I/O, controls
+			-- the graphics, the physics and AI engine.
+		require
+			
+		do
+			from
+			until false
+			loop
+				-- Process I/O
 
+				-- Render
+			
+			end				
+		end
+		
+	state : INTEGER -- the state of the loop and the program
+	
+		
+feature {NONE} -- game logic
+	
 	table: Q_TABLE -- the table of the game
 	mode : Q_MODE -- the mode of the game
 	player_A : Q_PLAYER -- the first player
