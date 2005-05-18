@@ -20,6 +20,10 @@ feature {NONE} -- create
 			fun_list.put(agent on_collide_ball_bank, 1, 2)
 			fun_list.put(agent on_collide_ball_bank, 2, 1)
 			fun_list.put(agent on_collide_dummy, 2, 2)
+			
+			-- BEGIN DEBUG --
+			create position_list.make
+			-- END DEBUG --
 		end
 		
 feature -- interface
@@ -67,6 +71,12 @@ feature -- interface
 			pr := p - (distv * 2)			-- point "gespiegelt" at bank
 			
 			ball.set_velocity (a - pr)		-- bounced velocity
+			
+			-- BEGIN DEBUG --
+			position_list.put_first (create {Q_VECTOR_2D}.make_from_other(a))
+			
+			-- END DEBUG --
+			
 
 		end
 		
@@ -75,6 +85,8 @@ feature -- interface
 		once
 		end
 
+	position_list: DS_LINKED_LIST[Q_VECTOR_2D]
+			-- Debugging: Keeping track of ball positions
 
 feature {NONE} -- implementation
 

@@ -19,7 +19,6 @@ feature {NONE} -- create
 			create pos_list.make
 			
 			new
-			
 		end
 		
 
@@ -47,8 +46,8 @@ feature -- interface
 
 			ball.set_velocity (create {Q_VECTOR_2D}.make (0.1, 0.025))
 			
-			pos_list.wipe_out
-			pos_list.put_first (create {Q_VECTOR_2D}.make_from_other (ball.center))
+			simulation.position_list.wipe_out
+			simulation.position_list.put_first (create {Q_VECTOR_2D}.make_from_other (ball.center))
 			
 			simulation.new (table)
 		end
@@ -67,6 +66,7 @@ feature -- interface
 			draw_bank (ogl, bank3)
 			draw_bank (ogl, bank4)
 
+			draw_track (ogl)
 		end
 		
 		
@@ -104,8 +104,34 @@ feature {NONE} -- implementation
 			glf.gl_vertex2d (b.edge2.x, b.edge2.y)
 			
 			glf.gl_end
-		end
+		end		
 		
+	draw_track (ogl: Q_GL_DRAWABLE) is
+			-- Draw track lines for ball
+		local
+			glf: GL_FUNCTIONS
+			cursor: DS_LINKED_LIST_CURSOR[Q_VECTOR_2D]
+		do
+			glf := ogl.gl
+			
+			-- don't use color3b or color3i, that does not work!
+			glf.gl_color3f(0,1,0)
+			glf.gl_line_width (1)
+			
+			glf.gl_begin (ogl.gl_constants.esdl_gl_line_strip)
+
+			create cursor.make (simulation.position_list)
+			from cursor.start
+			until
+				cursor.after
+			loop
+				glf.gl_vertex2d (cursor.item.x, cursor.item.y)				
+				cursor.forth
+			end
+			
+			glf.gl_end
+			
+		end
 
 	simulation: Q_SIMULATION
 	

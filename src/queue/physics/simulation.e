@@ -71,6 +71,11 @@ feature -- interface
 			result := False
 		end
 		
+	position_list: DS_LINKED_LIST[Q_VECTOR_2D] is
+		do
+			result := collision_handler.position_list
+		end
+		
 
 feature {NONE} -- implementation
 
