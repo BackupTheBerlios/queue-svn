@@ -11,7 +11,9 @@ inherit
 	Q_HUD_COMPONENT
 	redefine
 		process_key_down,
-		draw_foreground
+		draw_foreground,
+		make,
+		inside_3D
 	end
 
 creation
@@ -20,7 +22,7 @@ creation
 feature {NONE} -- creation
 	make is
 		do
-			default_create	
+			precursor
 			create children.make( 20 )
 			set_enabled( true )
 			set_focusable( false )
@@ -189,7 +191,12 @@ feature -- childs
 			end
 		end
 		
-	
+	inside_3d( x_, y_ : DOUBLE ) : BOOLEAN is
+		do
+			-- there might be some 3d-components, not directly fitting the area...
+			result := true
+		end		
+
 	tree_child_at( x_, y_ : DOUBLE; direction_ : Q_VECTOR_3D ) : Q_HUD_COMPONENT is
 			-- searches the whole tree, until the component under the
 			-- given point is found. "direction_" is the direction under witch 
@@ -210,7 +217,7 @@ feature -- childs
 				child_ := children.item
 				position_ := child_.convert_point( x_, y_, direction_ )
 				
-				if child_.inside( position_.x, position_.y ) then
+				if child_.inside_3d( position_.x, position_.y ) then
 					container_ ?= child_
 					if container_ /= void then
 						result := container_.tree_child_at( position_.x, position_.y, container_.convert_direction( direction_ ))
@@ -221,7 +228,7 @@ feature -- childs
 				children.forth
 			end
 			
-			if result = void and inside( x_, y_ ) then
+			if result = void and inside_2d( x_, y_ ) then
 				result := current
 			end
 		end

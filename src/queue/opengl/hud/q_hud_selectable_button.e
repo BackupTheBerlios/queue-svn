@@ -10,7 +10,8 @@ inherit
 	Q_HUD_TEXTED
 	rename
 		background as background_normal,
-		set_background as set_background_normal
+		set_background as set_background_normal,
+		make as texted_make
 	undefine
 		draw_background,
 		process_mouse_button_down,
@@ -22,18 +23,22 @@ inherit
 	redefine
 		process_key_down,
 		draw_foreground
+	select
+		texted_make
 	end
 	
 	Q_HUD_MOUSE_SENSITIVE_COMPONENT
+	undefine
+		make
 	redefine
 		process_key_down,
 		draw_foreground
 	end
 
-feature {NONE} -- Creation
+feature {Q_HUD_SELECTABLE_BUTTON} -- Creation
 	make is
 		do
-			default_create
+			texted_make
 			
 			set_background_normal( create {Q_GL_COLOR}.make_rgb( 0.5, 0.5, 1 ) )
 			set_background_pressed( create {Q_GL_COLOR}.make_rgb( 0.25, 0.25, 1 ) )

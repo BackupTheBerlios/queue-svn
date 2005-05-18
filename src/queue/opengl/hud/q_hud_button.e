@@ -9,7 +9,8 @@ inherit
 	Q_HUD_TEXTED
 	rename
 		background as background_normal,
-		set_background as set_background_normal
+		set_background as set_background_normal,
+		make as texted_make
 	undefine
 		draw_background,
 		process_mouse_button_down,
@@ -20,9 +21,13 @@ inherit
 		process_component_added
 	redefine
 		process_key_down
+	select
+		texted_make
 	end
 	
 	Q_HUD_MOUSE_SENSITIVE_COMPONENT
+	rename
+		make as mouse_sensitive_make
 	redefine
 		process_key_down
 	end
@@ -33,7 +38,7 @@ creation
 feature {NONE} -- creation
 	make is
 		do
-			default_create
+			texted_make
 			
 			create actions	
 			set_focusable( true )

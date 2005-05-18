@@ -21,6 +21,15 @@ feature {NONE} -- creation
 			zero
 		end
 
+feature -- acess
+	translation_3 : Q_VECTOR_3D is
+			-- Translation in 3D
+		do
+			create result.make( m_14, m_24, m_34 )
+		end
+		
+		
+
 feature -- matrix-modes
 	zero is
 			-- Sets all element to 0
@@ -88,6 +97,23 @@ feature -- matrix-modes
 			-- see "rotate"
 		do
 			rotate( vector_.x, vector_.y, vector_.z, angle_ )
+		end
+		
+	rotate_at( vx_, vy_, vz_, angle_, x_, y_, z_ : DOUBLE ) is
+			-- Creates a matrix rotating around the point x,y,z
+			-- with an anxis vx,vy,vz and a given angle
+		local
+			position_ : Q_VECTOR_3D
+		do
+			rotate( vx_, vy_, vz_, angle_ )
+			translate( 0, 0, 0 )
+			create position_.make( x_, y_, z_ )
+			position_ := mul_vector_3( position_ )
+			
+			translate(
+				x_ - position_.x,
+				y_ - position_.y,
+				z_ - position_.z)
 		end
 		
 
@@ -273,33 +299,22 @@ feature -- operations
 				vector_.set_y( 0 )
 				vector_.set_z( 0 )
 				vector_.set_t( 0 )
-				vector_.set( index_, 1 )
+				vector_.set( index_, 1.0 )
 				
 				vector_ := solve( vector_ )
 				
 				if vector_ = void then
 					result := void
 				else
-					result.set_m( index_, 1, vector_.x )
-					result.set_m( index_, 2, vector_.y )
-					result.set_m( index_, 3, vector_.z )
-					result.set_m( index_, 4, vector_.t )
+					result.set_m( 1, index_, vector_.x )
+					result.set_m( 2, index_, vector_.y )
+					result.set_m( 3, index_, vector_.z )
+					result.set_m( 4, index_, vector_.t )
 				end
 				index_ := index_+1
 			end
 		end
-	
-	scaled_row_sum( source_, destination_ : INTEGER; scale_ : DOUBLE ) is
-			-- Writes the sum of "source*scale + destination" into destination.
-		local
-			index_ : INTEGER
-		do
-			from index_ := 1 until index_ > 4 loop
-				set_m( destination_, index_, m( source_, index_ ) * scale_ + m( destination_, index_ ))
-				index_ := index_+1
-			end
-		end
-
+		
 	solve( b_ : Q_VECTOR_4D ) : Q_VECTOR_4D is
 			-- Serches a vector so that "current*result = b_"
 			-- void, if there is no such vector

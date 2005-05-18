@@ -9,16 +9,9 @@ indexing
 deferred class
 	Q_HUD_COMPONENT
 
-	inherit 
-		Q_GL_OBJECT
-		redefine
-			default_create
-		end
-
 feature -- creation
-	default_create is
+	make is
 		do
-			precursor()
 			set_enabled( true )
 			set_lightweight( true )
 			set_focusable( false )
@@ -26,7 +19,7 @@ feature -- creation
 			set_background( create {Q_GL_COLOR}.make_gray )
 			set_foreground( create {Q_GL_COLOR}.make_black )
 		end
-
+		
 feature -- drawing
 	draw( open_gl : Q_GL_DRAWABLE ) is
 		do
@@ -204,11 +197,26 @@ feature -- Color
 		end
 		
 feature -- 3D
-	inside( x_, y_ : DOUBLE ) : BOOLEAN is
-			-- true, if the point is inside this component, false otherwise
+	inside_2d( x_, y_ : DOUBLE ) : BOOLEAN is
+			-- true, if the point is in the rectangle in witch
+			-- this component is painted.
 		do
 			result := x_ >= 0 and y_ >= 0 and x_ <= width and y_ <= height
 		end
+		
+	inside_3d( x_, y_ : DOUBLE ) : BOOLEAN is
+			-- true, if the point is in the rectangle in witch
+			-- this component is painted, or else true if the
+			-- point might be in the box, in witch 3-dimensional 
+			-- parts of this component lies.
+			-- The following must hold: 
+			--		"Point is in Box" implies "inside_3d = true"
+			-- the other way is not necessary, and just saying 
+			-- "result := true" is a correct implementation.
+		do
+			result := inside_2d( x_, y_ )
+		end
+		
 		
 	convert_direction( direction_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
 			-- Convertes a direction from the parents-coordinatesystem

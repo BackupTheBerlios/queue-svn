@@ -20,7 +20,7 @@ feature{NONE} -- initialisation
 			lighting := lighting_
 
 			create live_manager.make
-			open_gl := create {Q_GL_DRAWABLE_IMPLEMENTATION}.make( live_manager )
+			create open_gl_impl.make( live_manager )
 			
 			set_left( -1.0 )
 			set_right( 1.0 )
@@ -40,14 +40,23 @@ feature{NONE} -- initialisation
 			set_hud( hud )
 		end
 
+feature{NONE}
+	open_gl_impl : Q_GL_DRAWABLE_IMPLEMENTATION
+
 feature -- visualisation
 	live_manager : Q_GL_LIVE_MANAGER
-	open_gl : Q_GL_DRAWABLE
+	open_gl : Q_GL_DRAWABLE is
+		do
+			result := open_gl_impl
+		end
+		
 
 	draw() is
 			-- draws the area
 		do
 			-- prepare
+			open_gl_impl.restart
+			
 			open_gl.gl.gl_clear( open_gl.gl_constants.esdl_gl_depth_buffer_bit.bit_or( open_gl.gl_constants.esdl_gl_color_buffer_bit ) )
 
 			open_gl.gl.gl_matrix_mode( open_gl.gl_constants.esdl_gl_projection )
@@ -60,6 +69,16 @@ feature -- visualisation
 				open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_lighting )
 			else
 				open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_lighting )				
+			end
+			
+			if smooth then
+				open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_point_smooth )
+				open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_line_smooth )
+				open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_polygon_smooth )				
+			else
+				open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_point_smooth )
+				open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_line_smooth )
+				open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_polygon_smooth )								
 			end
 			
 			live_manager.grow
@@ -215,11 +234,20 @@ feature -- frustum
  		
 feature -- values
 	lighting : BOOLEAN
-	
+		-- true if lighting should be enabled
+		
+	smooth : BOOLEAN
+		-- true if smooth painting for points, lines and polygons should be enabled
 	
 	set_lighting( lighting_ : BOOLEAN ) is
 		do
 			lighting := lighting_
 		end
+		
+	set_smooth( smooth_ : BOOLEAN ) is
+		do
+			smooth := smooth_
+		end
+		
 		
 end -- class Q_GL_ROOT

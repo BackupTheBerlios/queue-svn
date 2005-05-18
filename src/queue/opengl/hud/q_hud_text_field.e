@@ -12,7 +12,8 @@ inherit
 		draw_background,
 		process_mouse_button_down,
 		process_key_down,
-		set_text
+		set_text,
+		make
 	end
 	
 creation
@@ -21,7 +22,7 @@ creation
 feature{NONE} -- creation
 	make is
 		do
-			default_create
+			precursor
 			
 			set_focusable( true )
 			set_enabled( true )
@@ -34,6 +35,7 @@ feature{NONE} -- creation
 			set_alignement_y( 0.5 )
 			
 			set_insets( create {Q_HUD_INSETS}.make( 0, 0.1, 0, 0.1 ))
+			set_text( "" )
 		end
 		
 	

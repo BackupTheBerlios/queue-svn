@@ -55,15 +55,12 @@ feature{NONE} -- hud
 	
 	generate_menus is
 		local
-			font_ : Q_HUD_FONT
 			menu_ : Q_HUD_CONTAINER
 			count_, index_ : INTEGER
 			button_ : Q_HUD_BUTTON
 			test_case_ : Q_TEST_CASE
 			command_ : STRING
 		do
-			font_ := create {Q_HUD_IMAGE_FONT}.make_standard ( "Arial", 32, false, false )
-			
 			from
 				index_ := 1
 			until
@@ -83,8 +80,6 @@ feature{NONE} -- hud
 
 					create button_.make
 					button_.set_text( test_case_.name )
-					button_.set_font( font_ )
-					button_.set_font_size( 0.05 )
 					button_.set_command( command_ )
 					button_.actions.extend( agent action(?, ?) )
 					button_.set_bounds ( 0.1, 0.1 + count_ * 0.1, 0.8, 0.09 )
@@ -102,8 +97,6 @@ feature{NONE} -- hud
 					
 					create button_.make
 					button_.set_text( "Back" )
-					button_.set_font( font_ )
-					button_.set_font_size( 0.05 ) 
 					button_.set_bounds( 0.2, 0.9, 0.3, 0.09 )
 					button_.set_command( command_ ) 
 					button_.actions.extend( agent action(?,?) )
@@ -119,8 +112,6 @@ feature{NONE} -- hud
 					
 					create button_.make
 					button_.set_text( "Next" )
-					button_.set_font( font_ )
-					button_.set_font_size( 0.05 ) 
 					button_.set_bounds( 0.6, 0.9, 0.3, 0.09 )
 					button_.set_command( command_ ) 
 					button_.actions.extend( agent action(?,?) )

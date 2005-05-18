@@ -7,6 +7,18 @@ deferred class
 
 inherit
 	Q_HUD_COMPONENT
+	redefine
+		make
+	end
+
+feature {Q_HUD_COMPONENT} -- creation
+		make is
+			-- Sets the default settings for the font
+		do
+			precursor
+			set_font( create {Q_HUD_IMAGE_FONT}.make_standard( "Arial", 32, false, false ) )
+			set_font_size( 0.05 )
+		end
 
 feature -- drawing
 	draw_foreground( open_gl: Q_GL_DRAWABLE ) is

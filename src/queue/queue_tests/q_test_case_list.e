@@ -35,7 +35,9 @@ feature {NONE} -- creation
 			extend( create {BEN_RADIO_BUTTON_TEST} )
 			extend( create {BEN_MATRIX_TEST} )
 			extend( create {BEN_GAUSS_TEST} )
-			extend( create {BEN_CONTAINER_3D_TEST} )
+			extend( create {BEN_CONTAINER_3D_TEST}.make )
+			extend( create {BEN_TIME_TEST} )
+			extend( create {BEN_ROTATING_CONTAINER_TEST}.make )
 		end
 
 end -- class Q_TEST_CASE_LIST

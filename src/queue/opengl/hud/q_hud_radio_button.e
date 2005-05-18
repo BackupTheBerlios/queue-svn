@@ -18,7 +18,7 @@ feature {NONE} -- Creation
 	make is
 		do
 			precursor
-			
+
 			set_background_normal( create {Q_GL_COLOR}.make_rgb( 0.5, 1, 0.5 ) )
 			set_background_pressed( create {Q_GL_COLOR}.make_rgb( 0.25, 1, 0.25 ) )
 			set_background_rollover( create {Q_GL_COLOR}.make_rgb( 0.75, 1, 0.75 ) )

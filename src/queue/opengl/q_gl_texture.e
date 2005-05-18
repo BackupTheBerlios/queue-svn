@@ -44,14 +44,32 @@ feature {NONE} -- creation
 		local
 			shared_factory_ : ESDL_SHARED_BITMAP_FACTORY
 			factory_ : ESDL_BITMAP_FACTORY
+			key_ : STRING
+			loaded_ : Q_GL_TEXTURE
 		do
-			create shared_factory_
-			factory_ := shared_factory_.bitmap_factory
-			factory_.create_bitmap_from_image( file_ )
-			image := factory_.last_bitmap
-			image.set_colorkey( red_, green_, blue_ ) 
-			id := image.gl_texture
+			key_ := generate_key( file_, red_, green_, blue_ )
+			loaded_ := loaded_bitmaps.item( key_ )
+			if loaded_ /= void then
+				id := loaded_.id
+				image := loaded_.image
+			else
+				create shared_factory_
+				factory_ := shared_factory_.bitmap_factory
+				factory_.create_bitmap_from_image( file_ )
+				image := factory_.last_bitmap
+				image.set_colorkey( red_, green_, blue_ ) 
+				id := image.gl_texture
+				
+				loaded_bitmaps.put( current, key_ )
+			end
 		end		
+		
+	generate_key( file_ : STRING; red_, green_, blue_ : INTEGER ) : STRING is
+			-- Generates a key for a hashtable
+		do
+			result := file_ + "##" + red_.out + green_.out + blue_.out
+		end
+		
 		
 feature -- Informations
 	image : ESDL_BITMAP

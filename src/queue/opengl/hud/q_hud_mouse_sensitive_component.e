@@ -45,7 +45,7 @@ feature{Q_HUD_MOUSE_SENSITIVE_COMPONENT} -- event-handling
 			if pressed then
 				pressed := false
 				
-				if inside( x_, y_ ) then
+				if inside_2d( x_, y_ ) then
 					do_click
 				end
 			end

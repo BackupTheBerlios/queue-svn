@@ -8,7 +8,9 @@ class
 
 inherit
 	Q_HUD_TEXTED
-
+	redefine
+		make
+	end
 
 creation
 	make
@@ -16,7 +18,7 @@ creation
 feature {NONE} -- creation
 	make is
 		do
-			default_create
+			precursor
 			set_alignement_x( 0.0 )
 			set_alignement_y( 0.5 )
 		end
