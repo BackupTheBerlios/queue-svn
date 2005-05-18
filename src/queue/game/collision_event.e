@@ -1,5 +1,5 @@
 indexing
-	description: "Objects that represent a collision or fall between two objects (bank,ball,hole)"
+	description: "Objects that represent a collision or fall between two objects (bank,ball,hole) this is used in a list for collision tracking"
 	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"

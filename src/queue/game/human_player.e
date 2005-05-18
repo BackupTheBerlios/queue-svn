@@ -7,6 +7,9 @@ indexing
 class
 	Q_HUMAN_PLAYER
 
+inherit
+	Q_PLAYER
+	
 feature -- Interface
 
 feature {NONE} -- Implementation

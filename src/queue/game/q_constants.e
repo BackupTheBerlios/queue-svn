@@ -25,4 +25,5 @@ feature -- different object types
 	
 feature -- different balls
 	white_number :INTEGER is 0 -- this is the white ball
+	
 end -- class Q_CONSTANTS

@@ -1,6 +1,6 @@
 indexing
 	description: "Objects that represent a hole with balls"
-	author: ""
+	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"
 

@@ -23,13 +23,38 @@ feature -- Interface
 		end
 		
 	table: Q_TABLE is
-			-- creates/returns a table for this game mode
+			-- creates/returns the opening table for this game mode, all balls are in a triangle, the white is set at the head of table
+		local
+			balls_: ARRAY[Q_BALL]
+			banks_: ARRAY[Q_BANK]
+			holes_: ARRAY[Q_HOLE]
+			ball_ : Q_BALL
+			bank_ : Q_BANK
+			hole_ : Q_HOLE
+			i : INTEGER
 		do
+			-- create the balls
+			
+			-- create the white ball
+			create ball_.make_empty
+			-- create the full balls 1-7
+			from
+				i := 1
+			until
+				i = 7
+			loop
+				
+				i := i+1
+			end
+			-- create the 8 (black) ball
+			
+			-- create the half balls 9-15
 		end
 		
 	table_model: Q_TABLE_MODEL is
 			-- creates/returns a 3D-model of the table for this game mode
-		do
+	
+		do	
 		end
 		
 	ai_player: Q_AI_PLAYER is
@@ -95,7 +120,7 @@ feature -- Interface
 			Result := own_colored_first_ and then (colored_ball_fallen_ or else any_bank_touched_)
 		end
 		
-
+	
 
 feature {NONE} -- Implementation
 
