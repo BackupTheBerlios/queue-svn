@@ -111,20 +111,6 @@ feature -- Models
 					inner_index_ := inner_index_ + 1
 				end
 				
-				if not has_normals then
-					-- compute face normal
-					vertex_  := result.vertices.item (index_*3)
-					vertex2_ := result.vertices.item (index_*3 + 1)
-					vertex3_ :=result.vertices.item (index_*3 + 2)
-					create v1.make (vertex2_.x - vertex_.x, vertex2_.y - vertex_.y, vertex2_.z - vertex_.z)
-					create v2.make (vertex3_.x - vertex_.x, vertex3_.y - vertex_.y, vertex3_.z - vertex_.z)
-					
-					n := v1.cross (v2)
-					vertex_.set_normal( n.x, n.y, n.z )
-					vertex2_.set_normal( n.x, n.y, n.z )
-					vertex2_.set_normal( n.x, n.y, n.z )
-				end
-				
 				index_ := index_ + 1
 			end
 		end
@@ -194,6 +180,11 @@ feature {NONE} -- Implementation
 				elseif tok_.item.is_equal ("*MESH_FACE_LIST") then
 					read_faces (file_)
 					file_.read_line
+				elseif tok_.item.is_equal ("*MESH_NORMALS") then
+					normal_count := vector_count
+					has_normals := True
+					read_normals (file_)
+					file_.read_line
 				elseif tok_.i_th (tok_.count).is_equal ("{") then
 					read_subclause (file_)
 					file_.read_line
@@ -238,6 +229,49 @@ feature {NONE} -- Implementation
 					vector_.force (tok_.item.to_double, 1)
 					
 					vectors.force (vector_, index_)
+					
+					file_.read_line
+				elseif tok_.i_th (tok_.count).is_equal ("}") then
+					off_ := True
+				else
+					file_.read_line
+				end
+			end
+		end
+		
+	read_normals (file_: PLAIN_TEXT_FILE) is
+			-- Read the normals of a vertex.
+		local
+			tok_ : STRING_TOKENIZER
+			off_ : BOOLEAN
+			
+			index_ : INTEGER
+			vector_ : ARRAY[DOUBLE]
+		do
+			create normals.make (1, vector_count)
+			
+			from
+				file_.read_line
+			until
+				file_.after or off_
+			loop
+				create tok_.make (file_.last_string, " %T")
+				tok_.start
+				
+				if tok_.item.is_equal ("*MESH_VERTEXNORMAL") then
+					create vector_.make (0, 2)
+					
+					tok_.forth
+					index_ := tok_.item.to_integer
+					
+					tok_.forth
+					vector_.force (tok_.item.to_double, 0)
+					tok_.forth
+					vector_.force (tok_.item.to_double, 2)
+					tok_.forth
+					vector_.force (tok_.item.to_double, 1)
+					
+					normals.force (vector_, index_)
 					
 					file_.read_line
 				elseif tok_.i_th (tok_.count).is_equal ("}") then
@@ -297,6 +331,7 @@ feature {NONE} -- Implementation
 					
 					-- set it
 					face_.put (pos_, 1)
+					face_.put (pos_, 3)
 					
 					-- add to the list
 					faces.force (face_, index_)

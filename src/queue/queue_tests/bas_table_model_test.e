@@ -78,7 +78,7 @@ feature
 		end
 		
 	initialized( root_ : Q_GL_ROOT ) is
-			-- Called after the test-case is initialized. If you want, you
+			-- Called afte6 the test-case is initialized. If you want, you
 			-- can change some settings...
 --		local
 --			camera_ : Q_GL_CAMERA

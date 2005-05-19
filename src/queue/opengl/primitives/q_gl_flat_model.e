@@ -36,31 +36,20 @@ feature -- visualisation
 			until
 				index_ >= vertices.count
 			loop
-				-- set normal
-				v_ := vertices.item(index_)
-				nx_ := v_.nx
-				ny_ := v_.ny
-				nz_ := v_.nz
-				
-				v_ := vertices.item(index_)
-				nx_ := nx_ + v_.nx
-				ny_ := ny_ + v_.ny
-				nz_ := nz_ + v_.nz
-				
-				v_ := vertices.item(index_)
-				nx_ := nx_ + v_.nx
-				ny_ := ny_ + v_.ny
-				nz_ := nz_ + v_.nz
-				gl_.gl_normal3d (nx_/3, ny_/3, nz_/3)
-				
-				-- set vector
 				gl_.gl_begin( open_gl.gl_constants.esdl_gl_polygon )
+				
 				v_ := vertices.item (index_)
-				gl_.gl_vertex3d(v_.x, v_.y, v_.z)
+				gl_.gl_normal3d (v_.nx, v_.ny, v_.nz)
+				gl_.gl_vertex3d (v_.x, v_.y, v_.z)
+				
 				v_ := vertices.item(index_ + 1)
-				gl_.gl_vertex3d(v_.x, v_.y, v_.z)
+				gl_.gl_normal3d (v_.nx, v_.ny, v_.nz)
+				gl_.gl_vertex3d (v_.x, v_.y, v_.z)
+				
 				v_ := vertices.item(index_ + 2)
-				gl_.gl_vertex3d(v_.x, v_.y, v_.z)
+				gl_.gl_normal3d (v_.nx, v_.ny, v_.nz)
+				gl_.gl_vertex3d (v_.x, v_.y, v_.z)
+				
 				gl_.gl_end
 				
 				index_ := index_ + 3
