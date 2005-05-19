@@ -233,9 +233,9 @@ feature {NONE} -- Implementation
 					tok_.forth
 					vector_.force (tok_.item.to_double, 0)
 					tok_.forth
-					vector_.force (tok_.item.to_double, 1)
-					tok_.forth
 					vector_.force (tok_.item.to_double, 2)
+					tok_.forth
+					vector_.force (tok_.item.to_double, 1)
 					
 					vectors.force (vector_, index_)
 					

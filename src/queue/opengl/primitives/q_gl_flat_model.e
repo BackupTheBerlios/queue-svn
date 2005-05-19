@@ -30,8 +30,6 @@ feature -- visualisation
 			nx_, ny_, nz_ :DOUBLE
 		do
 			gl_ := open_gl.gl
-
-			gl_.gl_color3f( 1, 0, 0 )
 			
 			from
 				index_ := 0
