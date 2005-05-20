@@ -55,6 +55,8 @@ feature -- Eventhandling
 	mouse_button_pressed : BOOLEAN
 		-- mouse buttons witch are currently pressed
 	
+	unused_events : Q_EVENT_QUEUE
+	
 	mouse_direction( x_, y_ : DOUBLE ) : Q_VECTOR_3D is
 			-- Gives the direction in witch the mouse points at the location x_/y_
 		do
@@ -80,15 +82,16 @@ feature -- Eventhandling
 	
 	process( events_ : Q_EVENT_QUEUE ) is
 		-- process all events in the queue.
+		-- This will reset the "unused_events"-Queue!
 		require
 			events_ /= void
 		do
 			from
-				
+				create unused_events.make_empty( events_.surface )
 			until
 				events_.is_empty
 			loop
-				events_.move_forward_until( events_.input_event )
+				events_.move_forward_and_append_until( events_.input_event, unused_events )
 				if not events_.is_empty then
 					process_head( events_ )
 				end
@@ -104,33 +107,45 @@ feature -- Eventhandling
 			events_not_empty : not events_.is_empty
 			event_is_handable : events_.is_top( events_.input_event )
 		local
-			eiffel_shit_ : ANY
+			any_ : ANY
+			consumed_ : BOOLEAN
 		do
+			if unused_events = void then
+				create unused_events.make_empty( events_.surface )
+			end
+			
+			consumed_ := false
 			if events_.is_key_down_event then
-				process_key_down( events_.pop_keyboard_event )
+				consumed_ := process_key_down( events_.peek_keyboard_event )
 			elseif events_.is_key_up_event then
-				process_key_up( events_.pop_keyboard_event )
+				consumed_ := process_key_up( events_.peek_keyboard_event )
 			elseif events_.is_mouse_button_down_event then
-				process_mouse_button_down( 
-					events_.pop_mouse_button_event, 
+				consumed_ := process_mouse_button_down( 
+					events_.peek_mouse_button_event, 
 					events_.surface.video_surface_width,
 					events_.surface.video_surface_height )
 			elseif events_.is_mouse_button_up_event then
-				process_mouse_button_up( 
-					events_.pop_mouse_button_event, 
+				consumed_ := process_mouse_button_up( 
+					events_.peek_mouse_button_event, 
 					events_.surface.video_surface_width,
 					events_.surface.video_surface_height )				
 			elseif events_.is_mouse_motion_event then
-				process_mouse_motion(
-					events_.pop_mouse_motion_event, 
+				consumed_ := process_mouse_motion(
+					events_.peek_mouse_motion_event, 
 					events_.surface.video_surface_width,
 					events_.surface.video_surface_height )								
 			else
-				eiffel_shit_ := events_.pop_event
+				any_ := events_.peek_event
+			end
+			
+			if not consumed_ then
+				events_.throw_away( unused_events )
+			else
+				any_ := events_.pop_event
 			end
 		end
 		
-	process_key_down( event_ : ESDL_KEYBOARD_EVENT ) is
+	process_key_down( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
 		local
 			component_ : Q_HUD_COMPONENT
 			stop_ : BOOLEAN
@@ -154,9 +169,11 @@ feature -- Eventhandling
 				-- perhaps the root-focus manager is interested in this event
 				stop_ := component_key_down( event_ )
 			end
+			
+			result := stop_
 		end
 		
-	process_key_up( event_ : ESDL_KEYBOARD_EVENT ) is
+	process_key_up( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
 		local
 			component_ : Q_HUD_COMPONENT
 			stop_ : BOOLEAN
@@ -175,9 +192,11 @@ feature -- Eventhandling
 				end
 				component_ := component_.parent
 			end
+			
+			result := stop_
 		end
 
-	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; screen_width_, screen_height_ : INTEGER ) is
+	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; screen_width_, screen_height_ : INTEGER ) : BOOLEAN is
 		local
 			component_ : Q_HUD_COMPONENT
 			
@@ -203,6 +222,7 @@ feature -- Eventhandling
 				mouse_positions_ := mouse_positions(
 					x_, y_,	selected_component )				
 				
+				result := false
 				mouse_button_pressed := true
 				
 				from
@@ -218,6 +238,7 @@ feature -- Eventhandling
 								or not component_.lightweight then
 									
 							component_ := void
+							result := true
 						else
 							component_ := component_.parent
 						end
@@ -226,16 +247,18 @@ feature -- Eventhandling
 							component_ := component_.parent
 						else
 							component_ := void
+							result := true
 						end
 					end
 				end
 			else
 				mouse_button_pressed := false
+				result := false
 			end
 		end
 		
 		
-	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; screen_width_, screen_height_ : INTEGER ) is
+	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; screen_width_, screen_height_ : INTEGER ) : BOOLEAN is
 		local
 			component_ : Q_HUD_COMPONENT
 			mouse_ : Q_VECTOR_2D
@@ -244,6 +267,7 @@ feature -- Eventhandling
 			-- ensure, the selected component is still enabled
 			ensure_selected_component			
 			mouse_button_pressed := false
+			result := false
 
 			if selected_component /= void then
 				mouse_positions_ := mouse_positions ( 
@@ -262,6 +286,7 @@ feature -- Eventhandling
 					if component_.enabled then
 						if component_.process_mouse_button_up ( event_, mouse_.x, mouse_.y ) or not component_.lightweight then
 							component_ := void
+							result := true
 						else
 							component_ := component_.parent
 						end
@@ -270,13 +295,14 @@ feature -- Eventhandling
 							component_ := component_.parent							
 						else
 							component_ := void
+							result := true
 						end
 					end
 				end
 			end
 		end
 		
-	process_mouse_motion( event_ : ESDL_MOUSEMOTION_EVENT; screen_width_, screen_height_ : INTEGER ) is
+	process_mouse_motion( event_ : ESDL_MOUSEMOTION_EVENT; screen_width_, screen_height_ : INTEGER ) : BOOLEAN is
 		local
 			component_ : Q_HUD_COMPONENT
 			x_, y_ : DOUBLE
@@ -294,6 +320,7 @@ feature -- Eventhandling
 			
 			-- ensure, the selected component is still enabled
 			ensure_selected_component
+			result := false
 			
 			if selected_component /= void then	
 				mouse_positions_ := mouse_positions( x_, y_, selected_component ) 
@@ -309,6 +336,7 @@ feature -- Eventhandling
 					if component_.enabled then
 						if component_.process_mouse_moved( event_, mouse_.x, mouse_.y ) or not component_.lightweight then
 							component_ := void
+							result := true
 						else
 							component_ := component_.parent
 						end
@@ -317,6 +345,7 @@ feature -- Eventhandling
 							component_ := component_.parent							
 						else
 							component_ := void
+							result := true
 						end
 					end
 				end	

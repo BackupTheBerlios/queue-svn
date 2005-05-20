@@ -150,6 +150,7 @@ feature {NONE} -- values
 			object_ : Q_GL_OBJECT
 			camera_ : Q_GL_CAMERA
 			min_, max_, pos_, dir_ : Q_VECTOR_3D
+			behaviour_ : Q_SIMPLE_CAMERA_BEHAVIOUR
 		do
 			create root.init_lighting( test_case_.lighting )
 			test_case_.init
@@ -186,7 +187,9 @@ feature {NONE} -- values
 				camera_.set_beta( -45 )
 				
 				camera_.zoom( -dir_.length )
-				navigation.set_rotation_distance( dir_.length )
+				create behaviour_
+				behaviour_.set_rotation_distance( dir_.length )
+				navigation.set_behaviour( behaviour_ )
 			end
 			
 			test_case_.initialized( root )
@@ -202,6 +205,7 @@ feature {NONE} -- Implementation
 			
 			-- work on input
 			root.hud.process( events )
+			
 			
 			screen.redraw
 		end

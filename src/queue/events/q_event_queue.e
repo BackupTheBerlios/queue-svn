@@ -7,7 +7,7 @@ class
 	Q_EVENT_QUEUE
 
 creation
-	make
+	make, make_empty
 	
 feature{NONE} -- creation
 	make( event_loop_ : ESDL_EVENT_LOOP; surface_ : ESDL_VIDEO_SUBSYSTEM ) is
@@ -38,6 +38,16 @@ feature{NONE} -- creation
 			event_loop.expose_event.force( agent handle_expose_event(?) )
 			event_loop.quit_event.force( agent handle_quit_event(?) )
 		end		
+
+	make_empty( surface_ : ESDL_VIDEO_SUBSYSTEM ) is
+			-- creates an eventqueue witch does not listen to the eventloop
+		require
+			surface_not_void : surface_ /= void
+		do
+			create queue.make
+			surface := surface_
+		end
+		
 
 feature -- information top
 	top_flag : INTEGER is
@@ -181,11 +191,18 @@ feature -- information top
 			result := queue.first.integer_item(1).bit_and( event_type_ ) /= 0
 		end
 	
+feature{Q_EVENT_QUEUE} -- append
+	append( type_ : INTEGER; event_ : ANY ) is
+			-- Adds an event of a given type to the queue
+		do
+			queue.force([type_, event_])
+		end
+	
 feature -- access top
 	move_forward_until( event_ : INTEGER ) is
 			-- pops events until no event is left, or an event with the given signature is found
 		local
-			eiffel_shit_ : ANY
+			any_ : ANY
 				-- totally meaningless variable, but forced by the syntax of eiffel
 		do
 			from
@@ -193,10 +210,52 @@ feature -- access top
 			until
 				is_empty or else is_top( event_ )
 			loop
-				eiffel_shit_ := pop_event
+				any_ := pop_event
 			end
 		end
+	
+	move_forward_and_append_until( event_ : INTEGER; queue_ : Q_EVENT_QUEUE ) is
+			-- pops events until no event is left, or an event with the given signature is found
+			-- if an event is poped, it is appended to "queue"
+		require
+			queue_ /= void
+		local
+			any_ : ANY
+			flag_ : INTEGER
+		do
+			from
+				
+			until
+				is_empty or else is_top( event_ )
+			loop
+				flag_ := top_flag
+				any_ := pop_event
+				queue_.append( flag_, any_ )
+			end
+		end
+	
+	throw_away( queue_ : Q_EVENT_QUEUE ) is
+			-- Removes the first event in this queue, and
+			-- appends the event to the other queue
+		require
+			queue_ /= void
+			not is_empty
+		local
+			type_ : INTEGER
+			event_ : ANY
+		do
+			type_ := top_flag
+			event_ := pop_event
+			
+			queue_.append( type_, event_ )
+		end
 		
+	count : INTEGER is
+		do
+			result := queue.count
+		end
+		
+feature -- pop	
 	pop_event : ANY is
 			-- removes the event at the head, and returns it
 		require
@@ -326,6 +385,134 @@ feature -- access top
 			result_not_void : result /= void
 		end
 
+feature -- Peek
+	peek_event : ANY is
+			-- removes the event at the head, and returns it
+		require
+			not_empty : is_empty = false
+		do
+			queue.start
+			result := queue.item.item( 2 )
+		end
+
+	peek_active_event : ESDL_ACTIVE_EVENT is
+		require
+			is_active_event
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end
+		
+
+	peek_keyboard_event : ESDL_KEYBOARD_EVENT is
+		require
+			is_key_event : is_top( key_event )
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end
+	
+	peek_mouse_motion_event : ESDL_MOUSEMOTION_EVENT is
+		require
+			is_mouse_motion_event
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end
+	
+	peek_mouse_button_event : ESDL_MOUSEBUTTON_EVENT is
+		require
+			is_mouse_button_event : is_top( mouse_button_event )
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end
+		
+	peek_joystick_axis_event : ESDL_JOYSTICK_AXIS_EVENT is
+		require
+			is_joystick_axis_event
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end
+	
+	peek_joystick_button_event : ESDL_JOYSTICK_BUTTON_EVENT is
+		require
+			is_joystick_button_event : is_top( joystick_button_event )
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end
+		
+	peek_joystick_hat_event : ESDL_JOYSTICK_HAT_EVENT is
+		require
+			is_joystick_hat_event
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end
+		
+	peek_joystick_ball_event : ESDL_JOYSTICK_BALL_EVENT is
+		require
+			is_joystick_ball_event
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end
+		
+	peek_resize_event : ESDL_RESIZE_EVENT is
+		require
+			is_resize_event
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end
+		
+	peek_winwow_manager_event : ESDL_WINDOWMANAGER_EVENT is
+		require
+			is_window_manager_event
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end
+		
+	peek_user_event : ESDL_USER_EVENT is
+		require
+			is_user_event
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end			
+		
+	peek_expose_event : ESDL_EXPOSE_EVENT is
+		require
+			is_expose_event
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end
+		
+	peek_quit_event : ESDL_QUIT_EVENT is
+		require
+			is_quit_event
+		do
+			result ?= peek_event
+		ensure
+			result_not_void : result /= void
+		end
+
 feature -- constants
 	active_event : INTEGER					is        1
 	key_down_event : INTEGER				is        2
@@ -343,7 +530,6 @@ feature -- constants
 	user_event : INTEGER					is     8192
 	expose_event : INTEGER					is    16384
 	quit_event : INTEGER					is    32768
---	outside_event : INTEGER					is    65536
 
 	key_event : INTEGER is
 		once

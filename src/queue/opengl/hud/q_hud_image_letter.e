@@ -29,10 +29,6 @@ feature -- draw
 		require
 			open_gl_not_void : open_gl /= void
 		do
-
---			open_gl.gl.gl_enable (open_gl.gl_constants.esdl_gl_alpha_test)
---			open_gl.gl.gl_alpha_func (open_gl.gl_constants.esdl_gl_notequal, 0)
-
 			open_gl.gl.gl_color3f( 1, 1, 1)
 
 			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_blend )
@@ -47,12 +43,13 @@ feature -- draw
 			open_gl.gl.gl_blend_func( 
 				open_gl.gl_constants.esdl_gl_zero, 
 				open_gl.gl_constants.esdl_gl_src_color )
+
+--			open_gl.gl.gl_blend_func( 
+--				open_gl.gl_constants.esdl_gl_src_alpha, 
+--				open_gl.gl_constants.esdl_gl_one_minus_src_alpha )
 				
 			open_gl.gl.gl_alpha_func( 
 				open_gl.gl_constants.esdl_gl_notequal, 0 )
-
---		open_gl.gl_constants.esdl_gl_dst_color, 
---		open_gl.gl_constants.esdl_gl_one )
 
 			open_gl.gl.gl_begin( open_gl.gl_constants.esdl_gl_quads )
 

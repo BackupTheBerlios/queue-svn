@@ -12,6 +12,10 @@ inherit
 		process_mouse_moved,
 		process_mouse_button_down,
 		process_mouse_button_up,
+		process_mouse_enter,
+		process_mouse_exit,
+		process_key_down,
+		process_key_up,
 		make
 	end
 	
@@ -38,76 +42,67 @@ feature -- camera
 	set_camera( camera_ : Q_GL_CAMERA ) is
 		do
 			camera := camera_
+			if behaviour /= void then
+				behaviour.set_camera( camera )
+			end
 		end
-		
-	rotation_distance : DOUBLE
 	
-	set_rotation_distance( distance_ : DOUBLE ) is
+	behaviour : Q_CAMERA_BEHAVIOUR
+	
+	set_behaviour( behaviour_ : Q_CAMERA_BEHAVIOUR ) is
+			-- sets the behaviour
 		do
-			rotation_distance := distance_
+			if behaviour /= void then
+				behaviour.set_camera( void )
+			end
+			
+			if behaviour_ /= void then
+				behaviour_.set_camera( camera )
+			end
+			
+			behaviour := behaviour_
 		end
 		
 	
 feature{NONE} -- event-handling
-	zooming, rotating, moving : BOOLEAN
-	last_x, last_y : DOUBLE
 
 	process_mouse_moved( event_ : ESDL_MOUSEMOTION_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
-		local
-			delta_x_, delta_y_ : DOUBLE
 		do
-			result := false
-			if camera /= void then
-				delta_x_ := x_ - last_x
-				delta_y_ := y_ - last_y
-			
-				last_x := x_
-				last_y := y_
-			
-				if zooming then
-					camera.zoom( -delta_y_*rotation_distance )
-					result := true
-				elseif rotating then
-					camera.rotate_around( 360*delta_x_, -180*delta_y_, rotation_distance )
-					result := true
-				elseif moving then
-					camera.move( delta_x_ * rotation_distance, delta_y_ * rotation_distance )
-				end
-			end
+			result := behaviour /= void and then behaviour.process_mouse_moved( event_, x_, y_ )
 		end
 	
 	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
 		do
-			last_x := x_
-			last_y := y_
-			
-			rotating := false
-			zooming := false
-			moving := false
-
-			if y_ >= 0.5 then
-				rotating := true
-			elseif x_ >= 0.5 then
-				zooming := true
-			else
-				moving := true
-			end
-
-			result := rotating or zooming or moving
+			result := behaviour /= void and then behaviour.process_mouse_button_down( event_, x_, y_ )
 		end
 		
 	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
 		do
-			if rotating or zooming or moving then
-				rotating := false
-				zooming := false
-				moving := false
-				
-				result := true
-			else
-				result := false	
+			result := behaviour /= void and then behaviour.process_mouse_button_up( event_, x_, y_ )		
+		end
+		
+	process_key_down (event_: ESDL_KEYBOARD_EVENT): BOOLEAN is
+		do
+			result := behaviour /= void and then behaviour.process_key_down( event_ )
+		end
+
+	process_key_up( event_: ESDL_KEYBOARD_EVENT): BOOLEAN is
+		do
+			result := behaviour /= void and then behaviour.process_key_up( event_ )
+		end
+		
+	process_mouse_enter( x_, y_: DOUBLE) is
+		do
+			if behaviour /= void then
+				behaviour.process_mouse_enter( x_, y_ )				
 			end
 		end
 		
+	process_mouse_exit( x_, y_: DOUBLE) is
+		do
+			if behaviour /= void then
+				behaviour.process_mouse_exit( x_, y_ )				
+			end
+		end		
 
 end -- class Q_HUD_CAMERA_NAVIGATOR
