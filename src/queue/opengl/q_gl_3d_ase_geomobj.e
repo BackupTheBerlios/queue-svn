@@ -38,6 +38,14 @@ feature {NONE} -- Initialization
 					read_subclause (file_)
 				elseif tok_.item.is_equal ("*MESH") then
 					read_mesh (file_)
+				elseif tok_.item.is_equal ("*WIREFRAME_COLOR") then
+					tok_.forth
+					create color.make
+					color.set_red (tok_.item.to_double)
+					tok_.forth
+					color.set_green (tok_.item.to_double)
+					tok_.forth
+					color.set_blue (tok_.item.to_double)
 				else
 					if tok_.i_th (tok_.count).is_equal ("{") then
 						read_subclause (file_)
@@ -58,13 +66,19 @@ feature -- Models
 		local
 			index_, inner_index_:INTEGER
 			curr_face_:TUPLE[ARRAY[INTEGER],ARRAY[INTEGER], ARRAY[INTEGER]]
-			vertex_, vertex2_, vertex3_:Q_GL_VERTEX
-			
-			v1, v2, n : Q_VECTOR_3D
+			vertex_:Q_GL_VERTEX
 			
 			curr_array_:ARRAY[INTEGER]
 		do
 			create result.make(faces.count*3)
+			
+			-- set the base color
+			if color /= void then
+				result.set_color (color)
+			else
+				result.set_color (create {Q_GL_COLOR}.make_white)
+			end
+			
 			
 			from
 				index_ := 0
@@ -185,7 +199,7 @@ feature {NONE} -- Implementation
 					has_normals := True
 					read_normals (file_)
 					file_.read_line
-				elseif tok_.i_th (tok_.count).is_equal ("{") then
+			elseif tok_.i_th (tok_.count).is_equal ("{") then
 					read_subclause (file_)
 					file_.read_line
 				elseif tok_.i_th (tok_.count).is_equal ("}") then
@@ -347,5 +361,7 @@ feature {NONE} -- Implementation
 		
 feature -- Access
 	name : STRING
+	
+	color : Q_GL_COLOR
 	
 end -- class Q_GL_3D_ASE_GEOMOBJ

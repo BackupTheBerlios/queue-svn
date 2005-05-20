@@ -13,11 +13,22 @@ inherit
 create
 	make
 
-feature
+feature {NONE}
 	make (number_vertices:INTEGER) is
 			-- creation routine
 		do
 			create vertices.make(0,2)
+		end
+
+feature -- setters
+	set_color (new_color : Q_GL_COLOR) is
+			-- Set a new color for the model.
+		require
+			new_color /= void
+		do
+			color := new_color
+		ensure
+			color = new_color
 		end
 
 feature -- visualisation
@@ -27,9 +38,10 @@ feature -- visualisation
 			
 			index_:INTEGER
 			v_: Q_GL_VERTEX
-			nx_, ny_, nz_ :DOUBLE
 		do
 			gl_ := open_gl.gl
+			
+			gl_.gl_color3d (color.red, color.green, color.blue)
 			
 			from
 				index_ := 0
@@ -59,5 +71,7 @@ feature -- visualisation
 feature
 	vertices:ARRAY[Q_GL_VERTEX]
 			-- vertices
+			
+	color : Q_GL_COLOR
 
 end -- class Q_GL_FLAT_MODEL

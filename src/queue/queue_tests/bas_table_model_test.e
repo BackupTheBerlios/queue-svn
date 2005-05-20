@@ -35,18 +35,18 @@ feature
 			create light_1.make( 0 )
 			create light_2.make( 1 )
 			
-			light_1.set_ambient( 0, 0, 0, 1 )
-			light_1.set_specular( 0, 0, 0, 1 )
-			light_1.set_diffuse( 0, 0, 1, 1 )
+			light_1.set_ambient( 1, 1, 1, 1 )
+			light_1.set_specular( 1, 1, 1, 1 )
+			light_1.set_diffuse( 1, 1, 1, 1 )
 			light_1.set_position( 0, 200, 200 )
 
 			light_1.set_constant_attenuation( 0 )
 			light_1.set_attenuation( 1, 0, 0 )
 
 			
-			light_2.set_ambient( 0, 0, 0, 1 )
-			light_2.set_specular( 0, 0, 0, 1 )
-			light_2.set_diffuse( 1, 0, 0, 1 )
+			light_2.set_ambient( 1, 1, 1, 1 )
+			light_2.set_specular( 1, 1, 1, 1 )
+			light_2.set_diffuse( 1, 1, 1, 1 )
 			light_2.set_position( 0, -200, 200 )
 			light_2.set_attenuation( 1, 0, 0 )
 			
