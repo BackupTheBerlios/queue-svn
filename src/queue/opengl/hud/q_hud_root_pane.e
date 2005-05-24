@@ -67,6 +67,16 @@ feature -- Eventhandling
 			end
 		end
 		
+	position_of_mouse( x_, y_, z_ : DOUBLE ) : Q_VECTOR_2D is
+			-- Gives the position of the mouse, so the mouse is over a point in the hud
+		do
+			if root = void then
+				create result.make( 0, 0 )
+			else
+				result := root.position_in_hud( x_, y_, z_ )
+			end
+		end
+		
 	
 	request_focused_component( component_ : Q_HUD_COMPONENT ) is
 			-- Tries to set the given component as the component with the focus.

@@ -1,8 +1,6 @@
 indexing
 	description: "Contains one or many Q_HUD_COMPONENTS. The coordinate-system of this components is translated by the container"
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	author: "Benjamin Sigg"
 
 class
 	Q_HUD_CONTAINER

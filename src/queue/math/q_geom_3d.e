@@ -53,6 +53,5 @@ feature -- Cuting
 			
 			result := gauss_changing( system_, b_ )
 		end
-		
 
 end -- class Q_GEOM_3D

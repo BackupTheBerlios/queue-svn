@@ -140,6 +140,10 @@ feature {NONE} -- helpfeatures
 			end
 		end
 		
+	math : Q_MATH is
+		once
+			create result
+		end
 
 feature -- parts to be displayed
 	inside : Q_GL_OBJECT
@@ -190,7 +194,14 @@ feature -- geometrics
 			result.normaliced	
 		end
 		
-
+	position_in_hud( x_, y_, z_ : DOUBLE ) : Q_VECTOR_2D is
+			-- Gets the position in the hud of a 3d-point (in the huds-
+			-- coordinate system).
+		do
+			create result.make( -x_ / z_ + 0.5, -y_ / z_ + 0.5 )
+		end
+		
+		
 
 feature -- frustum
  -- private double left = -1, right = 1, bottom = -1, top = 1, near = 1, far = 10000;

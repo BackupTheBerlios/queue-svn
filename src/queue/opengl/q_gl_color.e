@@ -1,8 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "A color of Open-GL"
+	author: "Benjamin Sigg"
 
 class
 	Q_GL_COLOR
@@ -116,6 +114,21 @@ feature -- The color-values
 		end
 		
 
+	to_c : POINTER is
+			-- returns the value of this color as floar-array in RGBA
+		local
+			array_ : ARRAY[ DOUBLE ]
+			any_ : ANY
+		do
+			create array_.make( 1, 4 )
+			array_.put(   red, 1 )
+			array_.put( green, 2 )
+			array_.put(  blue, 3 )
+			array_.put( alpha, 4 )
+			any_ := array_.to_c
+			result := $any_
+		end
+		
 invariant
 	invariant_clause: True -- Your invariant here
 
