@@ -21,14 +21,14 @@ feature {NONE}
 		end
 
 feature -- setters
-	set_color (new_color : Q_GL_COLOR) is
+	set_material (new_material : Q_GL_MATERIAL) is
 			-- Set a new color for the model.
 		require
-			new_color /= void
+			new_material /= void
 		do
-			color := new_color
+			material := new_material
 		ensure
-			color = new_color
+			material = new_material
 		end
 
 feature -- visualisation
@@ -41,7 +41,12 @@ feature -- visualisation
 		do
 			gl_ := open_gl.gl
 			
-			gl_.gl_color3d (color.red, color.green, color.blue)
+			gl_.gl_shade_model (open_gl.gl_constants.esdl_gl_smooth)
+			gl_.gl_enable (open_gl.gl_constants.esdl_gl_color_material)
+			
+			gl_.gl_color_material (open_gl.gl_constants.esdl_gl_front_and_back, open_gl.gl_constants.esdl_gl_ambient_and_diffuse)
+			
+			material.set ( open_gl )
 			
 			from
 				index_ := 0
@@ -50,15 +55,18 @@ feature -- visualisation
 			loop
 				gl_.gl_begin( open_gl.gl_constants.esdl_gl_polygon )
 				
-				v_ := vertices.item (index_)
+				v_ := vertices.item (index_)				
+--				gl_.gl_color3d (color.red, color.green, color.blue)
 				gl_.gl_normal3d (v_.nx, v_.ny, v_.nz)
 				gl_.gl_vertex3d (v_.x, v_.y, v_.z)
 				
 				v_ := vertices.item(index_ + 1)
+--				gl_.gl_color3d (color.red, color.green, color.blue)
 				gl_.gl_normal3d (v_.nx, v_.ny, v_.nz)
 				gl_.gl_vertex3d (v_.x, v_.y, v_.z)
 				
 				v_ := vertices.item(index_ + 2)
+--				gl_.gl_color3d (color.red, color.green, color.blue)
 				gl_.gl_normal3d (v_.nx, v_.ny, v_.nz)
 				gl_.gl_vertex3d (v_.x, v_.y, v_.z)
 				
@@ -66,12 +74,14 @@ feature -- visualisation
 				
 				index_ := index_ + 3
 			end
+			
+			gl_.gl_disable (open_gl.gl_constants.esdl_gl_color_material)
 		end		
 
 feature
 	vertices:ARRAY[Q_GL_VERTEX]
 			-- vertices
 			
-	color : Q_GL_COLOR
+	material : Q_GL_MATERIAL
 
 end -- class Q_GL_FLAT_MODEL

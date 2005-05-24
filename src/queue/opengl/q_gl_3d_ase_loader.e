@@ -18,6 +18,7 @@ feature -- Initialization
 	make is
 		do
 			create geometric_objects.make (0, 1)
+			create shape_objects.make (0, 1)
 		end
 		
 feature  -- Commands
@@ -57,8 +58,7 @@ feature  -- Commands
 						-- ignore those for the moment
 						read_subclause(ase_file_)
 					elseif tokenizer_.item.is_equal ("*SHAPEOBJECT") then
-						-- ignore those for the moment
-						read_subclause(ase_file_)				
+						read_shape_object(ase_file_)				
 					elseif tokenizer_.item.is_equal ("*GEOMOBJECT") then
 						read_geometric_object(ase_file_)				
 					else
@@ -138,6 +138,14 @@ feature {NONE} -- Implementation
 			geometric_object_count := geometric_object_count + 1
 		end
 		
+	read_shape_object(file_: PLAIN_TEXT_FILE) is
+			-- parses a *SHAPEOBJECTS clause
+		do
+			shape_objects.force (create {Q_GL_3D_ASE_SHAPEOBJ}.make (file_), shape_object_count)
+			
+			shape_object_count := shape_object_count + 1
+		end
+		
 		
 feature -- access
 	file_version: INTEGER
@@ -145,4 +153,8 @@ feature -- access
 	geometric_objects : ARRAY[Q_GL_3D_ASE_GEOMOBJ]
 	
 	geometric_object_count : INTEGER
+	
+	shape_objects : ARRAY[Q_GL_3D_ASE_SHAPEOBJ]
+	
+	shape_object_count : INTEGER
 end

@@ -19,39 +19,35 @@ feature
 	object : Q_GL_OBJECT is
 		local 
 			group : Q_GL_GROUP[Q_GL_OBJECT]
-			loader : Q_GL_3D_ASE_LOADER
-			model : Q_GL_GROUP[Q_GL_MODEL]
+			table_model : Q_TABLE_MODEL
 			
 			light_1, light_2 :Q_GL_LIGHT
 		do
+			create table_model.make_from_file ("model/pool.ase")
 			create group.make
-			create loader.make
 			
-			loader.load_file ("model/pool.ase")
-			model := loader.create_flat_model
-			
-			group.force(model)
+			group.force(table_model.model)
 			
 			create light_1.make( 0 )
 			create light_2.make( 1 )
 			
-			light_1.set_ambient( 1, 1, 1, 1 )
-			light_1.set_specular( 1, 1, 1, 1 )
-			light_1.set_diffuse( 1, 1, 1, 1 )
+			--light_1.set_ambient( 1, 1, 1, 0 )
+			--light_1.set_specular( 1, 1, 1, 0 )
+			light_1.set_diffuse( 1, 1, 1, 0 )
 			light_1.set_position( 0, 200, 200 )
 
 			light_1.set_constant_attenuation( 0 )
 			light_1.set_attenuation( 1, 0, 0 )
 
 			
-			light_2.set_ambient( 1, 1, 1, 1 )
-			light_2.set_specular( 1, 1, 1, 1 )
-			light_2.set_diffuse( 1, 1, 1, 1 )
+			light_2.set_ambient( 1, 1, 0, 0 )
+			light_2.set_specular( 1, 1, 0, 0 )
+			light_2.set_diffuse( 1, 1, 0, 0 )
 			light_2.set_position( 0, -200, 200 )
 			light_2.set_attenuation( 1, 0, 0 )
 			
 			group.force( light_1 )
-			group.force( light_2 )
+			--group.force( light_2 )
 			
 			result := group
 		end

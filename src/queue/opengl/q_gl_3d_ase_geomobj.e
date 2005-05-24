@@ -74,9 +74,9 @@ feature -- Models
 			
 			-- set the base color
 			if color /= void then
-				result.set_color (color)
+				result.set_material (create {Q_GL_MATERIAL}.make_single_colored (color))
 			else
-				result.set_color (create {Q_GL_COLOR}.make_white)
+				result.set_material (create {Q_GL_MATERIAL}.make_empty)
 			end
 			
 			
