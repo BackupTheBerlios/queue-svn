@@ -9,6 +9,7 @@ inherit
 	
 feature -- Cuting
 	cut_plane_line( plane_position_, plane_direction_a_, plane_direction_b_, line_position_, line_direction_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
+			-- Cuts a line with a plane
 		local
 			sizes_ : ARRAY[ DOUBLE ]
 		do
@@ -52,6 +53,5 @@ feature -- Cuting
 			b_.put( line_position_.z - plane_position_.z, 3 )
 			
 			result := gauss_changing( system_, b_ )
-		end
-
+		end		
 end -- class Q_GEOM_3D

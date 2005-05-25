@@ -10,7 +10,7 @@ feature
 		-- root of the hud
 
 feature{NONE} -- Queue & Stack
-	list : ARRAYED_LIST[ TUPLE[ Q_HUD_COMPONENT, Q_VECTOR_3D, Q_VECTOR_3D, Q_VECTOR_3D ]]
+	list : ARRAYED_LIST[ TUPLE[ Q_HUD_COMPONENT, Q_PLANE ]]
 		-- The (ordered) list of the components, and their 3-dimensional rectangle, in
 		-- the form (component, position, width, height)
 
@@ -28,19 +28,14 @@ feature{NONE} -- Math
 			create result
 		end
 		
-	compare( first_, second_ : TUPLE[ Q_HUD_COMPONENT, Q_VECTOR_3D, Q_VECTOR_3D, Q_VECTOR_3D] ) : DOUBLE is
+	tolerance : DOUBLE is 0.0001
+		
+	compare( first_, second_ : TUPLE[ Q_HUD_COMPONENT, Q_PLANE ] ) : DOUBLE is
 			-- compares the position of two components. Returns the difference of the distanc
 			-- "result = second_ - first_". So a positive value means, that first_ is nearer
 			-- to the screen
 		do
 			
 		end
-		
-	planar( first_, second_ : TUPLE[ Q_HUD_COMPONENT, Q_VECTOR_3D, Q_VECTOR_3D, Q_VECTOR_3D ]) : BOOLEAN  is
-			-- true if the two components are in the same plane, false otherwise
-		do
-			
-		end
-		
 
 end -- class Q_HUD_COMPONENT_QUEUE
