@@ -114,9 +114,10 @@ feature {NONE} -- helpfeatures
 			if lighting then
 				open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_lighting )
 			end
-			
+			hud.reset_queue
+		    
 			open_gl.gl.gl_load_identity
-		    open_gl.gl.gl_push_matrix
+		    hud.queue.load_identity
 		    
 		    display_x_ := ( left + right ) / 2.0;
 		    display_y_ := ( top + bottom ) / 2.0;
@@ -125,15 +126,16 @@ feature {NONE} -- helpfeatures
 		    width_ := right - left;
 		    height_ := top - bottom;
 		    
-		    open_gl.gl.gl_translated( display_x_ - width_/2, -(display_y_ - height_/2), display_z_ );
-		    open_gl.gl.gl_scaled( width_, -height_, 1.0 );
-		    open_gl.gl.gl_normal3f( 0, 0, 1 );
-		    
 		    open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_depth_test )
-		    hud.draw( open_gl )
-		    open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_depth_test )
 		    
-		    open_gl.gl.gl_pop_matrix
+		    hud.queue.translate( display_x_ - width_/2, -(display_y_ - height_/2), display_z_ );
+		    hud.queue.scale( width_, -height_, 1.0 );
+		    
+		    open_gl.gl.gl_normal3f( 0, 0, 1 );
+		    hud.enqueue( hud.queue )
+		    hud.queue.draw( open_gl )
+		    
+		    open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_depth_test )
 		    
 		    if lighting then
 				open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_lighting )
@@ -179,26 +181,43 @@ feature -- parts to be displayed
 		end
 
 feature -- geometrics
-	direction_in_hud( x_, y_ : DOUBLE ) : Q_VECTOR_3D is
+	direction_in_space( x_, y_ : DOUBLE ) : Q_VECTOR_3D is
 			-- Gets the direction under a point. All points on the
 			-- line from x_, y_ and direction (in the huds-coorinate-system)
 			-- are projected into x_, y_.
 			-- The point 0/0 is at the top-left, the point 1/1 at the bottom-right
 
 		do
-			create result.make(
-				left / (right - left) + x_,
-				bottom / (top - bottom) + y_,
-				-near)
+			--create result.make(
+			--	left / (right - left) + x_,
+			--	bottom / (top - bottom) + y_,
+			--	-near)
 				
-			result.normaliced	
+			--result.normaliced	
+			
+			result := position_in_space( x_, y_ )
+			result.normaliced
 		end
 		
 	position_in_hud( x_, y_, z_ : DOUBLE ) : Q_VECTOR_2D is
 			-- Gets the position in the hud of a 3d-point (in the huds-
 			-- coordinate system).
 		do
-			create result.make( -x_ / z_ + 0.5, -y_ / z_ + 0.5 )
+			create result.make( (x_ - left) / (right - left) / z_, (y_ - top) / (bottom - top) / z_ )
+		end
+		
+	position_in_space( x_, y_ : DOUBLE ) : Q_VECTOR_3D is
+		do
+			create result.make( left + x_*( right - left ), top + y_ * ( bottom - top ), -near )
+		end	
+		
+	line_hud_to_point( point_ : Q_VECTOR_3D ) : Q_LINE_3D is
+			-- creates a line from the hud to the given point
+		local
+			hud_ : Q_VECTOR_2D
+		do
+			hud_ := position_in_hud( point_.x, point_.y, point_.z )
+			create result.make_vectorized( point_, direction_in_space( hud_.x, hud_.y ))
 		end
 		
 		

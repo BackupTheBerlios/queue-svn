@@ -77,27 +77,72 @@ feature -- Geometric
 			-- at the same position in space. The tolerance_-value tells, how
 			-- great the relative error is allowed to be
 		local
-			ratio_a_, ratio_b_, ratio_c_, ratio_d_, middle_ : DOUBLE
+			ratio_ : DOUBLE
 		do
-			ratio_a_ := a / other_.a
-			ratio_b_ := b / other_.b
-			ratio_c_ := c / other_.c
-			ratio_d_ := d / other_.d
+			ratio_ := 1
 			
-			middle_ := (ratio_a_ + ratio_b_ + ratio_c_ + ratio_d_ ) / 4
+			if a /= 0 then
+				ratio_ := other_.a / a
+			elseif b /= 0 then
+				ratio_ := other_.b / b
+			elseif c /= 0 then
+				ratio_ := other_.c / c
+			elseif d /= 0 then
+				ratio_ := other_.d / d
+			end
 			
-			result :=
-				( middle_ - ratio_a_ ).abs <= (middle_ * tolerance_) and
-				( middle_ - ratio_b_ ).abs <= (middle_ * tolerance_) and
-				( middle_ - ratio_c_ ).abs <= (middle_ * tolerance_) and
-				( middle_ - ratio_d_ ).abs <= (middle_ * tolerance_)
+			result := 
+			 	( a * ratio_ - other_.a ) <= tolerance_ and
+			 	( b * ratio_ - other_.b ) <= tolerance_ and
+			 	( c * ratio_ - other_.c ) <= tolerance_ and
+			 	( d * ratio_ - other_.d ) <= tolerance_ 
 		end
 		
-	cut_distance( position_, direction_ : Q_VECTOR_3D ) : DOUBLE is
+	direction_parallel( direction_ : Q_VECTOR_3D ) : BOOLEAN is
+		do
+			result := direction_parallel_toleranced( direction_, 0 )
+		end
+		
+		
+	direction_parallel_toleranced( direction_ : Q_VECTOR_3D; tolerance_ : DOUBLE ) : BOOLEAN is
+			-- True if the given direction is parallel to this plane. The tolerance is the
+			-- relative failur of the calculation respective to direction_'s length
+		do
+			result :=
+				((direction_.x /= 0) or (direction_.y /= 0) or (direction_.z /= 0) ) and then
+				(a*direction_.x + b*direction_.y + c*direction_.z <= tolerance_*direction_.length)
+		end
+		
+		
+	cut_distance( line_ : Q_LINE_3D ) : DOUBLE is
 			-- "result*direction_+positon_" gives the point in witch this
 			-- plane and the line "position, direction" cuts
+		require
+			not_parellel : not direction_parallel( line_.direction )
 		do
-
+			-- a(p.x + r*d.x) + b(p.y + r*d.y) + c(p.z + r*d.z) + d = 0
+			result := (d - a*line_.position.x - b*line_.position.y - c*line_.position.z) / 
+				(a*line_.direction.x + b*line_.direction.y + c*line_.direction.z)
+		end
+	
+	cut( line_ : Q_LINE_3D ) : Q_VECTOR_3D is
+			-- The point in witch plane and line cuts eatch other
+		local
+			length_ : DOUBLE
+		do
+			length_ := cut_distance( line_ )
+			
+			create result.make_from( line_.direction )
+			result.scaled( length_ )
+			result.add( line_.position )
+		end
+		
+		
+	point_distance( point_ : Q_VECTOR_3D ) : DOUBLE is
+			-- The distanc of a point to this plane. The value is positiv or negatv
+			-- respective to the side of the plane, the point is.
+		do
+			result := (a*point_.x + b*point_.y + c*point_.z + d) / (math.sqrt( a*a + b*b + c*c ))
 		end
 		
 		
@@ -106,11 +151,4 @@ feature {NONE} -- Math
 		once
 			create result
 		end
-		
-	not_a_number : DOUBLE is
-		once
-			
-		end
-		
-		
 end -- class Q_PLANE

@@ -98,6 +98,12 @@ feature -- drawing
 			open_gl.gl.gl_end
 		end
 		
+	visible : BOOLEAN is
+		do
+			result := true
+		end
+		
+	
 feature -- values
 	text : STRING
 		-- String to display

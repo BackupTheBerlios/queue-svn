@@ -10,8 +10,7 @@ inherit
 	redefine
 		make,
 		draw,
-		convert_direction,
-		convert_point
+		enqueue
 	end
 
 creation
@@ -22,11 +21,19 @@ feature{NONE} -- creation
 	do
 		precursor
 		create matrix.identity
-		inverse := matrix.inverted
 	end
 		
 
 feature -- drawing
+	enqueue( queue_ : Q_HUD_QUEUE ) is
+		do
+			queue_.push_matrix
+			queue_.matrix_multiplication( matrix )
+			precursor( queue_ )
+			queue_.pop_matrix
+		end
+		
+
 	draw( open_gl : Q_GL_DRAWABLE ) is
 		do
 			open_gl.gl.gl_push_matrix
@@ -37,7 +44,6 @@ feature -- drawing
 
 feature{NONE} -- Matrix
 	matrix : Q_MATRIX_4X4
-	inverse  : Q_MATRIX_4X4
 
 feature -- Conversion
 	
@@ -46,7 +52,6 @@ feature -- Conversion
 			-- as the transformationmatrix of this container 3d
 		do
 			create matrix.copy( matrix_ )
-			inverse := matrix.inverted
 		end
 		
 	get_matrix : Q_MATRIX_4X4 is
@@ -86,34 +91,5 @@ feature -- Conversion
 			
 			set_matrix( matrix.mul( matrix_ ) )
 		end		
-
-	convert_direction (direction_: Q_VECTOR_3D): Q_VECTOR_3D is
-		do
-			result := inverse.mul_vector_3( direction_ )
-		end
-
-	convert_point (x_, y_: DOUBLE; direction_: Q_VECTOR_3D): Q_VECTOR_2D is
-		local
-			position_, direction_a_, direction_b_ : Q_VECTOR_3D
-			system_ : ARRAY[ DOUBLE ]
-		do
-			create position_.make( 0, 0, 0 )
-			create direction_a_.make( 1, 0, 0 )
-			create direction_b_.make( 0, 1, 0 )
-			
-			position_ := matrix.mul_vector_3_as_4( position_ )
-			direction_a_ := matrix.mul_vector_3( direction_a_ )
-			direction_b_ := matrix.mul_vector_3( direction_b_ )
-			
-			system_ := (create {Q_GEOM_3D}).cut_plane_line_sizes(
-				position_, direction_a_, direction_b_,
-				create {Q_VECTOR_3D}.make( x_ - x, y_ - y, 0 ), direction_ )
-				
-			if system_ = void then
-				create result.make( 0, 0 )
-			else
-				create result.make( system_.item( 1 ), system_.item( 2 ))
-			end
-		end
 
 end -- class Q_HUD_CONTAINER_3D

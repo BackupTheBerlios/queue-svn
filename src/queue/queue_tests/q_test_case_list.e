@@ -39,6 +39,7 @@ feature {NONE} -- creation
 			extend( create {BEN_TIME_TEST} )
 			extend( create {BEN_ROTATING_CONTAINER_TEST}.make )
 			extend( create {BEN_MATERIAL_TEST} )
+			extend( create {BEN_COMPONENT_QUEUE_TEST}.make )
 		end
 
 end -- class Q_TEST_CASE_LIST

@@ -11,7 +11,7 @@ inherit
 		process_key_down,
 		draw_foreground,
 		make,
-		inside_3D
+		enqueue
 	end
 
 creation
@@ -31,23 +31,47 @@ feature {NONE} -- creation
 		
 
 feature -- visualisation
-	draw_foreground( open_gl : Q_GL_DRAWABLE ) is
-		local
-			component_ : Q_HUD_COMPONENT
+	visible : BOOLEAN is
 		do
+			result := false
+		end
+		
+
+	enqueue( queue_ : Q_HUD_QUEUE ) is
+		do
+			precursor( queue_ )
 			from
 				children.start
 			until
 				children.after
 			loop
-				component_ := children.item
+				queue_.push_matrix
+				queue_.translate( children.item.x, children.item.y, 0 )
+				children.item.enqueue( queue_ )
+				queue_.pop_matrix
 				
-				open_gl.gl.gl_translated( component_.x, component_.y, 0 )
-				component_.draw( open_gl )
-				open_gl.gl.gl_translated( -component_.x, -component_.y, 0 )
-
-				children.forth	
+				children.forth
 			end
+		end
+		
+
+	draw_foreground( open_gl : Q_GL_DRAWABLE ) is
+	--	local
+	--		component_ : Q_HUD_COMPONENT
+		do
+	--		from
+	--			children.start
+	--		until
+	--			children.after
+	--		loop
+	--			component_ := children.item
+				
+	--			open_gl.gl.gl_translated( component_.x, component_.y, 0 )
+	--			component_.draw( open_gl )
+	--			open_gl.gl.gl_translated( -component_.x, -component_.y, 0 )
+
+	--			children.forth	
+	--		end
 		end
 
 feature -- eventhandling
@@ -189,48 +213,6 @@ feature -- childs
 			end
 		end
 		
-	inside_3d( x_, y_ : DOUBLE ) : BOOLEAN is
-		do
-			-- there might be some 3d-components, not directly fitting the area...
-			result := true
-		end		
-
-	tree_child_at( x_, y_ : DOUBLE; direction_ : Q_VECTOR_3D ) : Q_HUD_COMPONENT is
-			-- searches the whole tree, until the component under the
-			-- given point is found. "direction_" is the direction under witch 
-			-- more components should be searched, if they are not planar. The direction
-			-- is in the coordinate-system of this component.
-			-- returns this, a child or void
-		local
-			child_ : Q_HUD_COMPONENT
-			container_ : Q_HUD_CONTAINER
-			position_ : Q_VECTOR_2D
-		do
-			from
-				result := void
-				children.start
-			until
-				children.after or (result /= void)
-			loop
-				child_ := children.item
-				position_ := child_.convert_point( x_, y_, direction_ )
-				
-				if child_.inside_3d( position_.x, position_.y ) then
-					container_ ?= child_
-					if container_ /= void then
-						result := container_.tree_child_at( position_.x, position_.y, container_.convert_direction( direction_ ))
-					else
-						result := child_
-					end
-				end
-				children.forth
-			end
-			
-			if result = void and inside_2d( x_, y_ ) then
-				result := current
-			end
-		end
-
 feature{NONE} -- implementation
 	children : ARRAYED_LIST[ Q_HUD_COMPONENT ]
 

@@ -237,7 +237,6 @@ feature -- operations
 				vector_.x * m_21 + vector_.y * m_22 + vector_.z * m_23 + m_24,
 				vector_.x * m_31 + vector_.y * m_32 + vector_.z * m_33 + m_34 )
 		end
-
 		
 	sum, infix "+" (matrix_ : Q_MATRIX_4X4 ) : Q_MATRIX_4X4 is
 			-- Create a new matrix with the sum of this and another matrix

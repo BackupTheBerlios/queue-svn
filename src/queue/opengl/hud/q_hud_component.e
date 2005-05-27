@@ -21,7 +21,17 @@ feature -- creation
 		end
 		
 feature -- drawing
+	enqueue( queue_ : Q_HUD_QUEUE ) is
+			-- Inserts this component into the queue.
+			-- A Container might call some of the matrix-features, and
+			-- a container must call the enqueue-feature of its children
+		do
+			queue_.insert( current )
+		end
+		
+
 	draw( open_gl : Q_GL_DRAWABLE ) is
+			-- draws this, and only this, component.
 		do
 			draw_background( open_gl )
 			draw_foreground( open_gl )
@@ -35,7 +45,7 @@ feature -- drawing
 		
 
 	draw_background( open_gl : Q_GL_DRAWABLE ) is
-		do
+		do			
 			if background /= void then
 				background.set( open_gl )
 
@@ -54,6 +64,14 @@ feature -- eventhandling
 	
 	focusable : BOOLEAN
 		-- tells, if this Component can hold the focus. Only focusable Components will recieve Key-Events
+		
+	visible : BOOLEAN is
+		-- true if the user can see this component (ex. true for Buttons or Textfields),
+		-- false if the user cannot see this component (container or root_pane)
+		-- If a user-visible component is behind a not-visible component, mouse-events will
+		-- first be sent to the user-visible component
+		deferred
+		end
 		
 	focused : BOOLEAN is
 			-- true if this component has the focus
@@ -197,44 +215,11 @@ feature -- Color
 		end
 		
 feature -- 3D
-	inside_2d( x_, y_ : DOUBLE ) : BOOLEAN is
+	inside( x_, y_ : DOUBLE ) : BOOLEAN is
 			-- true, if the point is in the rectangle in witch
 			-- this component is painted.
 		do
 			result := x_ >= 0 and y_ >= 0 and x_ <= width and y_ <= height
-		end
-		
-	inside_3d( x_, y_ : DOUBLE ) : BOOLEAN is
-			-- true, if the point is in the rectangle in witch
-			-- this component is painted, or else true if the
-			-- point might be in the box, in witch 3-dimensional 
-			-- parts of this component lies.
-			-- The following must hold: 
-			--		"Point is in Box" implies "inside_3d = true"
-			-- the other way is not necessary, and just saying 
-			-- "result := true" is a correct implementation.
-		do
-			result := inside_2d( x_, y_ )
-		end
-		
-		
-	convert_direction( direction_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
-			-- Convertes a direction from the parents-coordinatesystem
-			-- to the system of this component
-		do
-			result := direction_
-		end
-		
-	
-	convert_point( x_, y_ : DOUBLE; direction_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
-			-- Convertes a given point on the parent-component into a
-			-- point on this component
-			-- x_, y_ is the position of the point on the parent,
-			-- direction_ is the direction of the mouse-line in the parents-coordinatesystem
-		do
-			create result
-			result.set_x( x_ - x )
-			result.set_y( y_ - y )
 		end
 		
 feature -- position and size

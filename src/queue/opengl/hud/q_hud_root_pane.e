@@ -28,7 +28,7 @@ feature{NONE} -- creation
 		end
 		
 	
-feature
+feature -- root and top
 	is_toplevel : BOOLEAN is true
 
 	root_pane : Q_HUD_ROOT_PANE is
@@ -51,32 +51,14 @@ feature -- Eventhandling
 		
 	selected_component : Q_HUD_COMPONENT
 		-- the component witch is selected by the mouse. If it is a focusable component, its the same as focused_component
-		
+	
+	components_under_mouse : ARRAYED_LIST[ Q_HUD_COMPONENT ]
+		-- all components witch were under the mouse, when it was pressed
+	
 	mouse_button_pressed : BOOLEAN
 		-- mouse buttons witch are currently pressed
 	
 	unused_events : Q_EVENT_QUEUE
-	
-	mouse_direction( x_, y_ : DOUBLE ) : Q_VECTOR_3D is
-			-- Gives the direction in witch the mouse points at the location x_/y_
-		do
-			if root = void then
-				create result.make( 0, 0, -1 )
-			else
-				result := root.direction_in_hud( x_, y_ )
-			end
-		end
-		
-	position_of_mouse( x_, y_, z_ : DOUBLE ) : Q_VECTOR_2D is
-			-- Gives the position of the mouse, so the mouse is over a point in the hud
-		do
-			if root = void then
-				create result.make( 0, 0 )
-			else
-				result := root.position_in_hud( x_, y_, z_ )
-			end
-		end
-		
 	
 	request_focused_component( component_ : Q_HUD_COMPONENT ) is
 			-- Tries to set the given component as the component with the focus.
@@ -208,71 +190,51 @@ feature -- Eventhandling
 
 	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; screen_width_, screen_height_ : INTEGER ) : BOOLEAN is
 		local
-			component_ : Q_HUD_COMPONENT
-			
-			mouse_positions_ : STACK[ Q_VECTOR_2D ]
-			mouse_ : Q_VECTOR_2D
-			
 			x_, y_ : DOUBLE
-		do
-			-- relative position of the mouse
+			component_ : Q_HUD_COMPONENT
+			mouse_ : Q_VECTOR_2D
+		do			
 			x_ := event_.proportional_position.x / screen_width_
 			y_ := event_.proportional_position.y / screen_height_
-			
-			-- if no button was pressed: find component, and set the focus		
+	
+			-- perhaps another component must be selected
 			if not mouse_button_pressed then
 				component_select_and_focus( x_, y_ )
-			end
-
-			-- ensure selected component is enabled and child of this container
-			ensure_selected_component
-
-			-- send the event			
-			if selected_component /= void then
-				mouse_positions_ := mouse_positions(
-					x_, y_,	selected_component )				
-				
-				result := false
+				create_components_under_mouse_stack( x_, y_, selected_component )
 				mouse_button_pressed := true
-				
+			end
+		
+			-- ensure, the selected component is still enabled
+			ensure_selected_component
+			result := false
+		
+			if selected_component /= void then
 				from
-					component_ := selected_component				
+					components_under_mouse.start
 				until
-					component_ = void
+					result or components_under_mouse.after
 				loop
-					mouse_ := mouse_positions_.item
-					mouse_positions_.remove
-					
+					component_ := components_under_mouse.item
+				
 					if component_.enabled then
-						if component_.process_mouse_button_down ( event_, mouse_.x, mouse_.y ) 
-								or not component_.lightweight then
-									
-							component_ := void
+						mouse_ := absolut_location( x_, y_, component_ )
+						result := component_.process_mouse_button_down( event_, mouse_.x, mouse_.y )
+						if not result and not component_.lightweight then
 							result := true
-						else
-							component_ := component_.parent
-						end
-					else
-						if component_.lightweight then
-							component_ := component_.parent
-						else
-							component_ := void
-							result := true
-						end
+						end	
 					end
-				end
-			else
-				mouse_button_pressed := false
-				result := false
+				
+					components_under_mouse.forth
+				end			
 			end
 		end
-		
-		
+
 	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; screen_width_, screen_height_ : INTEGER ) : BOOLEAN is
 		local
 			component_ : Q_HUD_COMPONENT
 			mouse_ : Q_VECTOR_2D
-			mouse_positions_ : STACK[ Q_VECTOR_2D ]
+			
+			x_, y_ : DOUBLE
 		do
 			-- ensure, the selected component is still enabled
 			ensure_selected_component			
@@ -280,276 +242,274 @@ feature -- Eventhandling
 			result := false
 
 			if selected_component /= void then
-				mouse_positions_ := mouse_positions ( 
-					event_.proportional_position.x / screen_width_,
-					event_.proportional_position.y / screen_height_,
-					selected_component )
+				x_ := event_.proportional_position.x / screen_width_
+				y_ := event_.proportional_position.y / screen_height_
 				
 				from
-					component_ := selected_component
+					components_under_mouse.start
 				until
-					component_ = void
+					result or components_under_mouse.after
 				loop
-					mouse_ := mouse_positions_.item
-					mouse_positions_.remove
+					component_ := components_under_mouse.item
 					
 					if component_.enabled then
-						if component_.process_mouse_button_up ( event_, mouse_.x, mouse_.y ) or not component_.lightweight then
-							component_ := void
-							result := true
-						else
-							component_ := component_.parent
-						end
-					else
-						if component_.lightweight then
-							component_ := component_.parent							
-						else
-							component_ := void
+						mouse_ := absolut_location( x_, y_, component_ )
+						result := component_.process_mouse_button_up( event_, mouse_.x, mouse_.y )
+						if not result and not component_.lightweight then
 							result := true
 						end
 					end
+					
+					components_under_mouse.forth
 				end
+				
+				components_under_mouse := void
 			end
+			component_select( x_, y_ )
 		end
 		
 	process_mouse_motion( event_ : ESDL_MOUSEMOTION_EVENT; screen_width_, screen_height_ : INTEGER ) : BOOLEAN is
 		local
+			mouse_ : Q_VECTOR_2D
 			component_ : Q_HUD_COMPONENT
 			x_, y_ : DOUBLE
 			
-			mouse_ : Q_VECTOR_2D
-			mouse_positions_ : STACK[ Q_VECTOR_2D ]
-		do			
+			found_ : Q_HUD_QUEUE_SEARCH_RESULT
+		do
 			x_ := event_.proportional_position.x / screen_width_
 			y_ := event_.proportional_position.y / screen_height_
-		
-			-- perhaps another component must be selected
-			if not mouse_button_pressed then
-				component_select( x_, y_ )
-			end
 			
-			-- ensure, the selected component is still enabled
-			ensure_selected_component
-			result := false
-			
-			if selected_component /= void then	
-				mouse_positions_ := mouse_positions( x_, y_, selected_component ) 
-
+			if mouse_button_pressed then
 				from
-					component_ := selected_component
+					components_under_mouse.start
 				until
-					component_ = void
+					result or components_under_mouse.after
 				loop
-					mouse_ := mouse_positions_.item
-					mouse_positions_.remove
+					component_ := components_under_mouse.item
 					
 					if component_.enabled then
-						if component_.process_mouse_moved( event_, mouse_.x, mouse_.y ) or not component_.lightweight then
-							component_ := void
-							result := true
-						else
-							component_ := component_.parent
-						end
-					else
-						if component_.lightweight then
-							component_ := component_.parent							
-						else
-							component_ := void
+						mouse_ := absolut_location( x_, y_, component_ )
+						result := component_.process_mouse_moved( event_, mouse_.x, mouse_.y )
+						if not result and not component_.lightweight then
 							result := true
 						end
 					end
-				end	
+					
+					components_under_mouse.forth
+				end
+			else
+				component_select( x_, y_ )
+				
+				if selected_component /= void then
+					from
+						found_ := search_component_at( x_, y_, true, false, 
+							true, queue.index_of_component( selected_component ), false )
+					until
+						result or found_ = void
+					loop
+						component_ := found_.component
+						result := component_.process_mouse_moved( event_, found_.position.x, found_.position.y )
+						if not result and not component_.lightweight then
+							result := true
+						else
+							found_ := search_component_at( x_, y_, true, false,
+								true, found_.index, true )
+						end
+					end
+				end
 			end
 		end			
 	
-	mouse_positions( x_, y_ : DOUBLE; component__ : Q_HUD_COMPONENT ) : STACK[ Q_VECTOR_2D ] is
-			-- Calculates the position of the mouse for all components.
-			-- the top-component will be "component_", and the base will be "current"
-		local
-			components_ : STACK[ Q_HUD_COMPONENT ]
-			component_ : Q_HUD_COMPONENT
+removed( component_ : Q_HUD_COMPONENT ) is
+	-- called from the container, if a component is removed
 
-			vector_ : Q_VECTOR_2D
-			direction_ : Q_VECTOR_3D
-		do
-			components_ := create {ARRAYED_STACK[ Q_HUD_COMPONENT ]}.make( 5 )
-			
-			from
-				component_ := component__
-			until
-				component_ = current
-			loop
-				components_.put( component_ )
-				component_ := component_.parent
+	local
+		child_ : Q_HUD_COMPONENT
+	do
+		from child_ := component_ until child_ = void loop
+			if child_ = selected_component then
+				selected_component := void
 			end
 			
-			result := create {ARRAYED_STACK[ Q_VECTOR_2D ]}.make( components_.count+1 )
-			result.put( create {Q_VECTOR_2D}.make( x_, y_ ) )
-			
-			from
-				direction_ := mouse_direction( x_, y_ )
-			until
-				components_.is_empty
-			loop
-				component_ := components_.item
-				components_.remove
-				vector_ := result.item
-				
-				result.put( component_.convert_point( vector_.x, vector_.y, direction_ ) )
-				direction_ := component_.convert_direction( direction_ )
-			end
-		end
-		
-	removed( component_ : Q_HUD_COMPONENT ) is
-		-- called from the container, if a component is removed
-	
-		local
-			child_ : Q_HUD_COMPONENT
-		do
-			from child_ := component_ until child_ = void loop
-				if child_ = selected_component then
-					selected_component := void
-				end
-				
-				if child_ = focused_component then
-					focused_component := void
-				end
-				
-				child_ := child_.parent
-			end
-			
-			if selected_component /= void then
-				from child_ := selected_component until child_ = void loop
-					if child_ = component_ then
-						selected_component := void
-					end
-					child_ := child_.parent
-				end
-			end
-			
-			if focused_component /= void then
-				from child_ := focused_component until child_ = void loop
-					if child_ = component_ then
-						selected_component := void
-					end
-					child_ := child_.parent
-				end
-			end
-		end
-		
-	
-feature{NONE} -- assistants
-	absolut_location( x_, y_ : DOUBLE; child__ : Q_HUD_COMPONENT ) : Q_VECTOR_2D is
-		local
-			stack_ : STACK[ Q_HUD_COMPONENT ]
-			child_ : Q_HUD_COMPONENT
-			
-			direction_ : Q_VECTOR_3D
-			location_ : Q_VECTOR_2D
-		do
-			child_ := child__
-			
-			stack_ := create {ARRAYED_STACK[ Q_HUD_COMPONENT ]}.make( 10 )
-			
-			from
-				
-			until
-				child_ = current
-			loop
-				stack_.put( child_ )
-				child_ := child_.parent
-			end
-			
-			-- now the path from this location to the child is saved
-			
-			from
-				create location_.make( x_, y_ )
-				direction_ := mouse_direction( x_, y_ )
-			until
-				stack_.is_empty
-			loop
-				location_ := stack_.item.convert_point( location_.x, location_.y, direction_ )
-				direction_ := stack_.item.convert_direction( direction_ )
-				
-				stack_.remove
-			end
-			
-			result := location_
-		end
-		
-
-	component_select( x_, y_ : DOUBLE ) is
-		local
-			old_selected_component_ : Q_HUD_COMPONENT
-			location_ : Q_VECTOR_2D
-		do
-			from
-				old_selected_component_ := selected_component
-				selected_component := tree_child_at( x_, y_, mouse_direction( x_, y_ ))	
-			until
-				selected_component = void or else selected_component.enabled
-			loop
-				selected_component := selected_component.parent
-					
-				if selected_component /= void and then 
-						(not selected_component.enabled and 
-						 not selected_component.lightweight ) then
-						 	
-					selected_component := void
-				end
-			end
-			
-			if old_selected_component_ /= selected_component then
-				if old_selected_component_ /= void then
-					location_ := absolut_location( x_, y_, old_selected_component_ )
-					old_selected_component_.process_mouse_exit( location_.x, location_.y )
-				end
-				
-				if selected_component /= void then
-					location_ := absolut_location(x_, y_, selected_component )
-					selected_component.process_mouse_enter( location_.x, location_.y )
-				end
-			end
-		end
-		
-
-	component_select_and_focus( x_, y_ : DOUBLE ) is
-		do
-			component_select( x_, y_ )
-			
-			if selected_component = void then
+			if child_ = focused_component then
 				focused_component := void
-			else
-				from
-					focused_component := selected_component
-				until
-					focused_component = void or else focused_component.focusable
-				loop
-					focused_component := focused_component.parent
-				end
 			end
+			
+			child_ := child_.parent
 		end
 		
-
-	ensure_focused_component is
-		do
-			if focused_component /= void then
-				if focused_component.root_pane /= current or
-						not focused_component.focusable	then
-					focused_component := void
-				end
-			end
-		end
-		
-	ensure_selected_component is
-		do
-			if selected_component /= void then
-				if selected_component.root_pane /= current or
-						not selected_component.enabled	then
+		if selected_component /= void then
+			from child_ := selected_component until child_ = void loop
+				if child_ = component_ then
 					selected_component := void
 				end
+				child_ := child_.parent
 			end
 		end
 		
+		if focused_component /= void then
+			from child_ := focused_component until child_ = void loop
+				if child_ = component_ then
+					selected_component := void
+				end
+				child_ := child_.parent
+			end
+		end
+	end
+	
+
+feature -- Drawing
+queue : Q_HUD_QUEUE
+
+reset_queue is
+		-- Recreates the queue of all components
+	do
+		create queue.make( current )
+	end
+	
+
+feature{NONE} -- assistants
+
+search_component_at( x_, y_ : DOUBLE; enabled_, focusable_, lightweight_ : BOOLEAN; index__ : INTEGER; jump_ : BOOLEAN ) : Q_HUD_QUEUE_SEARCH_RESULT is
+		-- Searches the first component under the position x/y on the screen.
+		-- If enabled_ and/or focusable_ is set to true, the component must be
+		-- enabled and/or focusable. Otherwise this value is ignored.
+		-- If lightweight_ ist set to true, the search will stop if a non-lightweight component
+		-- is found (and has not the given abbilities).
+		-- index__ is the component befor the first component in the queue,
+		-- witch should be tested (= the last found component)
+	local
+		found_ : Q_HUD_QUEUE_SEARCH_RESULT
+		index_ : INTEGER
+		component_ : Q_HUD_COMPONENT
+		
+		mouse_ : Q_LINE_3D
+	do
+		create mouse_.make_vectorized( root.position_in_space( x_, y_ ), root.direction_in_space( x_, y_ ))
+		
+		from
+			index_ := index__
+			found_ := queue.next_component_on( mouse_, index_, jump_ )
+		until
+			result /= void or found_ = void
+		loop
+			index_ := found_.index
+			component_ := found_.component
+			
+			if (enabled_ implies component_.enabled) and
+			   (focusable_ implies component_.focusable) then
+				result := found_
+			elseif lightweight_ and not component_.lightweight then
+				found_ := void
+			else
+				found_ := queue.next_component_on( mouse_, index_, true )
+			end
+		end
+	end
+	
+create_components_under_mouse_stack( x_, y_ : DOUBLE; component_ : Q_HUD_COMPONENT ) is
+		-- creates the stack with all components who are under the mouseposition x/y
+		-- and behind component
+	local
+		found_ : Q_HUD_QUEUE_SEARCH_RESULT
+		line_ : Q_LINE_3D
+		index_ : INTEGER
+	do
+		create components_under_mouse.make( 10 )
+		create line_.make_vectorized( root.position_in_space( x_, y_ ), root.direction_in_space( x_, y_ ))
+		
+		from
+			index_ := queue.index_of_component( component_ )
+			found_ := queue.next_component_on( line_, index_, true )
+			components_under_mouse.extend( component_ )
+		until
+			found_ = void
+		loop
+			components_under_mouse.extend( found_.component )
+			found_ := queue.next_component_on( line_, found_.index, true )
+		end
+	end
+	
+
+absolut_location( x_, y_ : DOUBLE; component_ : Q_HUD_COMPONENT ) : Q_VECTOR_2D is
+	do
+		result := queue.cut( 
+			create {Q_LINE_3D}.make_vectorized( root.position_in_space ( x_, y_ ),
+				root.direction_in_space( x_, y_ )), component_ )
+	end
+	
+
+component_select( x_, y_ : DOUBLE ) is
+	local
+		found_ : Q_HUD_QUEUE_SEARCH_RESULT
+		old_selected_component_ : Q_HUD_COMPONENT
+		location_ : Q_VECTOR_2D
+	do			
+		old_selected_component_ := selected_component
+		found_ := search_component_at( x_, y_, true, false, true, 0, false )
+		
+		if found_ = void then
+			selected_component := void
+		else
+			selected_component := found_.component
+		end
+		
+		if old_selected_component_ /= selected_component then
+			if old_selected_component_ /= void then
+				location_ := absolut_location( x_, y_, old_selected_component_ )
+				if location_ /= void then
+					old_selected_component_.process_mouse_exit( location_.x, location_.y )					
+				end
+			end
+			
+			if selected_component /= void then
+				location_ := found_.position
+				selected_component.process_mouse_enter( location_.x, location_.y )
+			end
+		end
+	end
+
+component_select_and_focus( x_, y_ : DOUBLE ) is
+	local
+		index_ : INTEGER
+		found_ : Q_HUD_QUEUE_SEARCH_RESULT
+	do
+		component_select( x_, y_ )
+	
+		if selected_component = void then
+			focused_component := void
+		else
+			index_ := queue.index_of_component( selected_component )
+			found_ := search_component_at( x_, y_, true, true, true, index_, false )
+			
+			if found_ /= void then
+				focused_component := found_.component
+			else
+				focused_component := void
+			end
+		end
+	end
+	
+
+ensure_focused_component is
+	do
+		if focused_component /= void then
+			if focused_component.root_pane /= current or
+					not focused_component.focusable	then
+				focused_component := void
+			end
+		end
+	end
+	
+ensure_selected_component is
+	do
+		if selected_component /= void then
+			if selected_component.root_pane /= current or
+					not selected_component.enabled	then
+				selected_component := void
+			end
+		end
+	end
+	
 
 end -- class Q_HUD_ROOT_PANE

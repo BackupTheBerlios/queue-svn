@@ -8,6 +8,20 @@ class
 inherit
 	DOUBLE_MATH
 	
+feature -- number
+	positive_infinity : DOUBLE is
+			-- because EIFFEL does not support the IEEE-Standard, this is the greatest possible DOUBLE
+		once
+			result := 10^256
+		end
+		
+	negaive_infinity : DOUBLE is
+			-- because EIFFEL does not support the IEEE-Standard, this is the smalest possible DOUBLE
+		once
+			result := -(10^256)
+		end
+	
+	
 feature -- math
 	gauss_changing( system_ : ARRAY2[ DOUBLE ]; b_ : ARRAY[ DOUBLE ] ) : ARRAY[ DOUBLE ] is
 			-- Solves the system "system_*result = b_"
