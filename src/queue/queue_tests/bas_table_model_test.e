@@ -26,7 +26,7 @@ feature
 			create table_model.make_from_file ("model/pool.ase")
 			create group.make
 			
-			group.force(table_model.model)
+			group.force(table_model)
 			
 			create light_1.make( 0 )
 			create light_2.make( 1 )
