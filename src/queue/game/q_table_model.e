@@ -21,10 +21,14 @@ feature -- Interface
 		-- paint the table
 	do
 		model.draw (open_gl)
+		--shapes.draw (open_gl)
 	end
 	
 	model : Q_GL_GROUP[Q_GL_MODEL]
 		-- the model
+		
+	shapes : Q_GL_GROUP[Q_GL_OBJECT]
+		-- bounding shapes
 
 feature {NONE} -- Implementation
 	make_from_file (file_name_: STRING) is
@@ -35,7 +39,7 @@ feature {NONE} -- Implementation
 			tok_ : STRING_TOKENIZER
 			extension_ : STRING
 			
-			loader : Q_GL_3D_LOADER
+			loader : Q_GL_3D_ASE_LOADER
 		do
 			create tok_.make (file_name_, ".")
 			
@@ -47,6 +51,8 @@ feature {NONE} -- Implementation
 			
 			loader.load_file (file_name_)
 			model := loader.create_flat_model
+			
+			shapes := loader.create_shapes
 		end
 		
 

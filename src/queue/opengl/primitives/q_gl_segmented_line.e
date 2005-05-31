@@ -9,16 +9,19 @@ class
 
 inherit
 	Q_GL_OBJECT
+	undefine
+		copy
+	end
 	
 	ARRAY[Q_VECTOR_3D]
-	rename make as make_array
+	rename 
+		make as make_array
 	undefine
-		copy,
 		is_equal
 	end
 
 create
-	make, make_with_material
+	make, make_with_material, make_from_array_with_material
 
 feature {NONE} -- contructors
 	make (lower_, upper_ : INTEGER) is
@@ -27,6 +30,29 @@ feature {NONE} -- contructors
 			make_array (lower_, upper_)
 			
 			create material.make_empty
+		end
+		
+	make_from_array_with_material (arr_ : ARRAY[Q_VECTOR_3D]; material_ : Q_GL_MATERIAL) is
+			-- make a segmented line from a array of points.
+		require
+			arr_ /= void
+			material_ /= void
+		local
+			index_ : INTEGER
+		do
+			make_array (arr_.lower, arr_.upper)
+			
+			from
+				index_ := lower
+			until
+				index_ > upper
+			loop
+				put (arr_.item (index_), index_)
+				
+				index_ := index_ + 1
+			end
+			
+			material := material_
 		end
 		
 	make_with_material (lower_, upper_ : INTEGER; material_ : Q_GL_MATERIAL) is
@@ -56,6 +82,7 @@ feature
 				index_ > upper
 			loop
 				gl.gl_vertex3d (item (index_).x, item (index_).y, item (index_).z)
+				index_ := index_ + 1
 			end
 			
 			gl.gl_end

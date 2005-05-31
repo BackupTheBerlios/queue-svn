@@ -227,44 +227,4 @@ feature {NONE} -- implementation
 			result.put (tex_coords_, 2)
 			result.put (normals_, 3)
 		end
-
-	--vector_count: INTEGER
-			-- number of vertices
-	
-	--normal_count: INTEGER
-			-- number of normals
-	
-	--texture_coordinate_count: INTEGER
-			-- number texture coordinates
-			
-	--has_vectors: BOOLEAN
-		-- indicate if the file has vectors
-	
-	--has_normals: BOOLEAN
-		-- indicate if the file has normals
-		
-	--has_texture_cooridnates: BOOLEAN
-		-- indicate if the file has texture_coordinates
-	
-	--face_count: INTEGER
-			-- number of faces
-
-	--vectors: ARRAY[ARRAY[DOUBLE]]
-			-- Array with all vertices
-			
-	--normals: ARRAY[ARRAY[DOUBLE]]
-			-- Array with all normals
-			
-	--texture_coordinates: ARRAY[ARRAY[DOUBLE]]
-			-- Array with all texture coordinates
-
-	--faces: ARRAY[
-	--			 TUPLE[
-	--				   ARRAY[INTEGER],
-	--				   ARRAY[INTEGER],
-	--				   ARRAY[INTEGER]
-	--				  ]
-	--			 ]
-			-- Faces, described by indizes to the vertices,
-			-- texture coordinates and normals
 end

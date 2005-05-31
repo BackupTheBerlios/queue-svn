@@ -27,9 +27,9 @@ feature  -- Commands
 			-- Load an object from 'a_filename'
 		local
 			ase_file_: PLAIN_TEXT_FILE
-			tokenizer_: STRING_TOKENIZER
+			scanner: Q_TEXT_SCANNER
 		do
-			create tokenizer_.make ("", " ")
+			create scanner.make_from_string_with_delimiters ("", " %T")
 
 			create ase_file_.make_open_read (a_filename)
 			-- read line for line
@@ -40,31 +40,23 @@ feature  -- Commands
 			loop				
 				if not ase_file_.last_string.is_empty then
 					
-					tokenizer_.make (ase_file_.last_string, " %T")
+					scanner.set_source_string (ase_file_.last_string)
+					scanner.read_token
 					
-					-- set the iterator
-					tokenizer_.start
-					
-					if tokenizer_.item.is_equal ("*COMMENT") then
-						tokenizer_.forth
-						read_comment (tokenizer_)					
-					elseif tokenizer_.item.is_equal ("*3DSMAX_ASCIIEXPORT") then
-						tokenizer_.forth
-						file_version := tokenizer_.item.to_integer
-					elseif tokenizer_.item.is_equal ("*SCENE") then
+					if scanner.last_string.is_equal ("*COMMENT") then
+					elseif scanner.last_string.is_equal ("*3DSMAX_ASCIIEXPORT") then
+						scanner.read_token
+						file_version := scanner.last_string.to_integer
+					elseif scanner.last_string.is_equal ("*SCENE") then
 						-- ignore those for the moment
 						read_subclause(ase_file_)
-					elseif tokenizer_.item.is_equal ("*MATERIAL_LIST") then
+					elseif scanner.last_string.is_equal ("*MATERIAL_LIST") then
 						-- ignore those for the moment
 						read_subclause(ase_file_)
-					elseif tokenizer_.item.is_equal ("*SHAPEOBJECT") then
+					elseif scanner.last_string.is_equal ("*SHAPEOBJECT") then
 						read_shape_object(ase_file_)				
-					elseif tokenizer_.item.is_equal ("*GEOMOBJECT") then
+					elseif scanner.last_string.is_equal ("*GEOMOBJECT") then
 						read_geometric_object(ase_file_)				
-					else
-						-- a not recognized line
-						io.put_string (ase_file_.last_string)
-						io.put_new_line
 					end
 				end
 				
@@ -93,24 +85,27 @@ feature  -- Commands
 		do
 		end
 		
-feature {NONE} -- Implementation
-	read_comment(input_: STRING_TOKENIZER) is
-			-- reads a comment, and dumps it :)
-			-- if anyone really wants them rewrite this.
+	create_shapes : Q_GL_GROUP[Q_GL_OBJECT] is
+		local
+			index_:INTEGER
 		do
+			create result.make
 			from
+				index_ := shape_objects.lower
 			until
-				input_.off
+				index_ > shape_objects.upper
 			loop
-				input_.forth
+				result.extend( shape_objects.item(index_).create_primitve )
+				
+				index_ := index_ + 1
 			end
 		end
 		
+feature {NONE} -- Implementation
 		
 	read_subclause(file_: PLAIN_TEXT_FILE) is
 			-- reads a subclause and discards it
 		local
-			tok_ : STRING_TOKENIZER
 			off_ : BOOLEAN
 		do
 			from
@@ -118,11 +113,10 @@ feature {NONE} -- Implementation
 			until
 				file_.after or off_
 			loop
-				create tok_.make (file_.last_string, " %T")
-				if tok_.i_th (tok_.count).is_equal ("{") then
+				if file_.last_string.has ('{') then
 					read_subclause (file_)
 					file_.read_line
-				elseif tok_.i_th (tok_.count).is_equal ("}") then
+				elseif file_.last_string.has ('}') then
 					off_ := True
 				else
 					file_.read_line
