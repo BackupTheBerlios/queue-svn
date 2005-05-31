@@ -263,7 +263,7 @@ feature -- Eventhandling
 					components_under_mouse.forth
 				end
 				
-				components_under_mouse := void
+				--components_under_mouse := void
 			end
 			component_select( x_, y_ )
 		end

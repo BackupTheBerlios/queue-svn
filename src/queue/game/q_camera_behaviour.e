@@ -1,5 +1,5 @@
 indexing
-	description: "A description, how the camera does behave. Instances of this class could be sent to the Q_GL_ROOT"
+	description: "A description, how the camera does behave. Instances of this class could be sent to the Q_HUD_NAVIGATION_PANE"
 	author: "Benjamin Sigg"
 
 deferred class
@@ -14,6 +14,13 @@ feature -- camera
 			-- A void-value means, that no camera should be influenced
 		do
 			camera := camera_
+		end
+		
+	update is
+			-- Called all few milliseconds. The Behaviour can
+			-- change the position of the camera.
+		do
+			-- nothing
 		end
 		
 

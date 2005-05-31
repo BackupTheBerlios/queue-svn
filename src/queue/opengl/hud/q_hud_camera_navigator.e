@@ -16,7 +16,8 @@ inherit
 		process_mouse_exit,
 		process_key_down,
 		process_key_up,
-		make
+		make,
+		draw
 	end
 	
 creation
@@ -61,6 +62,14 @@ feature -- camera
 			end
 			
 			behaviour := behaviour_
+		end
+		
+	draw( open_gl : Q_GL_DRAWABLE ) is
+		do
+			precursor( open_gl )
+			if behaviour /= void then
+				behaviour.update
+			end
 		end
 		
 	
