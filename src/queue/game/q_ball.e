@@ -22,6 +22,7 @@ feature {NONE} -- create
 			bounding_object := bounding_circle
 		end
 		
+	
 	make (center_: Q_VECTOR_2D; radius_: DOUBLE) is
 			-- Create new ball.
 		require
@@ -39,6 +40,27 @@ feature -- interface
 	number: INTEGER -- the number of the ball, 0 is the white ball
 	owner : Q_PLAYER -- the owner of the ball, null if no owner yet specified
 
+
+	set_color(color_:INTEGER) is
+			-- Set the color of the ball
+		require
+		do
+			color := color_
+		end
+		
+	set_number (number_: INTEGER) is
+			-- Set the number of the ball (if used)
+		require
+			number_>= 0
+		do
+			number := number_
+		end
+		
+	set_owner(owner_: Q_PLAYER) is
+			-- Set the owner of the ball (null means that the ball belongs to nobody yet)
+		do
+			owner := owner_
+		end
 
 	update_position (step: DOUBLE) is
 			-- Update object position for one time step (given in ms).

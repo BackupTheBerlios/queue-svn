@@ -14,8 +14,10 @@ feature -- create
 			-- Creates table.
 		require
 			balls_exist: balls_ /= Void
-			banks_exist: banks_ /= Void
-			banks_exist: banks_ /= Void
+			
+			-- hackers: commented out for testing purposes
+			--banks_exist: banks_ /= Void
+			--banks_exist: banks_ /= Void
 		do
 			balls := balls_
 			banks := banks_
@@ -33,6 +35,12 @@ feature -- interface
 		
 	holes:ARRAY[Q_HOLE]
 		-- All holes of the table
+		
+	width: REAL
+		-- The width of the table
+	
+	height: REAL
+		-- The height of the table
 	
 	set_balls (balls_: ARRAY[Q_BALL]) is
 			-- Set balls.
@@ -70,7 +78,8 @@ feature {NONE} -- implementation
 
 invariant
 	balls_exist: balls /= Void
-	banks_exist: banks /= Void
+	-- hackers: commented out for testing purposes 
+	--banks_exist: banks /= Void
 
 -- ace: commented out for testing purposes (no holes yet!)
 			

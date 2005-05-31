@@ -23,7 +23,7 @@ feature -- Interface
 		end
 		
 	table: Q_TABLE is
-			-- creates/returns the opening table for this game mode, all balls are in a triangle, the white is set at the head of table
+			-- creates/returns the opening table for this game mode, all balls are in a triangle, the white is set at the head of the table
 		local
 			balls_: ARRAY[Q_BALL]
 			banks_: ARRAY[Q_BANK]
@@ -31,24 +31,159 @@ feature -- Interface
 			ball_ : Q_BALL
 			bank_ : Q_BANK
 			hole_ : Q_HOLE
-			i : INTEGER
+			i,x,y,nr : INTEGER
+			rand_ : RANDOM
+			center_ : Q_VECTOR_2D
+			used_integers : LINKED_LIST[INTEGER]
 		do
+			-- build positions
+			create used_integers.make
+			
 			-- create the balls
+			create balls_.make (0,15)
 			
 			-- create the white ball
 			create ball_.make_empty
-			-- create the full balls 1-7
-			from
-				i := 1
-			until
-				i = 7
-			loop
-				
-				i := i+1
-			end
+			ball_.set_number (white_number)
+			ball_.set_center (head_point)		
+			balls_.force (ball_,white_number)
+			used_integers.force (white_number)
 			-- create the 8 (black) ball
+			ball_ := ball_.twin
+			ball_.set_number(8)
+			create center_.make(root_point.x+0.866025*(4*ball_radius),root_point.y)
+			ball_.set_center (center_)
+			balls_.force (ball_,8)
+			used_integers.force (8)
 			
-			-- create the half balls 9-15
+			-- create left rack
+			ball_ := ball_.twin			
+			from
+			until
+				not used_integers.has (nr)
+			loop				
+				nr := random_range(1,15)
+			end
+			ball_.set_number (nr)
+			center_ := center_.twin
+			center_.set_x_y (root_point.x+0.866025*(8*ball_radius), root_point.y-4*ball_radius)
+			ball_.set_center(center_)
+			balls_.force (ball_,nr)
+			used_integers.force(nr)
+			
+			-- create right rack
+			ball_ := ball_.twin	
+			if nr <8 then
+				nr := random_range(9,15)
+			else
+				nr := random_range(1,7)
+			end
+			ball_.set_number (nr)
+			center_ := center_.twin
+			center_.set_x_y(root_point.x+0.866025*(8*ball_radius), root_point.y+4*ball_radius)
+			ball_.set_center(center_)
+			balls_.force (ball_,nr)
+			used_integers.force(nr)
+			
+			-- create the last line
+			from
+				y := -2
+			until
+				y > 2
+			loop
+				ball_ := ball_.twin				
+				from
+				until
+					not used_integers.has (nr)
+				loop				
+					nr := random_range(1,15)
+				end
+				ball_.set_number (nr)
+				center_ := center_.twin
+				center_.set_x_y(root_point.x+0.866025*(8*ball_radius), root_point.y+(y*ball_radius))
+				ball_.set_center(center_)
+				used_integers.force(nr)
+				balls_.force (ball_,nr)
+				y := y +2
+			end
+			-- create the second last line
+			from
+				y := -3
+			until
+				y > 3
+			loop
+				ball_ := ball_.twin				
+				from
+				until
+					not used_integers.has (nr)
+				loop				
+					nr := random_range(1,15)
+				end
+				ball_.set_number (nr)
+				center_ := center_.twin
+				center_.set_x_y(root_point.x+0.866025*(6*ball_radius), root_point.y+(y*ball_radius))
+				ball_.set_center(center_)
+				used_integers.force(nr)
+				balls_.force (ball_,nr)
+				y := y +2
+			end
+			-- create the middle line
+			from
+				y := -2
+			until
+				y > 2
+			loop
+				ball_ := ball_.twin				
+				from
+				until
+					not used_integers.has (nr)
+				loop				
+					nr := random_range(1,15)
+				end
+				ball_.set_number (nr)
+				center_ := center_.twin
+				center_.set_x_y(root_point.x+0.866025*(4*ball_radius), root_point.y+(y*ball_radius))
+				ball_.set_center(center_)
+				used_integers.force(nr)
+				balls_.force (ball_,nr)
+				y := y +4 -- skip the black ball
+			end
+			-- create the second line
+			from
+				y := -1
+			until
+				y > 1
+			loop
+				ball_ := ball_.twin				
+				from
+				until
+					not used_integers.has (nr)
+				loop				
+					nr := random_range(1,15)
+				end
+				ball_.set_number (nr)
+				center_ := center_.twin
+				center_.set_x_y(root_point.x+0.866025*(2*ball_radius), root_point.y+(y*ball_radius))
+				ball_.set_center(center_)
+				used_integers.force(nr)
+				balls_.force (ball_,nr)
+				y := y +2
+			end
+			-- create first ball
+			ball_ := ball_.twin				
+			from
+			until
+				not used_integers.has (nr)
+			loop				
+				nr := random_range(1,15)
+			end
+			ball_.set_number (nr)
+			center_ := center_.twin
+			center_.set_x_y(root_point.x,root_point.y)
+			ball_.set_center(center_)
+			used_integers.force(nr)
+			balls_.force (ball_,nr)
+			create Result.make (balls_, void, void)
 		end
 		
 	table_model: Q_TABLE_MODEL is
@@ -62,6 +197,22 @@ feature -- Interface
 		do
 		end
 		
+	root_point : Q_VECTOR_2D is
+		-- fusspunkt of the table
+		do
+			create Result.make (100,100)
+		end
+	head_point : Q_VECTOR_2D is
+		-- the point in the middle of the head line (kopflinie)
+		do
+			create Result.make(200,100)
+			
+		end
+	ball_radius : DOUBLE is 5.0
+
+
+feature {NONE} -- Implementation
+
 	is_correct_opening(collisions_: LIST[Q_COLLISION_EVENT]):BOOLEAN is
 			-- this implements rule 4.6 for a correct opening, the definition
 		local
@@ -119,10 +270,6 @@ feature -- Interface
 			
 			Result := own_colored_first_ and then (colored_ball_fallen_ or else any_bank_touched_)
 		end
-		
-	
-
-feature {NONE} -- Implementation
 
 	is_any_ball_in_hole(collisions_: LIST[Q_COLLISION_EVENT]): BOOLEAN is
 			-- has any ball fallen into a hole?
@@ -169,7 +316,19 @@ feature {NONE} -- Implementation
 			Result ?= collisions_.first.defendent	
 		end
 		
-
+	random_range(min:INTEGER; max:INTEGER): INTEGER is
+			-- returns random in the range [min..max]
+		local 
+			r_: RANDOM
+		do
+			create r_.make
+			Result := (r_.double_i_th (random_i)*(max-min)+min).rounded
+			random_i := random_i+1
+		ensure
+			result >= min and result <= max
+		end
+		
+	random_i :INTEGER
 invariant
 	invariant_clause: True -- Your invariant here
 

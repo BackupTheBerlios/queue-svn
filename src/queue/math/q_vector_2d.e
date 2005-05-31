@@ -41,6 +41,14 @@ feature -- interface
 		do
 			result := "d: (" + x.out + ", " + y.out + ") l: " + length.out
 		end
+		
+	set_x_y(x_:DOUBLE;y_:DOUBLE) is
+			-- set x and y
+		do
+			set_x(x_)
+			set_y(y_)
+		end
+		
 
 end -- class Q_VECTOR_2D
 
