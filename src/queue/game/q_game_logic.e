@@ -1,26 +1,40 @@
 indexing
 	description: "This is the root class of the project. It contains the game loop."
 	author: "Severin Hacker"
-	date: "$Date$"
-	revision: "$Revision$"
 
 class
 	Q_GAME_LOGIC
 
 inherit
 	ESDL_APPLICATION
+	undefine
+		default_create
+	end
+	ESDL_SCENE
+	rename
+		screen as scene_screen
+	redefine
+		redraw
+	end
 	
 create
 	make
 
 feature -- Interface
 
+	initialize_scene is
+		do
+			
+		end
+		
 	make is
 			-- the creation procedure of the root class, creates the event_queue and others
 		local
-			scene_ : Q_TEST_CASE_SCENE
+--			scene_ : Q_TEST_CASE_SCENE
 			eball_mode_ : Q_8BALL
 		do
+			default_create
+			
 			video_subsystem.set_video_surface_width (width)
 			video_subsystem.set_video_surface_height (height)
 			video_subsystem.set_video_bpp (resolution)
@@ -28,69 +42,65 @@ feature -- Interface
 			initialize_screen
 			set_application_name ("Queue OpenGL Proof of Concept")
 		
+			-- Create ressources
+			create ressources.make
+		
 			-- Create first scene.
-			create scene_.make_scene( video_subsystem )
-			scene_.initialize_scene
+--			create scene_.make_scene( video_subsystem )
+--			scene_.initialize_scene
 			
 			-- Create the event_queue
-			create event_queue.make(scene_.event_loop, video_subsystem)
+			create event_queue.make( event_loop, video_subsystem )
 			
 			-- Create the game mode
 			create eball_mode_.make
 			
+			-- Scene initialisation
+			
 			-- Set and launch the first scene.
-			set_scene ( scene_ )
+			set_scene( current )
 			launch
 			
-			-- Start the game loop
-			game_loop
 		end
 	
-		
-
 feature {NONE} -- THE game loop
 	
-	game_loop is
+	redraw is
 			-- this is the main game loop. loops as long as needed, processes I/O, controls
 			-- the graphics, the physics and AI engine.
-		require
-			
+		local
+			next_ : Q_GAME_STATE
 		do
-			from
-			until false
-			loop
 				-- Process I/O
-
+				ressources.gl_manager.process( event_queue )
+				
+				-- Manage states
+				state.step( ressources )
+				next_ := state.next( ressources )
+				
+				if next_ /= void then
+					state.uninstall( ressources )
+					state := next_
+					state.install( ressources )
+				end
+				
 				-- Render
-			
-			end				
+				ressources.gl_manager.draw
+				screen.redraw			
 		end
 		
-	state : INTEGER -- the state of the loop and the program
+	state : Q_GAME_STATE -- the state of the loop and the program
 	
-		
-feature {NONE} -- game logic
-	
-	table: Q_TABLE -- the table of the game
-	mode : Q_MODE -- the mode of the game
-	player_A : Q_PLAYER -- the first player
-	player_B : Q_PLAYER -- the second player
+	ressources : Q_GAME_RESSOURCES 
 
-feature {NONE} -- physics
-	simulation : Q_SIMULATION -- the simulation that computes physical exact collisions and moves
-	
-feature {NONE} -- graphics
-	table_model : Q_TABLE_MODEL -- the table model of the game
-	renderer : Q_RENDERER -- the renderer that is used to render updated tables, stats, etc.
-	
-feature {NONE} -- I/O
-	event_queue: Q_EVENT_QUEUE
+	event_queue : Q_EVENT_QUEUE
+		-- the real event-queue
 
 feature {NONE} -- other
-	width: INTEGER is 512
+	width: INTEGER is 640
 		-- The width of the surface
 		
-	height: INTEGER is 512
+	height: INTEGER is 480
 		-- The height of the surface
 		
 	resolution: INTEGER is 24
