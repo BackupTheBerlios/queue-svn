@@ -78,6 +78,16 @@ feature -- matrix
 			matrix_multiplication( matrix_ )
 		end
 		
+	rotate_around( ax_, ay_, az_, angle_, px_, py_, pz_ : DOUBLE ) is
+			-- rotates the current matrix
+		local
+			matrix_ : Q_MATRIX_4X4
+		do
+			create matrix_.identity
+			matrix_.rotate_at( ax_, ay_, az_, angle_, px_, py_, pz_ )
+			matrix_multiplication( matrix_ )
+		end		
+		
 	push_matrix is
 		do
 			stack.extend( matrix )

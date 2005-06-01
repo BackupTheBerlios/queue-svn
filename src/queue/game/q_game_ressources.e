@@ -9,10 +9,12 @@ creation
 	make
 
 feature{NONE} -- creation
-	make is
+	make( logic_ : Q_GAME_LOGIC ) is
 		do
 			create state_list.make( 20 )
 			create gl_manager.make
+			
+			logic := logic_
 		end
 		
 
@@ -20,6 +22,8 @@ feature	-- Physics
 	simulation : Q_SIMULATION
 	
 feature  -- game logic
+	logic : Q_GAME_LOGIC
+	
 	table: Q_TABLE -- the table of the game
 	mode : Q_MODE -- the mode of the game
 	player_A : Q_PLAYER -- the first player

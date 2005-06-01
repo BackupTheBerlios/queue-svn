@@ -18,6 +18,7 @@ feature {Q_HUD_COMPONENT} -- creation
 			precursor
 			set_font( create {Q_HUD_IMAGE_FONT}.make_standard( "Arial", 32, false, false ) )
 			set_font_size( 0.05 )
+			set_text( "" )
 		end
 
 feature -- drawing

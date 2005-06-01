@@ -90,6 +90,18 @@ feature -- Conversion
 			matrix_.rotate( ax_ , ay_, az_, angle_ )
 			
 			set_matrix( matrix.mul( matrix_ ) )
-		end		
+		end
+		
+	rotate_around( ax_, ay_, az_, angle_, px_, py_, pz_ : DOUBLE ) is
+			-- rotates the container around a point
+		local
+			matrix_ : Q_MATRIX_4X4
+		do
+			create matrix_.identity
+			matrix_.rotate_at( ax_, ay_, az_, angle_, px_, py_, pz_ )
+			
+			set_matrix( matrix.mul( matrix_ ) )
+		end
+		
 
 end -- class Q_HUD_CONTAINER_3D

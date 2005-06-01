@@ -27,11 +27,9 @@ feature -- Interface
 			
 		end
 		
+feature{NONE} -- creation
 	make is
 			-- the creation procedure of the root class, creates the event_queue and others
-		local
---			scene_ : Q_TEST_CASE_SCENE
-			eball_mode_ : Q_8BALL
 		do
 			default_create
 			
@@ -43,17 +41,10 @@ feature -- Interface
 			set_application_name ("Queue OpenGL Proof of Concept")
 		
 			-- Create ressources
-			create ressources.make
+			create ressources.make( current )
 		
-			-- Create first scene.
---			create scene_.make_scene( video_subsystem )
---			scene_.initialize_scene
-			
 			-- Create the event_queue
 			create event_queue.make( event_loop, video_subsystem )
-			
-			-- Create the game mode
-			create eball_mode_.make
 			
 			-- create first state
 			state := create {Q_ESCAPE_STATE}.make
@@ -62,8 +53,8 @@ feature -- Interface
 			-- Set and launch the first scene.
 			set_scene( current )
 			launch
-			
 		end
+		
 	
 feature {NONE} -- THE game loop
 	
@@ -88,7 +79,8 @@ feature {NONE} -- THE game loop
 				
 			-- Render
 			ressources.gl_manager.draw
-			screen.redraw			
+
+			screen.redraw				
 		end
 		
 	state : Q_GAME_STATE -- the state of the loop and the program

@@ -7,22 +7,27 @@ class
 	
 inherit
 	DOUBLE_MATH
-	
-feature -- number
-	positive_infinity : DOUBLE is
-			-- because EIFFEL does not support the IEEE-Standard, this is the greatest possible DOUBLE
-		once
-			result := 10^256
-		end
-		
-	negaive_infinity : DOUBLE is
-			-- because EIFFEL does not support the IEEE-Standard, this is the smalest possible DOUBLE
-		once
-			result := -(10^256)
-		end
-	
+	export
+		{ANY} pi, sqrt2, euler
+	end
 	
 feature -- math
+	smooth( x_ : DOUBLE ) : DOUBLE is
+			-- transforms a value between 0 and 1 into a new value between 0 and 1 on 
+			-- a curve with a differential of 0 at x=0 and x=1
+		do
+			result := 3*x_*x_ - 2*x_*x_*x_
+		end
+		
+	smooth_over( x_ : DOUBLE ) : DOUBLE is
+			-- 
+		do
+			result := 0.1 + smooth( x_ )
+		end
+		
+		
+	
+feature -- gauss
 	gauss_changing( system_ : ARRAY2[ DOUBLE ]; b_ : ARRAY[ DOUBLE ] ) : ARRAY[ DOUBLE ] is
 			-- Solves the system "system_*result = b_"
 			-- This method might change the contents of system_ and of b_

@@ -463,6 +463,8 @@ component_select( x_, y_ : DOUBLE ) is
 				end
 			end
 			
+			ensure_selected_component
+			
 			if selected_component /= void then
 				location_ := found_.position
 				selected_component.process_mouse_enter( location_.x, location_.y )
