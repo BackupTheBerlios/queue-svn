@@ -10,7 +10,9 @@ class
 feature -- Interface
 
 	direction: Q_VECTOR_2D -- the direction of the shot in (x,y) coordinates
-	strength : REAL -- the strength of the shot
+	
+	-- hackers: commented out because strength = |direction| = length of direction vector
+	--strength : REAL -- the strength of the shot
 	
 	set_direction(direction_:Q_VECTOR_2D) is
 			-- sets the new direction of the shot
@@ -22,16 +24,17 @@ feature -- Interface
 			direction = direction_
 		end
 	
-	set_strength(strength_:REAL) is
-			-- sets the strength of the shot
-		require
-			strength_exist : strength /= Void
-			pos_strength: strength_ > 0
-		do
-			strength := strength_
-		ensure
-			strength = strength_
-		end
+	-- hackers: commented out because strength = |direction| = length of direction vector
+--	set_strength(strength_:REAL) is
+--			-- sets the strength of the shot
+--		require
+--			strength_exist : strength /= Void
+--			pos_strength: strength_ > 0
+--		do
+--			strength := strength_
+--		ensure
+--			strength = strength_
+--		end
 		
 
 feature {NONE} -- Implementation
