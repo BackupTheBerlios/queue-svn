@@ -55,7 +55,9 @@ feature -- Interface
 			-- Create the game mode
 			create eball_mode_.make
 			
-			-- Scene initialisation
+			-- create first state
+			state := create {Q_ESCAPE_STATE}.make
+			state.install( ressources )
 			
 			-- Set and launch the first scene.
 			set_scene( current )
@@ -71,22 +73,22 @@ feature {NONE} -- THE game loop
 		local
 			next_ : Q_GAME_STATE
 		do
-				-- Process I/O
-				ressources.gl_manager.process( event_queue )
+			-- Process I/O
+			ressources.gl_manager.process( event_queue )
 				
-				-- Manage states
-				state.step( ressources )
-				next_ := state.next( ressources )
+			-- Manage states
+			state.step( ressources )
+			next_ := state.next( ressources )
 				
-				if next_ /= void then
-					state.uninstall( ressources )
-					state := next_
-					state.install( ressources )
-				end
+			if next_ /= void then
+				state.uninstall( ressources )
+				state := next_
+				state.install( ressources )
+			end
 				
-				-- Render
-				ressources.gl_manager.draw
-				screen.redraw			
+			-- Render
+			ressources.gl_manager.draw
+			screen.redraw			
 		end
 		
 	state : Q_GAME_STATE -- the state of the loop and the program

@@ -25,6 +25,7 @@ feature{NONE} -- creation
 		do
 			precursor
 			set_focus_handler( create {Q_FOCUS_DEFAULT_HANDLER} )
+			reset_queue
 		end
 		
 	
@@ -359,18 +360,18 @@ removed( component_ : Q_HUD_COMPONENT ) is
 	
 
 feature -- Drawing
-queue : Q_HUD_QUEUE
+	queue : Q_HUD_QUEUE
 
-reset_queue is
-		-- Recreates the queue of all components
-	do
-		create queue.make( current )
-	end
+	reset_queue is
+			-- Recreates the queue of all components
+		do
+			create queue.make( current )
+		end
 	
 
 feature{NONE} -- assistants
 
-search_component_at( x_, y_ : DOUBLE; enabled_, focusable_, lightweight_ : BOOLEAN; index__ : INTEGER; jump_ : BOOLEAN ) : Q_HUD_QUEUE_SEARCH_RESULT is
+	search_component_at( x_, y_ : DOUBLE; enabled_, focusable_, lightweight_ : BOOLEAN; index__ : INTEGER; jump_ : BOOLEAN ) : Q_HUD_QUEUE_SEARCH_RESULT is
 		-- Searches the first component under the position x/y on the screen.
 		-- If enabled_ and/or focusable_ is set to true, the component must be
 		-- enabled and/or focusable. Otherwise this value is ignored.
