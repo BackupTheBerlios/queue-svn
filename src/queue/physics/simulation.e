@@ -76,6 +76,14 @@ feature -- interface
 			result := collision_handler.position_list
 		end
 		
+	cue_vector_for_collision(ball_: Q_BALL; velocity_after_collision : Q_VECTOR_2D):Q_VECTOR_2D is
+			-- compute the velocity of the cue ball so that the ball ball_ has a given velocity vector
+			-- after a collision cue / ball_
+			-- return void if there is no such collision
+		do
+			-- implemented by physics engine
+		end
+		
 
 feature {NONE} -- implementation
 

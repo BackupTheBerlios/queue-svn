@@ -43,6 +43,7 @@ feature {NONE} -- creation
 			extend( create {BEN_MATERIAL_TEST} )
 			extend( create {BEN_COMPONENT_QUEUE_TEST}.make )
 			extend( create {HAC_8BALL_TEST})
+			extend( create {HAC_RANDOM_TEST})
 		end
 
 end -- class Q_TEST_CASE_LIST

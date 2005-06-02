@@ -20,10 +20,10 @@ feature {NONE} -- Implementation
 		end
 		
 
-	next_shot(situation_ : Q_TABLE): Q_SHOT is
+	next_shot(gr_ : Q_GAME_RESSOURCES): Q_SHOT is
 			-- returns the shot the player wants to play next
 		require
-			situation_exists : situation_ /= Void
+			gr_ /= Void
 		deferred
 		ensure
 			result_exists : Result /=Void

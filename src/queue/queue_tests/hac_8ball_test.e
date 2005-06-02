@@ -12,7 +12,7 @@ inherit
 	
 feature
 	
-	name : STRING is "Table Model Test"
+	name : STRING is "8Ball Test"
 		
 	init is
 			-- Invoked when this test ist choosen.
@@ -34,6 +34,7 @@ feature
 				io.put_new_line
 				i := i+1
 			end
+
 		end
 		
 	initialized( root_ : Q_GL_ROOT ) is
