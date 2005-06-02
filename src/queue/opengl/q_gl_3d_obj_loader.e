@@ -28,14 +28,14 @@ feature  -- Commands
 			-- Load an object from 'a_filename'
 		local
 			obj_file_: PLAIN_TEXT_FILE
-			tokenizer_: STRING_TOKENIZER
+			tokenizer_: Q_TEXT_SCANNER
 		do		
 			create vectors.make (0,2)
 			create normals.make (0,2)
 			create texture_coordinates.make(0,1)
 			create faces.make (0,0)
 
-			create tokenizer_.make ("", " ")
+			create tokenizer_.make_from_string_with_delimiters ("", " %T")
 
 			create obj_file_.make_open_read (a_filename)
 			-- read line for line
@@ -52,34 +52,34 @@ feature  -- Commands
 				
 				if not obj_file_.last_string.is_empty then
 					
-					tokenizer_.make (obj_file_.last_string, " ")
+					tokenizer_.set_source_string (obj_file_.last_string)
 					
 					-- set the iterator
-					tokenizer_.start
+					tokenizer_.read_token
 					
-					if tokenizer_.item.is_equal ("#") then
+					if tokenizer_.last_string.is_equal ("#") then
 						-- ignore this line, it's a comment
-					elseif tokenizer_.item.is_equal ("v") then
+					elseif tokenizer_.last_string.is_equal ("v") then
 						-- read a vector
-						tokenizer_.forth
+						tokenizer_.read_token
 						vectors.force (read_vector (tokenizer_), vector_count)
 						vector_count := vector_count + 1
 						has_vectors := TRUE
-					elseif tokenizer_.item.is_equal ("vn") then
+					elseif tokenizer_.last_string.is_equal ("vn") then
 						-- read a vector
-						tokenizer_.forth
+						tokenizer_.read_token
 						normals.force (read_vector (tokenizer_), normal_count)
 						normal_count := normal_count + 1
 						has_normals := TRUE
-					elseif tokenizer_.item.is_equal ("vt") then
+					elseif tokenizer_.last_string.is_equal ("vt") then
 						-- read a vector
-						tokenizer_.forth
+						tokenizer_.read_token
 						vectors.force (read_vector (tokenizer_), texture_coordinate_count)
 						texture_coordinate_count := texture_coordinate_count + 1
 						has_texture_cooridnates := TRUE
-					elseif tokenizer_.item.is_equal ("f")  then
+					elseif tokenizer_.last_string.is_equal ("f")  then
 						-- face data
-						tokenizer_.forth
+						tokenizer_.read_token
 						faces.force (read_face (tokenizer_), face_count)
 						face_count := face_count + 1
 					else
@@ -157,7 +157,7 @@ feature  -- Commands
 		end
 		
 feature {NONE} -- implementation
-	read_vector (input: STRING_TOKENIZER): ARRAY[DOUBLE] is
+	read_vector (input: Q_TEXT_SCANNER): ARRAY[DOUBLE] is
 			-- Read the vertex data from the current position
 		local
 			index_: INTEGER
@@ -167,19 +167,19 @@ feature {NONE} -- implementation
 			from
 				index_ := 0
 			until
-				input.off
+				input.last_string.is_equal ("")
 			loop
-				result.force (input.item.to_double, index_)	
-				input.forth
+				result.force (input.last_string.to_double, index_)	
+				input.read_token
 				index_ := index_ + 1
 			end
 			
 		end
 		
-	read_face (input: STRING_TOKENIZER): TUPLE[ARRAY[INTEGER],ARRAY[INTEGER], ARRAY[INTEGER]] is
+	read_face (input: Q_TEXT_SCANNER): TUPLE[ARRAY[INTEGER],ARRAY[INTEGER], ARRAY[INTEGER]] is
 			-- Read the face data from the current position
 		local
-			tokenizer_: STRING_TOKENIZER
+			tokenizer_: Q_TEXT_SCANNER
 			vectors_: ARRAY[INTEGER]
 			vectors_index_: INTEGER
 			normals_: ARRAY[INTEGER]
@@ -189,7 +189,7 @@ feature {NONE} -- implementation
 		do
 			create result
 			
-			create tokenizer_.make ("", "/")
+			create tokenizer_.make_from_string_with_delimiters ("", "/")
 			
 			create vectors_.make (0,2)
 			create normals_.make (0,2)
@@ -198,29 +198,30 @@ feature {NONE} -- implementation
 			from
 				
 			until
-				input.off
+				input.last_string.is_equal ("")
 			loop
-				tokenizer_.make(input.item, "/")
+				tokenizer_.set_source_string (input.last_string)
 				
-				tokenizer_.start
-				if not tokenizer_.off and has_vectors then					
-					vectors_.force (tokenizer_.item.to_integer, vectors_index_)
+				tokenizer_.read_token
+				if not tokenizer_.last_string.is_equal ("") and has_vectors then					
+					vectors_.force (tokenizer_.last_string.to_integer, vectors_index_)
 					vectors_index_ := vectors_index_ + 1
-					tokenizer_.forth
+					tokenizer_.read_token
 				end
 				
-				if not tokenizer_.off and has_texture_cooridnates then					
-					tex_coords_.force (tokenizer_.item.to_integer, tex_coords_index)
+				if not tokenizer_.last_string.is_equal ("") and has_texture_cooridnates then					
+					tex_coords_.force (tokenizer_.last_string.to_integer, tex_coords_index)
 					tex_coords_index := tex_coords_index + 1
+					tokenizer_.read_token
 				end
 				
-				if not tokenizer_.off and has_normals then					
-					normals_.force (tokenizer_.item.to_integer, normals_index_)
+				if not tokenizer_.last_string.is_equal ("") and has_normals then					
+					normals_.force (tokenizer_.last_string.to_integer, normals_index_)
 					normals_index_ := normals_index_ + 1
-					tokenizer_.forth
+					tokenizer_.read_token
 				end
 				
-				input.forth
+				input.read_token
 			end
 			
 			result.put (vectors_, 1)
