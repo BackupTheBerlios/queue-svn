@@ -27,7 +27,6 @@ feature  -- Commands
 			-- Load an object from 'a_filename'
 		local
 			ase_file_: PLAIN_TEXT_FILE
-			scanner: Q_TEXT_SCANNER
 		do
 			create scanner.make_from_string_with_delimiters ("", " %T")
 
@@ -52,7 +51,7 @@ feature  -- Commands
 						read_subclause(ase_file_)
 					elseif scanner.last_string.is_equal ("*MATERIAL_LIST") then
 						-- ignore those for the moment
-						read_subclause(ase_file_)
+						read_materials (ase_file_)
 					elseif scanner.last_string.is_equal ("*SHAPEOBJECT") then
 						read_shape_object(ase_file_)				
 					elseif scanner.last_string.is_equal ("*GEOMOBJECT") then
@@ -68,6 +67,12 @@ feature  -- Commands
 			-- Create a flat object.
 		local
 			index_ : INTEGER
+			
+			model_ : Q_GL_FLAT_MODEL
+			geom_obj_ : Q_GL_3D_ASE_GEOMOBJ
+			
+			material_ : Q_GL_MATERIAL
+			ase_material_ : Q_GL_3D_ASE_MATERIAL
 		do
 			create result.make
 			
@@ -76,7 +81,25 @@ feature  -- Commands
 			until
 				index_ > geometric_objects.upper
 			loop
-				result.extend (geometric_objects.item(index_).create_flat_model)
+				geom_obj_ := geometric_objects.item(index_)
+				model_ := geom_obj_.create_flat_model
+				
+				-- set the material
+				if geom_obj_.color /= void then
+					model_.set_material (create {Q_GL_MATERIAL}.make_single_colored (geom_obj_.color))
+				else
+					-- a material is present
+					ase_material_ := materials.item(geom_obj_.material_index)
+					create material_.make_empty
+					material_.set_ambient (ase_material_.ambient)
+					material_.set_diffuse (ase_material_.diffuse)
+					material_.set_specular (ase_material_.specular)
+					model_.set_material (material_)
+					
+					model_.set_diffuse_texture (create {Q_GL_TEXTURE}.make (ase_material_.diffuse_texutre))
+				end
+				
+				result.extend (model_)
 				index_ := index_ + 1
 			end
 		end
@@ -96,7 +119,6 @@ feature  -- Commands
 				index_ > shape_objects.upper
 			loop
 				result.extend( shape_objects.item(index_).create_primitve )
-				
 				index_ := index_ + 1
 			end
 		end
@@ -140,8 +162,43 @@ feature {NONE} -- Implementation
 			shape_object_count := shape_object_count + 1
 		end
 		
-		
+	read_materials (file_: PLAIN_TEXT_FILE) is
+			-- parses the *MATERIAL_LIST clause
+		local
+			off_ : BOOLEAN
+			
+			index_ : INTEGER
+		do
+			from
+				file_.read_line
+			until
+				file_.after or off_
+			loop
+				scanner.set_source_string (file_.last_string)
+				scanner.read_token
+				
+				if scanner.last_string.is_equal ("*MATERIAL_COUNT") then
+					scanner.read_token
+					create materials.make (0, scanner.last_string.to_integer-1)
+					file_.read_line
+				elseif scanner.last_string.is_equal ("*MATERIAL") then
+					scanner.read_token
+					index_ := scanner.last_string.to_integer
+					materials.force (create {Q_GL_3D_ASE_MATERIAL}.make(file_), index_)
+				elseif file_.last_string.has ('{') then
+					read_subclause (file_)
+					file_.read_line
+				elseif file_.last_string.has ('}') then
+					off_ := True
+				else
+					file_.read_line
+				end
+			end
+		end
+
 feature -- access
+	scanner: Q_TEXT_SCANNER
+
 	file_version: INTEGER
 	
 	geometric_objects : ARRAY[Q_GL_3D_ASE_GEOMOBJ]
@@ -151,4 +208,8 @@ feature -- access
 	shape_objects : ARRAY[Q_GL_3D_ASE_SHAPEOBJ]
 	
 	shape_object_count : INTEGER
+	
+	materials : ARRAY[Q_GL_3D_ASE_MATERIAL]
+	
+	matieral_count : INTEGER
 end

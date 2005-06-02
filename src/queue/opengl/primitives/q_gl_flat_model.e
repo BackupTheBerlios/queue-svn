@@ -22,13 +22,23 @@ feature {NONE}
 
 feature -- setters
 	set_material (new_material : Q_GL_MATERIAL) is
-			-- Set a new color for the model.
+			-- Set a new material for the model.
 		require
 			new_material /= void
 		do
 			material := new_material
 		ensure
 			material = new_material
+		end
+		
+	set_diffuse_texture (new_texture : Q_GL_TEXTURE) is
+			-- Set a new diffuse texture for the model.
+		require
+			new_texture /= void
+		do
+			diffuse_texture := new_texture
+		ensure
+			diffuse_texture = new_texture
 		end
 
 feature -- visualisation
@@ -48,6 +58,10 @@ feature -- visualisation
 			
 			material.set ( open_gl )
 			
+			if diffuse_texture /= void then
+				diffuse_texture.transform (open_gl)	
+			end
+			
 			from
 				index_ := 0
 			until
@@ -55,24 +69,28 @@ feature -- visualisation
 			loop
 				gl_.gl_begin( open_gl.gl_constants.esdl_gl_polygon )
 				
-				v_ := vertices.item (index_)				
---				gl_.gl_color3d (color.red, color.green, color.blue)
+				v_ := vertices.item (index_)
+				gl_.gl_tex_coord2d (v_.tu, v_.tv)
 				gl_.gl_normal3d (v_.nx, v_.ny, v_.nz)
 				gl_.gl_vertex3d (v_.x, v_.y, v_.z)
 				
 				v_ := vertices.item(index_ + 1)
---				gl_.gl_color3d (color.red, color.green, color.blue)
+				gl_.gl_tex_coord2d (v_.tu, v_.tv)
 				gl_.gl_normal3d (v_.nx, v_.ny, v_.nz)
 				gl_.gl_vertex3d (v_.x, v_.y, v_.z)
 				
 				v_ := vertices.item(index_ + 2)
---				gl_.gl_color3d (color.red, color.green, color.blue)
+				gl_.gl_tex_coord2d (v_.tu, v_.tv)
 				gl_.gl_normal3d (v_.nx, v_.ny, v_.nz)
 				gl_.gl_vertex3d (v_.x, v_.y, v_.z)
 				
 				gl_.gl_end
 				
 				index_ := index_ + 3
+			end
+			
+			if diffuse_texture /= void then
+				diffuse_texture.untransform (open_gl)
 			end
 			
 			gl_.gl_disable (open_gl.gl_constants.esdl_gl_color_material)
@@ -83,5 +101,7 @@ feature
 			-- vertices
 			
 	material : Q_GL_MATERIAL
+	
+	diffuse_texture : Q_GL_TEXTURE
 
 end -- class Q_GL_FLAT_MODEL

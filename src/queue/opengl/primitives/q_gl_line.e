@@ -30,7 +30,7 @@ feature
 		do
 			gl := open_gl.gl
 			
-			gl.gl_begin( open_gl.gl_constants.esdl_gl_line )
+			gl.gl_begin( open_gl.gl_constants.esdl_gl_lines )
 
 			material.set (open_gl )
 

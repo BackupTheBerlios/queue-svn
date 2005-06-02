@@ -74,7 +74,7 @@ feature
 		do
 			gl := open_gl.gl
 			
-			gl.gl_begin( open_gl.gl_constants.esdl_gl_lines )
+			gl.gl_begin( open_gl.gl_constants.esdl_gl_line_strip )
 
 			from
 				index_ := lower

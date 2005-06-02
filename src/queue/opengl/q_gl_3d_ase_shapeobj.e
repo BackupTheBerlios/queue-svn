@@ -93,9 +93,12 @@ feature {NONE} -- Initialization
 				if scanner.last_string.is_equal ("*SHAPE_VERTEXCOUNT") then
 					scanner.read_token
 					create knots.make (0, scanner.last_string.to_integer - 1)
+					create knot_types.make (0, scanner.last_string.to_integer - 1)
 					
 					file_.read_line
-				elseif scanner.last_string.is_equal ("*SHAPE_VERTEX_KNOT") or scanner.last_string.is_equal ("*SHAPE_VERTEX_INTERP") then
+				elseif scanner.last_string.is_equal ("*SHAPE_VERTEX_KNOT") then
+					knot_types.put (True, index_)
+					
 					create curr_knot_
 					
 					scanner.read_token
@@ -105,10 +108,32 @@ feature {NONE} -- Initialization
 					curr_knot_.set_x (scanner.last_string.to_double)
 					
 					scanner.read_token
+					curr_knot_.set_z (scanner.last_string.to_double)
+					
+					scanner.read_token
 					curr_knot_.set_y (scanner.last_string.to_double)
+					
+					knots.force (curr_knot_, index_)
+					
+					index_ := index_ + 1
+					
+					file_.read_line
+				elseif scanner.last_string.is_equal ("*SHAPE_VERTEX_INTERP") then
+					knot_types.put (False, index_)
+					
+					create curr_knot_
+					
+					scanner.read_token
+					index_ := scanner.last_string.to_integer
+					
+					scanner.read_token
+					curr_knot_.set_x (scanner.last_string.to_double)
 					
 					scanner.read_token
 					curr_knot_.set_z (scanner.last_string.to_double)
+					
+					scanner.read_token
+					curr_knot_.set_y (scanner.last_string.to_double)
 					
 					knots.force (curr_knot_, index_)
 					
@@ -147,7 +172,6 @@ feature -- Primitive creation
 			multi_line : Q_GL_SEGMENTED_LINE
 		do
 			if knots.count = 1 then
-			
 			elseif knots.count = 2 then
 				create line.make_position_material (knots.item (0), knots.item (1), create {Q_GL_MATERIAL}.make_empty )
 				line.material.set_diffuse (create {Q_GL_COLOR}.make_white)
@@ -166,5 +190,9 @@ feature -- Access
 	number_of_shapes : INTEGER
 	
 	knots : ARRAY[Q_VECTOR_3D]
+	
+	knot_types : ARRAY[BOOLEAN]
+		-- Entries are 'True' is the knot is a knot,
+		-- 'False' is it is a interpolated point
 	
 end -- class Q_GL_3D_ASE_SHAPEOBJ

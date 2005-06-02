@@ -38,6 +38,9 @@ feature {NONE} -- Initialization
 					read_subclause (file_)
 				elseif scanner.last_string.is_equal ("*MESH") then
 					read_mesh (file_)
+				elseif scanner.last_string.is_equal ("*MATERIAL_REF") then
+					scanner.read_token
+					material_index := scanner.last_string.to_integer
 				elseif scanner.last_string.is_equal ("*WIREFRAME_COLOR") then
 					scanner.read_token
 					create color.make
@@ -72,15 +75,7 @@ feature -- Models
 			
 			curr_array_:ARRAY[INTEGER]
 		do
-			create result.make(faces.count*3)
-			
-			-- set the base color
-			if color /= void then
-				result.set_material (create {Q_GL_MATERIAL}.make_single_colored (color))
-			else
-				result.set_material (create {Q_GL_MATERIAL}.make_empty)
-			end
-			
+			create result.make(faces.count*3)			
 			
 			from
 				index_ := 0
@@ -98,9 +93,9 @@ feature -- Models
 						curr_array_ ?= curr_face_ @ (1)
 						
 						vertex_.set_position (
-									vectors @ (curr_array_ @ (inner_index_) - 1) @ (0),
-									vectors @ (curr_array_ @ (inner_index_) - 1) @ (1),
-									vectors @ (curr_array_ @ (inner_index_) - 1) @ (2)
+									vectors @ (curr_array_ @ (inner_index_)) @ (0),
+									vectors @ (curr_array_ @ (inner_index_)) @ (1),
+									vectors @ (curr_array_ @ (inner_index_)) @ (2)
 											 )
 					end
 					
@@ -108,8 +103,8 @@ feature -- Models
 						curr_array_ ?= curr_face_ @ (2)
 						
 						vertex_.set_texture_coordinates (
-										texture_coordinates @ (curr_array_ @ (inner_index_) - 1) @ (0),
-										texture_coordinates @ (curr_array_ @ (inner_index_) - 1) @ (1)
+										texture_coordinates @ (curr_array_ @ (inner_index_)) @ (0),
+										texture_coordinates @ (curr_array_ @ (inner_index_)) @ (1)
 											 			)
 					end
 					
@@ -117,9 +112,9 @@ feature -- Models
 						curr_array_ ?= curr_face_ @ (3)
 						
 						vertex_.set_normal (
-									normals @ (curr_array_ @ (inner_index_) - 1) @ (0),
-									normals @ (curr_array_ @ (inner_index_) - 1) @ (1),
-									normals @ (curr_array_ @ (inner_index_) - 1) @ (2)
+									normals @ (curr_array_ @ (inner_index_)) @ (0),
+									normals @ (curr_array_ @ (inner_index_)) @ (1),
+									normals @ (curr_array_ @ (inner_index_)) @ (2)
 										   )
 					end
 					
@@ -187,8 +182,24 @@ feature {NONE} -- Implementation
 					scanner.read_token
 					face_count := scanner.last_string.to_integer
 					file_.read_line
+				elseif scanner.last_string.is_equal ("*MESH_NUMTVFACES") then
+					scanner.read_token
+					if scanner.last_string.to_integer = face_count and faces /= void then
+						has_texture_cooridnates := true
+						read_texured_faces (file_)
+					else
+						read_subclause (file_)
+					end
+					file_.read_line
+				elseif scanner.last_string.is_equal ("*MESH_NUMTVERTEX") then
+					scanner.read_token
+					texture_coordinate_count := scanner.last_string.to_integer
+					file_.read_line
 				elseif scanner.last_string.is_equal ("*MESH_VERTEX_LIST") then
 					read_vertices (file_)
+					file_.read_line
+				elseif scanner.last_string.is_equal ("*MESH_TVERTLIST") then
+					read_texture_cooridinates (file_)
 					file_.read_line
 				elseif scanner.last_string.is_equal ("*MESH_FACE_LIST") then
 					read_faces (file_)
@@ -217,7 +228,7 @@ feature {NONE} -- Implementation
 			index_ : INTEGER
 			vector_ : ARRAY[DOUBLE]
 		do
-			create vectors.make (1, vector_count)
+			create vectors.make (0, vector_count - 1)
 			
 			from
 				file_.read_line
@@ -259,7 +270,7 @@ feature {NONE} -- Implementation
 			index_ : INTEGER
 			vector_ : ARRAY[DOUBLE]
 		do
-			create normals.make (1, vector_count)
+			create normals.make (0, vector_count-1)
 			
 			from
 				file_.read_line
@@ -292,6 +303,91 @@ feature {NONE} -- Implementation
 				end
 			end
 		end
+		
+	read_texture_cooridinates (file_: PLAIN_TEXT_FILE) is
+			-- Read the texture coordinates
+		local
+			off_ : BOOLEAN
+			
+			index_ : INTEGER
+			vector_ : ARRAY[DOUBLE]
+		do
+			create texture_coordinates.make (0, texture_coordinate_count - 1)
+			
+			from
+				file_.read_line
+			until
+				file_.after or off_
+			loop
+				scanner.set_source_string (file_.last_string)
+				scanner.read_token
+				
+				if scanner.last_string.is_equal ("*MESH_TVERT") then
+					create vector_.make (0, 1)
+					
+					scanner.read_token
+					index_ := scanner.last_string.to_integer
+					
+					scanner.read_token
+					vector_.force (scanner.last_string.to_double, 0)
+					scanner.read_token
+					vector_.force (scanner.last_string.to_double, 1)
+					
+					texture_coordinates.force (vector_, index_)
+					
+					file_.read_line
+				elseif file_.last_string.has ('}') then
+					off_ := True
+				else
+					file_.read_line
+				end
+			end
+		end
+	
+	read_texured_faces (file_:PLAIN_TEXT_FILE) is
+			-- Read the texture coordinates of the faces.
+		require
+			faces /= void
+		local
+			off_ : BOOLEAN
+			
+			index_ : INTEGER
+			pos_ : ARRAY[INTEGER]
+		do
+			from
+				file_.read_line
+			until
+				file_.after or off_
+			loop
+				scanner.set_source_string (file_.last_string)
+				scanner.read_token
+				if scanner.last_string.is_equal ("*MESH_TFACE") then
+					scanner.read_token
+					index_ := scanner.last_string.to_integer
+					
+					create pos_.make (0, 2)
+					
+					scanner.read_token
+					pos_.put (scanner.last_string.to_integer, 0)
+					
+					scanner.read_token
+					pos_.put (scanner.last_string.to_integer, 1)
+					
+					scanner.read_token
+					pos_.put (scanner.last_string.to_integer, 2)
+					
+					faces.item (index_).put (pos_, 2)
+					
+					file_.read_line
+				elseif file_.last_string.has ('}') then
+					off_ := True
+				else
+					file_.read_line
+				end
+			end	
+			
+		end
+		
 		
 	read_faces  (file_: PLAIN_TEXT_FILE) is
 			-- Read the vertices of a face.
@@ -327,17 +423,17 @@ feature {NONE} -- Implementation
 					-- first
 					scanner.read_token
 					scanner.read_token
-					pos_.put (scanner.last_string.to_integer + 1, 0)
+					pos_.put (scanner.last_string.to_integer, 0)
 					
 					-- second
 					scanner.read_token
 					scanner.read_token
-					pos_.put (scanner.last_string.to_integer + 1, 1)
+					pos_.put (scanner.last_string.to_integer, 1)
 					
 					-- third
 					scanner.read_token
 					scanner.read_token
-					pos_.put (scanner.last_string.to_integer + 1, 2)
+					pos_.put (scanner.last_string.to_integer, 2)
 					
 					-- set it
 					face_.put (pos_, 1)
@@ -359,5 +455,7 @@ feature -- Access
 	name : STRING
 	
 	color : Q_GL_COLOR
+	
+	material_index : INTEGER
 	
 end -- class Q_GL_3D_ASE_GEOMOBJ

@@ -21,7 +21,9 @@ feature -- Interface
 		-- paint the table
 	do
 		model.draw (open_gl)
-		--shapes.draw (open_gl)
+		shapes.draw (open_gl)
+		
+		
 	end
 	
 	model : Q_GL_GROUP[Q_GL_MODEL]
@@ -36,23 +38,14 @@ feature {NONE} -- Implementation
 		require
 			file_name_ /= void
 		local
-			tok_ : STRING_TOKENIZER
-			extension_ : STRING
-			
 			loader : Q_GL_3D_ASE_LOADER
 		do
-			create tok_.make (file_name_, ".")
-			
-			extension_ := tok_.i_th (tok_.count)
-			
-			if extension_.is_equal ("ase") then
-				loader := create {Q_GL_3D_ASE_LOADER}.make
-			end
+			create loader.make
 			
 			loader.load_file (file_name_)
 			model := loader.create_flat_model
 			
-			shapes := loader.create_shapes
+			--shapes := loader.create_shapes
 		end
 		
 	vector_2D_to_vector_3D ( v_ :Q_VECTOR_2D) : Q_VECTOR_3D is
