@@ -187,8 +187,8 @@ feature -- Interface
 		
 	table_model: Q_TABLE_MODEL is
 			-- creates/returns a 3D-model of the table for this game mode
-	
-		do	
+		do
+			result := create {Q_TABLE_MODEL}.make_from_file ("model/pool.ase")
 		end
 		
 	ai_player: Q_AI_PLAYER is
