@@ -30,7 +30,8 @@ feature
 			until
 				i >= balls_.count
 			loop
-				out.append(balls_.item (i).out)
+				io.put_string(balls_.item (i).number.out+" "+balls_.item (i).center.out )
+				io.put_new_line
 				i := i+1
 			end
 		end

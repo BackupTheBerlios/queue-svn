@@ -19,24 +19,44 @@ feature -- Interface
 	make is
 			-- creation procedure
 		do
+			-- create the model and the table
+			new_table_model
 			new_table
 		end
 		
-	table : Q_TABLE
+	table : Q_TABLE	
+	table_model: Q_TABLE_MODEL	
+	ai_player : Q_AI_PLAYER
+	
+	root_point :Q_VECTOR_2D is
+		-- fusspunkt of the table
+		do
+			create Result.make (300,100)
+		end
 		
+	head_point : Q_VECTOR_2D is
+		-- the point in the middle of the head line (kopflinie)
+		do
+			create Result.make(100,100)
+		end
+		
+	ball_radius : DOUBLE is 5.0
+	width : DOUBLE is 400.0 -- size in x-direction
+	height: DOUBLE is 200.0 -- size in y-direction
+
+
+feature {NONE} -- Implementation
+
 	new_table is
 			-- creates the opening table for this game mode, all balls are in a triangle, the white is set at the head of the table
 		local
 			balls_: ARRAY[Q_BALL]
-			banks_: ARRAY[Q_BANK]
-			holes_: ARRAY[Q_HOLE]
 			ball_ : Q_BALL
-			bank_ : Q_BANK
-			hole_ : Q_HOLE
-			i,x,y,nr : INTEGER
-			rand_ : RANDOM
+			y,nr : INTEGER
+			rand_ : Q_RANDOM
 			used_integers : LINKED_LIST[INTEGER]
 		do
+			create rand_
 			-- build positions
 			create used_integers.make
 			
@@ -64,7 +84,7 @@ feature -- Interface
 			until
 				not used_integers.has (nr)
 			loop				
-				nr := random_range(1,15)
+				nr := rand_.random_range(1,15)
 			end
 			ball_.set_number (nr)
 			ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(8*ball_radius), root_point.y-4*ball_radius))
@@ -74,9 +94,9 @@ feature -- Interface
 			-- create right rack
 			ball_ := ball_.deep_twin	
 			if nr <8 then
-				nr := random_range(9,15)
+				nr := rand_.random_range(9,15)
 			else
-				nr := random_range(1,7)
+				nr := rand_.random_range(1,7)
 			end
 			ball_.set_number (nr)
 			ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(8*ball_radius), root_point.y+4*ball_radius))
@@ -94,7 +114,7 @@ feature -- Interface
 				until
 					not used_integers.has (nr)
 				loop				
-					nr := random_range(1,15)
+					nr := rand_.random_range(1,15)
 				end
 				ball_.set_number (nr)
 				ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(8*ball_radius), root_point.y+(y*ball_radius)))
@@ -113,7 +133,7 @@ feature -- Interface
 				until
 					not used_integers.has (nr)
 				loop				
-					nr := random_range(1,15)
+					nr := rand_.random_range(1,15)
 				end
 				ball_.set_number (nr)
 				ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(6*ball_radius), root_point.y+(y*ball_radius)))
@@ -132,7 +152,7 @@ feature -- Interface
 				until
 					not used_integers.has (nr)
 				loop				
-					nr := random_range(1,15)
+					nr := rand_.random_range(1,15)
 				end
 				ball_.set_number (nr)
 				ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(4*ball_radius), root_point.y+(y*ball_radius)))
@@ -151,7 +171,7 @@ feature -- Interface
 				until
 					not used_integers.has (nr)
 				loop				
-					nr := random_range(1,15)
+					nr := rand_.random_range(1,15)
 				end
 				ball_.set_number (nr)
 				ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(2*ball_radius), root_point.y+(y*ball_radius)))
@@ -165,57 +185,27 @@ feature -- Interface
 			until
 				not used_integers.has (nr)
 			loop				
-				nr := random_range(1,15)
+				nr := rand_.random_range(1,15)
 			end
 			ball_.set_number (nr)
 			ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x,root_point.y))
 			used_integers.force(nr)
 			balls_.force (ball_,nr)
-			
-			-- create the banks
-			
-			-- create the holes
-			create holes_.make (1,6)
-			holes_.force (create {Q_HOLE}.make (create {Q_VECTOR_2D}.make (0,0)),1)
-			holes_.force (create {Q_HOLE}.make (create {Q_VECTOR_2D}.make (width/2,0)),2)
-			holes_.force (create {Q_HOLE}.make (create {Q_VECTOR_2D}.make (width,0)),3)
-			holes_.force (create {Q_HOLE}.make (create {Q_VECTOR_2D}.make (width,height)),4)
-			holes_.force (create {Q_HOLE}.make (create {Q_VECTOR_2D}.make (width/2,height)),5)
-			holes_.force (create {Q_HOLE}.make (create {Q_VECTOR_2D}.make (0,height)),6)
-			create table.make (balls_, banks_, holes_)
+			-- set the banks
+			table.set_banks (table_model.banks)
 		end
 		
-	table_model: Q_TABLE_MODEL is
+	new_table_model is
 			-- creates/returns a 3D-model of the table for this game mode
 		do
-			result := create {Q_TABLE_MODEL}.make_from_file ("model/pool.ase")
+			create table_model.make_from_file ("model/pool.ase")
 		end
 		
-	ai_player: Q_AI_PLAYER is
+	new_ai_player is
 			-- creates/returns an AI-Player for this game mode
 		do
 		end
 		
-	root_point : Q_VECTOR_2D is
-		-- fusspunkt of the table
-		do
-			create Result.make (300,100)
-		end
-		
-	head_point : Q_VECTOR_2D is
-		-- the point in the middle of the head line (kopflinie)
-		do
-			create Result.make(100,100)
-			
-		end
-		
-	ball_radius : DOUBLE is 5.0
-	
-	width : DOUBLE is 400.0 -- size in x-direction
-	height: DOUBLE is 200.0 -- size in y-direction
-
-
-feature {NONE} -- Implementation
 
 	is_correct_opening(collisions_: LIST[Q_COLLISION_EVENT]):BOOLEAN is
 			-- this implements rule 4.6 for a correct opening, the definition
@@ -260,7 +250,7 @@ feature {NONE} -- Implementation
 			colored_ball_fallen_ : BOOLEAN
 			any_bank_touched_ : BOOLEAN
 		do
-			own_colored_first_ := first_ball_collision (collisions_).owner = player_
+			own_colored_first_ := first_ball_collision (collisions_).owner.has (player_)
 			colored_ball_fallen_ := is_any_ball_in_hole (collisions_) and not is_ball_in_hole (white_number,collisions_)
 			
 			from
@@ -320,19 +310,6 @@ feature {NONE} -- Implementation
 			Result ?= collisions_.first.defendent	
 		end
 		
-	random_range(min:INTEGER; max:INTEGER): INTEGER is
-			-- returns random in the range [min..max]
-		local 
-			r_: RANDOM
-		do
-			create r_.make
-			Result := (r_.double_i_th (random_i)*(max-min)+min).rounded
-			random_i := random_i+1
-		ensure
-			result >= min and result <= max
-		end
-		
-	random_i :INTEGER
 invariant
 	invariant_clause: True -- Your invariant here
 

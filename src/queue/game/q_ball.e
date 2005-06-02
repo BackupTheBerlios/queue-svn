@@ -38,9 +38,8 @@ feature -- interface
 
 	color : INTEGER -- the color of the ball
 	number: INTEGER -- the number of the ball, 0 is the white ball
-	owner : Q_PLAYER -- the owner of the ball, null if no owner yet specified
-
-
+	owner : LINKED_LIST[Q_PLAYER] -- the owners of the ball, null if no owner yet specified, usually the list has only one owner
+	
 	set_color(color_:INTEGER) is
 			-- Set the color of the ball
 		require
@@ -56,10 +55,10 @@ feature -- interface
 			number := number_
 		end
 		
-	set_owner(owner_: Q_PLAYER) is
+	add_owner(owner_: Q_PLAYER) is
 			-- Set the owner of the ball (null means that the ball belongs to nobody yet)
 		do
-			owner := owner_
+			owner.force (owner_)
 		end
 
 	update_position (step: DOUBLE) is

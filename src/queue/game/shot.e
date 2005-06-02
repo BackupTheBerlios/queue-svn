@@ -6,9 +6,25 @@ indexing
 
 class
 	Q_SHOT
-
+	
+create
+	make,
+	make_empty
+	
 feature -- Interface
 
+	make (dir_: Q_VECTOR_2D) is
+			-- create a shot with direction vector
+		do
+			direction := dir_
+		end
+		
+	make_empty is
+			-- create a default shot
+		do
+			
+		end
+		
 	direction: Q_VECTOR_2D -- the direction of the shot in (x,y) coordinates
 	
 	-- hackers: commented out because strength = |direction| = length of direction vector

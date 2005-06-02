@@ -12,6 +12,14 @@ inherit
 
 feature {NONE} -- Implementation
 
+	set_ability(ability_ : INTEGER) is
+			-- set the ability of the AI player 10 is best, 1 is worst
+		require
+			ability_ >= 1 and then ability_ <=10
+		deferred
+		end
+		
+
 	next_shot(situation_ : Q_TABLE): Q_SHOT is
 			-- returns the shot the player wants to play next
 		require
