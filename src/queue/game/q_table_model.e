@@ -32,6 +32,28 @@ feature -- Interface
 	shapes : Q_GL_GROUP[Q_GL_OBJECT]
 		-- bounding shapes
 
+feature -- coordinate-system
+	position_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
+		do
+			
+		end
+	
+	direction_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
+		do
+			
+		end
+		
+	position_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
+		do
+			
+		end
+		
+	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
+		do
+			
+		end
+		
+
 feature {NONE} -- Implementation
 	make_from_file (file_name_: STRING) is
 			-- create the model from out of a file
@@ -48,11 +70,4 @@ feature {NONE} -- Implementation
 			--shapes := loader.create_shapes
 		end
 		
-	vector_2D_to_vector_3D ( v_ :Q_VECTOR_2D) : Q_VECTOR_3D is
-			-- convert a vector_2D to a 3-dimensional vector
-		do
-			
-		end
-		
-
 end -- class Q_TABLE_MODEL
