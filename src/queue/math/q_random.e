@@ -7,6 +7,9 @@ indexing
 class
 	Q_RANDOM
 	
+inherit
+	DOUBLE_MATH
+	
 feature
 	
 	random_range(min:INTEGER; max:INTEGER): INTEGER is
@@ -21,14 +24,14 @@ feature
 			result >= min and result <= max
 		end
 		
-	random_gaussian(mean: DOUBLE; variance:DOUBLE): DOUBLE is
-			-- returns a random number with a gaussian density function with given mean and variance
+	random_gaussian(m_: DOUBLE; s_:DOUBLE): DOUBLE is
+			-- returns a random number with a gaussian density function with given mean and standard deviation
 			-- uses the polar form of the box-muller transformation as seen on http://www.taygeta.com/random/boxmuller.html
 		require
-			mean /= void
-			variance /= void
+			m_ /= void
+			s_ /= void
 		local
-			x1, x2,w,y1 :DOUBLE
+			x1, x2,w,y1,y2 :DOUBLE
 			r_ : RANDOM
 		do
 			create r_.make
@@ -41,10 +44,10 @@ feature
 				x2 := 2.0*r_.double_i_th(random_i)-1.0
 				w := x1*x1 + x2*x2
 			end
-			w := sqrt((-2.0*w.log) / w);
+			w := sqrt((-2.0*log(w)) / w);
 			y1 := x1*w
 			y2 := x2*w
-			result := m+y1*s
+			result := m_+y1*s_
 		end
 		
 		
