@@ -19,15 +19,13 @@ inherit
 		process_mouse_exit,
 		process_component_removed,
 		process_component_added
-	redefine
-		process_key_down
 	select
 		texted_make
 	end
 	
 	Q_HUD_MOUSE_SENSITIVE_COMPONENT
-	rename
-		make as mouse_sensitive_make
+	undefine
+		make
 	redefine
 		process_key_down
 	end
@@ -39,6 +37,7 @@ feature {NONE} -- creation
 	make is
 		do
 			texted_make
+			make_sensitive
 			
 			create actions	
 			set_focusable( true )
@@ -51,7 +50,9 @@ feature {NONE} -- creation
 			set_background_normal( create {Q_GL_COLOR}.make_rgba( 1, 0.5, 0, 0.75 )) -- orange
 			set_background_pressed( create {Q_GL_COLOR}.make_rgba( 1, 0, 0, 0.75 )) -- red
 			set_background_rollover( create {Q_GL_COLOR}.make_rgba( 1, 1, 0, 0.75 )) -- yellow
-			set_blend_background( true ) 
+			set_blend_background( true )
+			
+			key_down_listener.extend( agent do_click_on_event( ?, ? ))
 		end		
 
 feature -- eventhandling
@@ -79,13 +80,15 @@ feature -- eventhandling
 			end
 		end
 
-	process_key_down( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
+	do_click_on_event( event_ : ESDL_KEYBOARD_EVENT; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
-			if event_.key = event_.sdlk_return then
-				do_click
-				result := true
-			else
-				result := false
+			if not consumed_ then
+				if event_.key = event_.sdlk_return then
+					do_click
+					result := true
+				else
+					result := false
+				end
 			end
 		end
 		

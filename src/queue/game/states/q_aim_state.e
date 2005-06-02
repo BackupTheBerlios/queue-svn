@@ -1,8 +1,6 @@
 indexing
 	description: "The state where the player can aim, where a ball should be shoot at"
 	author: "Benjamin Sigg"
-	date: "$Date$"
-	revision: "$Revision$"
 
 deferred class
 	Q_AIM_STATE
@@ -19,11 +17,15 @@ feature
 				create line.make( 
 					create {Q_VECTOR_3D}, create {Q_VECTOR_3D}, 20 )
 					
-				create behaviour.make
+				create behaviour.make( ressource_.table_model )
 				
 				behaviour.set_ball( ball )
+				behaviour.set_zoom_max( ball.radius * 50 )
+				behaviour.set_zoom_min( ball.radius * 2 )
+				behaviour.set_rotate_vertical_min( -50 )
+				behaviour.set_rotate_vertical_max( -2.5 )					
 			end
-			
+				
 			ressource_.gl_manager.add_object( line )
 			ressource_.gl_manager.set_camera_behaviour( behaviour )
 			
@@ -56,10 +58,15 @@ feature {Q_AIM_STATE}
 	set_ball( ball_ : Q_BALL ) is
 		do
 			ball := ball_
+			
+			if behaviour /= void and ball /= void then
+				behaviour.set_ball( ball )				
+			end
 		end
 		
 		
 feature{NONE} -- internals
+
 	line : Q_GL_BROKEN_LINE
 	
 	behaviour : Q_BALL_CAMERA_BEHAVIOUR

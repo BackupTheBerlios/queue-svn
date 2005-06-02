@@ -9,10 +9,7 @@ inherit
 	Q_HUD_COMPONENT
 	redefine
 		make, 
-		draw_background,
-		process_mouse_button_down, 
-		process_mouse_button_up,
-		process_mouse_moved
+		draw_background
 	end
 	
 creation
@@ -26,6 +23,10 @@ feature{NONE}--creation
 			set_focusable( false )
 			set_foreground( create {Q_GL_COLOR}.make_magenta )
 			set_background( create {Q_GL_COLOR}.make_magenta )
+			
+			mouse_button_up_listener.extend( agent mouse_button_up( ?,?,?,? ))
+			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,? ))
+			mouse_moved_listener.extend( agent mouse_moved( ?,?,?,?))
 		end
 		
 feature
@@ -113,26 +114,32 @@ feature -- calclations
 feature -- event - handling
 	mouse_pressed : BOOLEAN
 
-	process_mouse_button_down( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE ) : BOOLEAN is
+	mouse_button_down( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
-			mouse_pressed := true
-			set_value( screen_to_value( x_ ))
-			result := true
-		end
-		
-	process_mouse_button_up( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE ) : BOOLEAN is
-		do
-			mouse_pressed := false
-			result := false
-		end
-	
-	process_mouse_moved( event_: ESDL_MOUSEMOTION_EVENT; x_: DOUBLE; y_: DOUBLE ) : BOOLEAN is
-		do
-			if mouse_pressed then
+			if not consumed_ then
+				mouse_pressed := true
 				set_value( screen_to_value( x_ ))
 				result := true
-			else
+			end
+		end
+		
+	mouse_button_up( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
+		do
+			if not consumed_ then
+				mouse_pressed := false
 				result := false
+			end
+		end
+	
+	mouse_moved( event_: ESDL_MOUSEMOTION_EVENT; x_: DOUBLE; y_: DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
+		do
+			if not consumed_ then		
+				if mouse_pressed then
+					set_value( screen_to_value( x_ ))
+					result := true
+				else
+					result := false
+				end
 			end
 		end
 		

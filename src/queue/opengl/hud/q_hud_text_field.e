@@ -9,8 +9,6 @@ inherit
 	Q_HUD_TEXTED
 	redefine
 		draw_text,
-		process_mouse_button_down,
-		process_key_down,
 		set_text,
 		make
 	end
@@ -37,6 +35,9 @@ feature{NONE} -- creation
 			
 			set_insets( create {Q_HUD_INSETS}.make( 0, 0.1, 0, 0.1 ))
 			set_text( "" )
+			
+			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,? ))
+			key_down_listener.extend( agent key_down( ?,? ))
 		end
 		
 	
@@ -87,122 +88,126 @@ feature {NONE} -- event handling
 	-- calculated by the Superclass, when it is painted (so its that, what the user
 	-- sees, not a bad compromis, i think)
 	
-	process_mouse_button_down (event_: ESDL_MOUSEBUTTON_EVENT; x__, y_: DOUBLE): BOOLEAN is
+	mouse_button_down (event_: ESDL_MOUSEBUTTON_EVENT; x__, y_: DOUBLE; consumed_ : BOOLEAN): BOOLEAN is
 		local
 			count_ : INTEGER
 			stop_ : BOOLEAN
 			x_, width_old_, width_new_ : DOUBLE
 		do
-			-- search new position for cursor
-			x_ := x__ - left_text_start
-			
-			from
-				count_ := 0
-				stop_ := false
-			until
-				stop_ or count_ >= text.count
-			loop
-				width_old_ := width_new_
+			if not consumed_ then
+				-- search new position for cursor
+				x_ := x__ - left_text_start
 				
-				if count_ = 0 then
-					width_old_ := 0
-					width_new_ := 0
-				else
-					width_new_ := font.string_width( text.substring( 1, count_ ), font_size )
-				end
-				
-				if width_new_ > x_ then
-					stop_ := true
+				from
+					count_ := 0
+					stop_ := false
+				until
+					stop_ or count_ >= text.count
+				loop
+					width_old_ := width_new_
 					
-					if width_new_ - x_ > x_ - width_old_ then
-						count_ := count_ - 1	
+					if count_ = 0 then
+						width_old_ := 0
+						width_new_ := 0
+					else
+						width_new_ := font.string_width( text.substring( 1, count_ ), font_size )
 					end
-				else
-					count_ := count_ + 1	
+					
+					if width_new_ > x_ then
+						stop_ := true
+						
+						if width_new_ - x_ > x_ - width_old_ then
+							count_ := count_ - 1	
+						end
+					else
+						count_ := count_ + 1	
+					end
 				end
+				
+				if count_ < 0 then
+					count_ := 0
+				end
+				
+				set_cursor( count_ + 1 )
+				
+				request_focus
+				result := true
 			end
-			
-			if count_ < 0 then
-				count_ := 0
-			end
-			
-			set_cursor( count_ + 1 )
-			
-			request_focus
-			result := true
 		end
 
-	process_key_down (event_: ESDL_KEYBOARD_EVENT): BOOLEAN is
+	key_down (event_: ESDL_KEYBOARD_EVENT; consumed_ : BOOLEAN ): BOOLEAN is
 		local
 			delete_ : BOOLEAN
 			character_ : CHARACTER
 		do
-			result := false
-			
-			-- insert or remove some letters
-			if event_.key = event_.sdlk_backspace then
-				if cursor > 1 then
-					delete_ := true
-					cursor := cursor - 1	
-				end
-			end
-			
-			if delete_ or event_.key = event_.sdlk_delete then
-				if cursor <= text.count and text.count > 0 then
-					if text.count = 1 then
-						set_text( "" )
-					elseif cursor = 1 then
-						set_text( text.substring( 2, text.count ))
-					elseif cursor = text.count then
-						set_text( text.substring( 1, cursor-1 ))
-					else
-						set_text(
-							text.substring( 1, cursor-1 ) +
-							text.substring( cursor+1, text.count ))
-					end
-				end	
-				result := true
-			elseif event_.key = event_.sdlk_right then
-				if cursor <= text.count then
-					set_cursor( cursor+1 )
-				end
-				result := true
-			elseif event_.key = event_.sdlk_left then
-				if cursor > 1 then
-					set_cursor( cursor-1 )
-				end
-				result := true
-			elseif event_.key = event_.sdlk_home then
-				set_cursor( 1 )
-				result := true
-			elseif event_.key = event_.sdlk_end then
-				set_cursor( text.count + 1 )
-				result := true
-			else
-				character_ := event_.character
+			if not consumed_ then
+				result := false
 				
-				if (event_.is_caps_locked and not event_.is_shift_pressed) or
-					(not event_.is_caps_locked and event_.is_shift_pressed) then
-					
-					character_ := character_.upper
+				-- insert or remove some letters
+				if event_.key = event_.sdlk_backspace then
+					if cursor > 1 then
+						delete_ := true
+						cursor := cursor - 1	
+					end
 				end
 				
-				if font.known_letter( character_ ) then
-					if text.count = 0 then
-						set_text( character_.out )
-					elseif cursor = 1 then
-						set_text( character_.out + text )
-					elseif cursor = text.count+1 then
-						set_text( text + character_.out )
-					else
-						set_text(
-							text.substring( 1, cursor-1 ) +
-							character_.out + 
-							text.substring( cursor, text.count ))
-					end
-					cursor := cursor + 1
+				if delete_ or event_.key = event_.sdlk_delete then
+					if cursor <= text.count and text.count > 0 then
+						if text.count = 1 then
+							set_text( "" )
+						elseif cursor = 1 then
+							set_text( text.substring( 2, text.count ))
+						elseif cursor = text.count then
+							set_text( text.substring( 1, cursor-1 ))
+						else
+							set_text(
+								text.substring( 1, cursor-1 ) +
+								text.substring( cursor+1, text.count ))
+						end
+					end	
 					result := true
-				end	
+				elseif event_.key = event_.sdlk_right then
+					if cursor <= text.count then
+						set_cursor( cursor+1 )
+					end
+					result := true
+				elseif event_.key = event_.sdlk_left then
+					if cursor > 1 then
+						set_cursor( cursor-1 )
+					end
+					result := true
+				elseif event_.key = event_.sdlk_home then
+					set_cursor( 1 )
+					result := true
+				elseif event_.key = event_.sdlk_end then
+					set_cursor( text.count + 1 )
+					result := true
+				else
+					character_ := event_.character
+					
+					if (event_.is_caps_locked and not event_.is_shift_pressed) or
+						(not event_.is_caps_locked and event_.is_shift_pressed) then
+						
+						character_ := character_.upper
+					end
+					
+					if font.known_letter( character_ ) then
+						if text.count = 0 then
+							set_text( character_.out )
+						elseif cursor = 1 then
+							set_text( character_.out + text )
+						elseif cursor = text.count+1 then
+							set_text( text + character_.out )
+						else
+							set_text(
+								text.substring( 1, cursor-1 ) +
+								character_.out + 
+								text.substring( cursor, text.count ))
+						end
+						cursor := cursor + 1
+						result := true
+					end	
+				end
 			end
 		end
 

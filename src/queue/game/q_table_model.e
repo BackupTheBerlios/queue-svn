@@ -41,7 +41,7 @@ feature -- coordinate-system
 	
 	direction_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
 		do
-			create result.make (table_.x, -2.86, table_.y)
+			create result.make (table_.x, 0, table_.y)
 		end
 		
 	position_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is

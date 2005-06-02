@@ -18,6 +18,16 @@ feature -- creation
 			
 			set_background( create {Q_GL_COLOR}.make_gray )
 			set_foreground( create {Q_GL_COLOR}.make_black )
+			
+			create mouse_button_up_listener.make
+			create mouse_button_down_listener.make
+			create mouse_moved_listener.make
+			create mouse_enter_listener.make
+			create mouse_exit_listener.make
+			create component_added_listener.make
+			create component_removed_listener.make
+			create key_down_listener.make
+			create key_up_listener.make
 		end
 		
 feature -- drawing
@@ -120,67 +130,138 @@ feature -- eventhandling
 			end
 		end
 		
+feature -- listeners
+	mouse_button_up_listener   : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_MOUSEBUTTON_EVENT, DOUBLE, DOUBLE, BOOLEAN], BOOLEAN]]
+		-- event, x, y, consumed
+		
+	mouse_button_down_listener : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_MOUSEBUTTON_EVENT, DOUBLE, DOUBLE, BOOLEAN], BOOLEAN]]
+		-- event, x, y, consumed
+	
+	mouse_moved_listener       : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_MOUSEMOTION_EVENT, DOUBLE, DOUBLE, BOOLEAN], BOOLEAN]]
+		-- event, x, y, consumed
+	
+	mouse_enter_listener : LINKED_LIST[ PROCEDURE[ ANY, TUPLE[ DOUBLE, DOUBLE]]]
+		-- x, y
+		
+	mouse_exit_listener : LINKED_LIST[ PROCEDURE[ ANY, TUPLE[ DOUBLE, DOUBLE]]]	
+		-- x, y
+	
+	component_added_listener  : LINKED_LIST[ PROCEDURE[ ANY, TUPLE[ Q_HUD_COMPONENT, Q_HUD_COMPONENT ]]]
+		-- parent, child
+		
+	component_removed_listener : LINKED_LIST[ PROCEDURE[ ANY, TUPLE[ Q_HUD_COMPONENT, Q_HUD_COMPONENT ]]]
+		-- parent, child
+	
+	key_up_listener   : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_KEYBOARD_EVENT, BOOLEAN], BOOLEAN]]
+		-- event, consumed
+		
+	key_down_listener : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_KEYBOARD_EVENT, BOOLEAN], BOOLEAN]]
+		-- event, consumed
 		
 feature{Q_HUD_ROOT_PANE, Q_HUD_COMPONENT} -- eventhandling
 	process_key_down( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
 			-- invoked when a keyevent happens, and this component has the focus and is enabled
 			-- returns true if the event is consumed, false if the parent should be invoked with the event
+		local
+			consumed_ : BOOLEAN
 		do
-			result := false
+			from key_down_listener.start until key_down_listener.after loop
+				consumed_ := key_down_listener.item.item( [ event_, result ])
+				result := result or consumed_
+				key_down_listener.forth
+			end
 		end
 
 	process_key_up( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
 			-- invoked when a keyevent happens, and this component has the focus and is enabled
 			-- returns true if the event is consumed, false if the parent should be invoked with the event
+		local
+			consumed_ : BOOLEAN
 		do
-			result := false
+			from key_up_listener.start until key_up_listener.after loop
+				consumed_ := key_up_listener.item.item( [ event_, result ])
+				result := result or consumed_
+				key_up_listener.forth
+			end
 		end
 		
 	process_mouse_enter( x_, y_ : DOUBLE ) is
 			-- invoked when the Mouse enters this component
 		do
+			from mouse_enter_listener.start until mouse_enter_listener.after loop
+				mouse_enter_listener.item.call([x_, y_])
+				mouse_enter_listener.forth
+			end			
 		end
 		
 	process_mouse_exit( x_, y_ : DOUBLE ) is
 			-- invoked when the Mouse exites this component.
 			-- this method will perhaps not be called, if the enabled-state is set to false,
 			-- or the component is removed from its parent
-		do	
+		do
+			from mouse_exit_listener.start until mouse_exit_listener.after loop
+				mouse_exit_listener.item.call([x_, y_])
+				mouse_exit_listener.forth
+			end				
 		end
 		
 		
 	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
 			-- invoked when a Mousebutton is pressed, and the Mouse is over this Component
 			-- returns true if the event is consumed, false if the parent should be invoked with the event			
+		local
+			consumed_ : BOOLEAN
 		do
-			result := false
+			from mouse_button_down_listener.start until mouse_button_down_listener.after loop
+				consumed_ := mouse_button_down_listener.item.item( [ event_, x_, y_, result ])
+				result := result or consumed_
+				mouse_button_down_listener.forth
+			end
 		end
 		
 	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
 			-- invoked when a Mousebutton is released, witch was earlier pressed over this Component
 			-- returns true if the event is consumed, false if the parent should be invoked with the event
+		local
+			consumed_ : BOOLEAN
 		do
-			result := false
+			from mouse_button_up_listener.start until mouse_button_up_listener.after loop
+				consumed_ := mouse_button_up_listener.item.item( [ event_, x_, y_, result ])
+				result := result or consumed_
+				mouse_button_up_listener.forth
+			end
 		end
 		
 	process_mouse_moved( event_ : ESDL_MOUSEMOTION_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
 			-- invoked the mouse is moved over this component, but not if a mousebutton was pressed over another component
 			-- returns true if the event is consumed, false if the parent should be invoked with the event
+		local
+			consumed_ : BOOLEAN
 		do
-			result := false
+			from mouse_moved_listener.start until mouse_moved_listener.after loop
+				consumed_ := mouse_moved_listener.item.item( [ event_, x_, y_, result ])
+				result := result or consumed_
+				mouse_moved_listener.forth
+			end
 		end
 			
 	process_component_added( parent_ : Q_HUD_CONTAINER; child_ : Q_HUD_COMPONENT ) is
 			-- invoked, when this component or one of its parents, is added
 		do
+			from component_added_listener.start until component_added_listener.after loop
+				component_added_listener.item.call( [parent_, child_] )
+				component_added_listener.forth
+			end
 		end
 	
 	process_component_removed( parent_ : Q_HUD_CONTAINER; child_ : Q_HUD_COMPONENT ) is
 			-- invoked, when this component or one of its parents, is removed
 		do
+			from component_removed_listener.start until component_removed_listener.after loop
+				component_removed_listener.item.call( [parent_, child_] )
+				component_removed_listener.forth
+			end			
 		end
-		
-		
 			
 feature -- Componenttree
 	parent : Q_HUD_CONTAINER

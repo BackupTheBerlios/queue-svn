@@ -18,8 +18,10 @@ creation
 	make
 
 feature{NONE}
-	make is
+	make( table_ : Q_TABLE_MODEL )is
 		do
+			table := table_
+			
 			zoom_factor := 2.0
 			zoom_max := 100
 			zoom_min := 50
@@ -32,8 +34,16 @@ feature{NONE}
 		end
 		
 
-feature -- the ball
+feature -- the ball & table
 	ball : Q_BALL
+	
+	table : Q_TABLE_MODEL
+	
+	set_table( table_ : Q_TABLE_MODEL ) is
+		do
+			table := table_
+		end
+		
 	
 	set_ball( ball_ : Q_BALL ) is
 		do
@@ -49,7 +59,8 @@ feature -- update
 				vector_ := camera.view_direction_by_angles( alpha, beta )
 				vector_.normaliced
 				vector_.scaled( -distance )
-				vector_.add_xyz( ball.center.x, ball.center.y, 0 )
+				vector_.add( table.position_table_to_world( ball.center ) )
+				vector_.add_xyz( 0, ball.radius, 0 )
 				
 				camera.set_position( vector_.x, vector_.y, vector_.z )
 				camera.set_alpha( alpha )
@@ -136,6 +147,37 @@ feature -- event-handling
 feature -- boundaris
 	zoom_factor, zoom_min, zoom_max : DOUBLE
 	rotate_factor, rotate_vertical_min, rotate_vertical_max : DOUBLE
+
+	set_zoom_factor( factor_ : DOUBLE ) is
+		do
+			zoom_factor := factor_
+		end
+		
+	set_zoom_min( min_ : DOUBLE ) is
+		do
+			zoom_min := min_
+		end
+		
+	set_zoom_max( max_ : DOUBLE ) is
+		do
+			zoom_max := max_
+		end
+		
+	set_rotate_factor( factor_ : DOUBLE ) is
+		do
+			rotate_factor := factor_
+		end
+		
+	set_rotate_vertical_min( min_ : DOUBLE ) is
+		do
+			rotate_vertical_min := min_
+		end
+		
+	set_rotate_vertical_max( max_ : DOUBLE ) is
+		do
+			rotate_vertical_max := max_
+		end
+		
 
 feature{NONE} -- math
 	math : Q_MATH is

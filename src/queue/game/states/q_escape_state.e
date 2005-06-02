@@ -16,7 +16,6 @@ feature{NONE}--creation
 		do
 			create_menus
 		end
-		
 
 feature
 	install( ressources_: Q_GAME_RESSOURCES ) is

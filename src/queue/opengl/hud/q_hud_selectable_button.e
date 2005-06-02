@@ -19,9 +19,9 @@ inherit
 		process_mouse_enter,
 		process_mouse_exit,
 		process_component_removed,
-		process_component_added
+		process_component_added,
+		process_key_down
 	redefine
-		process_key_down,
 		draw_foreground
 	select
 		texted_make
@@ -31,7 +31,6 @@ inherit
 	undefine
 		make
 	redefine
-		process_key_down,
 		draw_foreground
 	end
 
@@ -39,6 +38,7 @@ feature {Q_HUD_SELECTABLE_BUTTON} -- Creation
 	make is
 		do
 			texted_make
+			make_sensitive
 			
 			set_background_normal( create {Q_GL_COLOR}.make_rgb( 0.5, 0.5, 1 ) )
 			set_background_pressed( create {Q_GL_COLOR}.make_rgb( 0.25, 0.25, 1 ) )
@@ -50,6 +50,8 @@ feature {Q_HUD_SELECTABLE_BUTTON} -- Creation
 			set_enabled( true )
 			set_focusable( true )
 			
+			key_down_listener.extend( agent key_down( ?,? ))
+			
 			create actions
 		end
 		
@@ -59,13 +61,15 @@ feature {Q_HUD_CHECK_BOX} -- eventhandling
 			set_selected( not selected )
 		end
 		
-	process_key_down( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
+	key_down( event_ : ESDL_KEYBOARD_EVENT; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
-			if event_.key = event_.sdlk_space or event_.key = event_.sdlk_return then
-				do_click
-				result := true
-			else
-				result := false
+			if not consumed_ then
+				if event_.key = event_.sdlk_space or event_.key = event_.sdlk_return then
+					do_click
+					result := true
+				else
+					result := false
+				end
 			end
 		end
 		

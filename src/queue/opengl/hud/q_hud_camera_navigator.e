@@ -8,14 +8,9 @@ class
 
 inherit
 	Q_HUD_CONTAINER
+	rename
+		key_down as container_key_down
 	redefine
-		process_mouse_moved,
-		process_mouse_button_down,
-		process_mouse_button_up,
-		process_mouse_enter,
-		process_mouse_exit,
-		process_key_down,
-		process_key_up,
 		make,
 		draw
 	end
@@ -28,6 +23,14 @@ feature{NONE} -- creation
 		do
 			precursor
 			set_enabled( true )
+
+			mouse_moved_listener.extend( agent mouse_moved( ?,?,?,? ))
+			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,? ))
+			mouse_button_up_listener.extend( agent mouse_button_up( ?,?,?,? ))
+			mouse_enter_listener.extend( agent mouse_enter( ?,? ))
+			mouse_exit_listener.extend( agent mouse_exit( ?,? ))
+			key_down_listener.extend( agent key_down( ?,? ))
+			key_up_listener.extend( agent key_up( ?,? ))			
 		end
 
 	make_camera( camera_ : Q_GL_CAMERA ) is
@@ -75,39 +78,49 @@ feature -- camera
 	
 feature{NONE} -- event-handling
 
-	process_mouse_moved( event_ : ESDL_MOUSEMOTION_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
+	mouse_moved( event_ : ESDL_MOUSEMOTION_EVENT; x_, y_ : DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
-			result := behaviour /= void and then behaviour.process_mouse_moved( event_, x_, y_ )
+			if not consumed_ then
+				result := behaviour /= void and then behaviour.process_mouse_moved( event_, x_, y_ )
+			end
 		end
 	
-	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
+	mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
-			result := behaviour /= void and then behaviour.process_mouse_button_down( event_, x_, y_ )
+			if not consumed_ then
+				result := behaviour /= void and then behaviour.process_mouse_button_down( event_, x_, y_ )
+			end
 		end
 		
-	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
+	mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
-			result := behaviour /= void and then behaviour.process_mouse_button_up( event_, x_, y_ )		
+			if not consumed_ then
+				result := behaviour /= void and then behaviour.process_mouse_button_up( event_, x_, y_ )
+			end
 		end
 		
-	process_key_down (event_: ESDL_KEYBOARD_EVENT): BOOLEAN is
+	key_down( event_: ESDL_KEYBOARD_EVENT; consumed_ : BOOLEAN ): BOOLEAN is
 		do
-			result := behaviour /= void and then behaviour.process_key_down( event_ )
+			if not consumed_ then
+				result := behaviour /= void and then behaviour.process_key_down( event_ )
+			end
 		end
 
-	process_key_up( event_: ESDL_KEYBOARD_EVENT): BOOLEAN is
+	key_up( event_: ESDL_KEYBOARD_EVENT; consumed_ : BOOLEAN ): BOOLEAN is
 		do
-			result := behaviour /= void and then behaviour.process_key_up( event_ )
+			if not consumed_ then
+				result := behaviour /= void and then behaviour.process_key_up( event_ )
+			end
 		end
 		
-	process_mouse_enter( x_, y_: DOUBLE) is
+	mouse_enter( x_, y_: DOUBLE) is
 		do
 			if behaviour /= void then
 				behaviour.process_mouse_enter( x_, y_ )				
 			end
 		end
 		
-	process_mouse_exit( x_, y_: DOUBLE) is
+	mouse_exit( x_, y_: DOUBLE) is
 		do
 			if behaviour /= void then
 				behaviour.process_mouse_exit( x_, y_ )				

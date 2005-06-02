@@ -8,7 +8,6 @@ class
 inherit
 	Q_HUD_COMPONENT
 	redefine
-		process_key_down,
 		draw_foreground,
 		make,
 		enqueue
@@ -27,6 +26,8 @@ feature {NONE} -- creation
 			
 			set_background( void )
 			set_foreground( create {Q_GL_COLOR}.make_black )
+			
+			key_down_listener.extend( agent key_down( ?,? ))
 		end
 		
 
@@ -83,18 +84,20 @@ feature -- eventhandling
 		end
 		
 feature{Q_HUD_CONTAINER} -- eventhandling
-	process_key_down( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
+	key_down( event_ : ESDL_KEYBOARD_EVENT; consumed_ : BOOLEAN ) : BOOLEAN is
 		local
 			component_, focused_component_ : Q_HUD_COMPONENT
 		do
-			result := false
-			
-			if focus_handler /= void then
-				focused_component_ := root_pane.focused_component
-				component_ := focus_handler.next( focused_component_, current, event_ )
-				if component_ /= void then
-					component_.request_focus
-					result := true
+			if not consumed_ then
+				result := false
+				
+				if focus_handler /= void then
+					focused_component_ := root_pane.focused_component
+					component_ := focus_handler.next( focused_component_, current, event_ )
+					if component_ /= void then
+						component_.request_focus
+						result := true
+					end
 				end
 			end
 		end

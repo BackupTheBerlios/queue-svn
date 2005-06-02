@@ -6,7 +6,7 @@ class
 	Q_HUD_CHECK_BOX
 
 inherit
-		Q_HUD_SELECTABLE_BUTTON
+	Q_HUD_SELECTABLE_BUTTON
 		redefine
 			make
 		end

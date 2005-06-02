@@ -11,13 +11,25 @@ inherit
 		background as background_normal,
 		set_background as set_background_normal
 	redefine
-		process_mouse_button_down,
-		process_mouse_button_up,
-		process_mouse_enter,
-		process_mouse_exit,
-		process_component_removed,
-		draw_background
+		draw_background, make
 	end
+	
+feature{Q_HUD_MOUSE_SENSITIVE_COMPONENT} -- creation
+	make is
+		do
+			precursor
+			make_sensitive
+		end
+		
+	make_sensitive is
+		do
+			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,? ))
+			mouse_button_up_listener.extend( agent mouse_button_up( ?,?,?,? ))
+			mouse_enter_listener.extend( agent mouse_enter( ?,? ))
+			mouse_exit_listener.extend( agent mouse_exit( ?,? ))
+			component_removed_listener.extend( agent component_removed( ?,? ))
+		end
+		
 	
 feature{Q_HUD_MOUSE_SENSITIVE_COMPONENT} -- event-handling
 	pressed, mouse_over : BOOLEAN
@@ -28,35 +40,39 @@ feature{Q_HUD_MOUSE_SENSITIVE_COMPONENT} -- event-handling
 		end
 		
 
-	process_component_removed( parent_ : Q_HUD_CONTAINER; child_ : Q_HUD_COMPONENT ) is
+	component_removed( parent_ : Q_HUD_CONTAINER; child_ : Q_HUD_COMPONENT ) is
 		do
 			pressed := false
 			mouse_over := false
 		end
 
-	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
-		do
-			pressed := true
-			result := true
+	mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
+		do			
+			if not consumed_ then
+				pressed := true
+				result := true
+			end
 		end
 		
-	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
+	mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
-			if pressed then
-				pressed := false
-				
-				if inside( x_, y_ ) then
-					do_click
+			if not consumed_ then
+				if pressed then
+					pressed := false
+					
+					if inside( x_, y_ ) then
+						do_click
+					end
 				end
 			end
 		end
 		
-	process_mouse_enter( x_, y_ : DOUBLE ) is
+	mouse_enter( x_, y_ : DOUBLE ) is
 		do
 			mouse_over := true
 		end
 		
-	process_mouse_exit( x_, y_ : DOUBLE ) is
+	mouse_exit( x_, y_ : DOUBLE ) is
 		do
 			mouse_over := false
 		end
