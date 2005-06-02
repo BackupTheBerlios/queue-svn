@@ -19,9 +19,11 @@ feature {NONE} -- Creation
 		do
 			precursor
 
-			set_background_normal( create {Q_GL_COLOR}.make_rgb( 0.5, 1, 0.5 ) )
-			set_background_pressed( create {Q_GL_COLOR}.make_rgb( 0.25, 1, 0.25 ) )
-			set_background_rollover( create {Q_GL_COLOR}.make_rgb( 0.75, 1, 0.75 ) )
+			set_background_normal( create {Q_GL_COLOR}.make_rgba( 0.5, 1, 0.5, 0.75 ) )
+			set_background_pressed( create {Q_GL_COLOR}.make_rgba( 0.25, 1, 0.25, 0.75 ) )
+			set_background_rollover( create {Q_GL_COLOR}.make_rgba( 0.75, 1, 0.75, 0.75 ) )
+			
+			set_blend_background( true )
 		end
 		
 feature -- drawing

@@ -40,7 +40,7 @@ feature
 			light_1_.set_spot_exponent ( 0 )
 			
 			light_2_.set_spot_cut_off ( 180 )
-			light_2_.set_diffuse ( 0, 0, 1, 0 )
+			light_2_.set_diffuse ( 0, 0, 1, 0 ) 
 			light_2_.set_specular( 1, 0, 0, 0 )
 			light_2_.set_ambient (  0.5, 0.5, 0.5, 0.5 )
 			light_2_.set_direction( -1, -1, -0.5 )

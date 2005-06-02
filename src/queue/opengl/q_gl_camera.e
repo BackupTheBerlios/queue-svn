@@ -11,11 +11,10 @@ class
 feature -- transformation
 	transform( open_gl : Q_GL_DRAWABLE ) is
 		do
-			open_gl.gl.gl_push_matrix	
+			open_gl.gl.gl_push_matrix
 			
-			open_gl.gl.gl_rotated( -beta, 1, 0, 0 )
-			open_gl.gl.gl_rotated( alpha, 0, 1, 0 )
-			open_gl.gl.gl_translated( -x, -y, -z )
+			ensure_matrix
+			matrix.set( open_gl )
 			
 			end
 		
@@ -23,6 +22,68 @@ feature -- transformation
 		do
 			open_gl.gl.gl_pop_matrix
 		end
+
+feature -- screen & model coordinate exchange
+	transform_direction( vector_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
+		do
+			ensure_matrix
+			result := matrix.mul_vector_3( vector_ )
+		end
+		
+	transform_position( vector_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
+		do
+			ensure_matrix
+			result := matrix.mul_vector_3_as_4( vector_ )
+		end
+		
+	untransform_direction( vector_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
+		do
+			ensure_inverse
+			result := inverse.mul_vector_3( vector_ )
+		end
+		
+	untransform_position( vector_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
+		do
+			ensure_inverse
+			result := inverse.mul_vector_3_as_4( vector_ )
+		end
+		
+
+feature{NONE} -- matrix
+	matrix, inverse : Q_MATRIX_4X4
+	
+	ensure_matrix is
+		local
+			matrix_ : Q_MATRIX_4X4
+		do
+			if matrix = void then
+				create matrix_.identity
+				create matrix.identity
+				
+				matrix_.rotate( 1, 0, 0, -beta / 180 * pi )
+				matrix := matrix.mul( matrix_ )
+				
+				matrix_.identity
+				matrix_.rotate( 0, 1, 0, alpha / 180 * pi )
+				matrix := matrix.mul( matrix_ )
+				
+				matrix_.identity
+				matrix_.translate( -x, -y, -z )
+				matrix := matrix.mul( matrix_ )
+				
+				inverse := void
+			end
+		end
+		
+	ensure_inverse is
+		do
+			if inverse = void then
+				ensure_matrix
+				inverse := matrix.inverted
+			end
+		end
+		
+		
 
 feature -- view
 	x : DOUBLE -- x positon
@@ -33,46 +94,66 @@ feature -- view
 
 	set_x( x_ : DOUBLE ) is
 		do
-			x := x_
+			if x /= x_ then
+				x := x_
+				matrix := void
+			end
 		end
 		
 	set_y( y_ : DOUBLE ) is
 		do
-			y := y_
+			if y /= y_ then
+				y := y_
+				matrix := void
+			end
 		end
 		
 	set_z( z_ : DOUBLE ) is
 		do
-			z := z_
+			if z /= z_ then
+				z := z_
+				matrix := void
+			end
 		end
 		
 	set_position( x_, y_, z_ : DOUBLE ) is
 		do
-			x := x_
-			y := y_
-			z := z_
+			if x /= x_ or y /= y_ or z /= z_ then
+				x := x_
+				y := y_
+				z := z_
+				matrix := void
+			end
 		end
 		
 		
 	set_alpha( alpha_ : DOUBLE ) is
 		do
-			if alpha_ > 360 then
-				alpha := alpha_ - 360
-			elseif alpha_ < 0 then
-				alpha := alpha_ + 360
-			else
-				alpha := alpha_
+			if alpha /= alpha_ then
+				if alpha_ > 360 then
+					alpha := alpha_ - 360
+				elseif alpha_ < 0 then
+					alpha := alpha_ + 360
+				else
+					alpha := alpha_
+				end
+				
+				matrix := void
 			end
 		end
 	
 	set_beta( beta_ : DOUBLE ) is
 		do
-			if beta_ > 360 then
-				beta := beta_ - 360
-			elseif beta_ < 0 then
-				beta := beta_ + 360
-			else
-				beta := beta_
+			if beta_ /= beta then
+				if beta_ > 360 then
+					beta := beta_ - 360
+				elseif beta_ < 0 then
+					beta := beta_ + 360
+				else
+					beta := beta_
+				end
+				
+				matrix := void
 			end
 		end
 	
@@ -82,7 +163,6 @@ feature -- additional information
 		do
 			result := view_direction_by_angles( alpha, beta )
 		end
-		
 
 	view_direction_by_angles( alpha_, beta_ : DOUBLE ) : Q_VECTOR_3D is
 			-- calculates the direction someone views, if the given angles are used
@@ -142,14 +222,6 @@ feature -- additional information
 			sin_beta_ := math.sine( rad_beta_ )
 			cos_beta_ := math.cosine( rad_beta_ )
 		
---		double x = -sinAlpha;
---		double z = cosAlpha;
-		
---		x *= sinBeta;
---		double y  = cosBeta;
---		z *= sinBeta;
-		
---		return new Vektor(x, y, z);
 			create result.make( -sin_alpha_ * sin_beta_, cos_beta_, cos_alpha_ * sin_beta_ )
 		end
 		

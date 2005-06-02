@@ -180,7 +180,7 @@ feature -- parts to be displayed
 			transform := transform_
 		end
 
-feature -- geometrics
+feature -- geometrics with the hud
 	direction_in_space( x_, y_ : DOUBLE ) : Q_VECTOR_3D is
 			-- Gets the direction under a point. All points on the
 			-- line from x_, y_ and direction (in the huds-coorinate-system)
@@ -188,22 +188,22 @@ feature -- geometrics
 			-- The point 0/0 is at the top-left, the point 1/1 at the bottom-right
 
 		do
-			--create result.make(
-			--	left / (right - left) + x_,
-			--	bottom / (top - bottom) + y_,
-			--	-near)
-				
-			--result.normaliced	
-			
 			result := position_in_space( x_, y_ )
 			result.normaliced
 		end
 		
+	direction_in_hud( x_, y_, z_ : DOUBLE ) : Q_VECTOR_2D is
+			-- 
+		do
+			result := position_in_hud( x_, y_, z_ )
+		end
+		
+	
 	position_in_hud( x_, y_, z_ : DOUBLE ) : Q_VECTOR_2D is
 			-- Gets the position in the hud of a 3d-point (in the huds-
 			-- coordinate system).
 		do
-			create result.make( (x_ - left) / (right - left) / z_, (y_ - top) / (bottom - top) / z_ )
+			create result.make((x_/-z_ - left) / (right - left), (y_/-z_ - top) / (bottom - top) )
 		end
 		
 	position_in_space( x_, y_ : DOUBLE ) : Q_VECTOR_3D is

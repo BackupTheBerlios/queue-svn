@@ -23,6 +23,8 @@ feature
 		do
 			ressources_.gl_manager.set_hud( menu )
 			ressources := ressources_
+			
+			goto_main_menu( void, void )
 		end
 
 	uninstall( ressources_: Q_GAME_RESSOURCES ) is
@@ -90,7 +92,7 @@ feature{NONE} -- menus
 	move_1 : Q_HUD_SLIDING
 	move_4 : Q_HUD_SLIDING
 	
-	main_menu, option_menu : Q_HUD_CONTAINER
+	main_menu, option_menu, game_menu, quit_dialog, game_dialog : Q_HUD_CONTAINER
 		-- the Menus
 		
 	return_button : Q_HUD_BUTTON
@@ -120,15 +122,42 @@ feature{NONE} -- menu creation
 			
 			create_main_menu
 			create_option_menu
+			create_quit_dialog
+			create_game_menu
+			create_new_game_dialog
 			
 			menu.side( 1 ).add( move_1 )
 			menu.side( 2 ).add( option_menu )
 			menu.side( 4 ).add( move_4 )
 			
 			move_1.add( main_menu )
-			move_1.add( create_quit_dialog )
-			move_4.add( create_game_menu )
-			move_4.add( create_new_game_dialog )
+			move_1.add( quit_dialog )
+			move_4.add( game_menu )
+			move_4.add( game_dialog )
+			
+			create_background( main_menu )
+			create_background( option_menu )
+			create_background( quit_dialog )
+			create_background( game_menu )
+			create_background( game_dialog )
+		end
+		
+	create_background( container_ : Q_HUD_CONTAINER ) is
+		local
+			back_ : Q_HUD_CONTAINER_3D
+			label_ : Q_HUD_LABEL
+		do
+			create back_.make
+			create label_.make
+			
+			label_.set_background( create {Q_GL_COLOR}.make_rgba( 0, 0, 1, 0.5 ))
+			label_.set_blend_background( true )
+			back_.translate( 0, 0, -0.2 )
+			
+			back_.set_bounds( 0, 0, 1, 1 )
+			label_.set_bounds( 0.2, 0.2, 0.6, 0.6 )
+			back_.add( label_ )
+			container_.add( back_ )
 		end
 		
 
@@ -138,6 +167,7 @@ feature{NONE} -- menu creation
 		do
 			create main_menu.make
 			main_menu.set_bounds( 0, 0, 1, 1 )
+			main_menu.set_focus_handler( create {Q_FOCUS_DEFAULT_HANDLER} )
 			
 			create game_.make
 			create option_.make
@@ -151,7 +181,7 @@ feature{NONE} -- menu creation
 			main_menu.add( exit_ )
 			
 			game_.actions.extend( agent new_game( ?,? ))
-			option_.actions.extend( agent option( ?, ? ))
+			option_.actions.extend( agent goto_option_menu( ?, ? ))
 			help_.actions.extend( agent help( ?, ? ))
 			exit_.actions.extend( agent goto_quit_dialog( ?, ? ))
 			return_button.actions.extend( agent return_to_game( ?, ? ))
@@ -169,7 +199,7 @@ feature{NONE} -- menu creation
 			return_button.set_bounds( 0.1, 0.7, 0.8, 0.1 )
 		end
 		
-	create_quit_dialog : Q_HUD_COMPONENT is
+	create_quit_dialog is
 		local
 			container_ : Q_HUD_CONTAINER
 			button_ : Q_HUD_BUTTON
@@ -177,6 +207,7 @@ feature{NONE} -- menu creation
 		do
 			create container_.make
 			container_.set_bounds( 0, 1, 1, 1 )
+			container_.set_focus_handler( create {Q_FOCUS_DEFAULT_HANDLER} )
 			
 			create label_.make
 			label_.set_text( "Press Yes to quit now" )
@@ -184,18 +215,18 @@ feature{NONE} -- menu creation
 			container_.add( label_ )
 			
 			create button_.make
+			button_.set_text( "No" )
+			button_.set_bounds( 0.6, 0.55, 0.3, 0.1 )
+			container_.add( button_ )
+			button_.actions.extend( agent goto_main_menu( ?, ? ))			
+			
+			create button_.make
 			button_.set_text( "Yes" )
 			button_.set_bounds( 0.2, 0.55, 0.3, 0.1 )
 			container_.add( button_ )
 			button_.actions.extend( agent exit( ?, ? ))
 			
-			create button_.make
-			button_.set_text( "No" )
-			button_.set_bounds( 0.6, 0.55, 0.3, 0.1 )
-			container_.add( button_ )
-			button_.actions.extend( agent goto_main_menu( ?, ? ))
-			
-			result := container_
+			quit_dialog := container_
 		end
 		
 	
@@ -206,6 +237,7 @@ feature{NONE} -- menu creation
 			label_1_, label_2_ : Q_HUD_LABEL
 		do
 			create option_menu.make
+			option_menu.set_focus_handler( create {Q_FOCUS_DEFAULT_HANDLER} )
 			
 			create human_player_zero.make
 			create human_player_one.make
@@ -260,14 +292,14 @@ feature{NONE} -- menu creation
 		end
 		
 		
-	create_game_menu : Q_HUD_COMPONENT is
+	create_game_menu  is
 		local
 			container_ : Q_HUD_CONTAINER
 			button_ : Q_HUD_BUTTON
 		do
 			create container_.make
 			create button_.make
-			
+			container_.set_focus_handler( create {Q_FOCUS_DEFAULT_HANDLER} )
 			container_.set_bounds( 0, 0, 1, 1 )
 			
 			button_.set_text( "8 Ball" )
@@ -281,16 +313,17 @@ feature{NONE} -- menu creation
 			container_.add( button_ )
 			button_.actions.extend( agent goto_main_menu( ?, ? ))
 			
-			result := container_
+			game_menu := container_
 		end
 		
-	create_new_game_dialog : Q_HUD_COMPONENT is
+	create_new_game_dialog is
 		local
 			container_ : Q_HUD_CONTAINER
 			button_ : Q_HUD_BUTTON
 			label_ : Q_HUD_LABEL
 		do
 			create container_.make
+			container_.set_focus_handler( create {Q_FOCUS_DEFAULT_HANDLER} )
 			container_.set_bounds( 0, 1, 1, 1 )
 			
 			create label_.make
@@ -299,18 +332,18 @@ feature{NONE} -- menu creation
 			container_.add( label_ )
 			
 			create button_.make
+			button_.set_text( "No" )
+			button_.set_bounds( 0.6, 0.55, 0.3, 0.1 )
+			container_.add( button_ )
+			button_.actions.extend( agent goto_main_menu( ?, ? ))			
+			
+			create button_.make
 			button_.set_text( "Yes" )
 			button_.set_bounds( 0.2, 0.55, 0.3, 0.1 )
 			container_.add( button_ )
 			button_.actions.extend( agent goto_game_menu( ?, ? ))
 			
-			create button_.make
-			button_.set_text( "No" )
-			button_.set_bounds( 0.6, 0.55, 0.3, 0.1 )
-			container_.add( button_ )
-			button_.actions.extend( agent goto_main_menu( ?, ? ))
-			
-			result := container_
+			game_dialog := container_
 		end
 		
 		
@@ -319,11 +352,6 @@ feature{NONE} -- event-handling
 	new_game( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
 			goto_new_game_dialog( command_, button_ )
-		end
-		
-	option( command_ : STRING; button_ : Q_HUD_BUTTON ) is
-		do
-			menu.rotate_to( 2 )
 		end
 
 	help( command_ : STRING; button_ : Q_HUD_BUTTON ) is
@@ -340,22 +368,32 @@ feature{NONE} -- event-handling
 			end
 		end
 
+	goto_option_menu( command_ : STRING; button_ : Q_HUD_BUTTON ) is
+		do
+			menu.rotate_to( 2 )
+			option_menu.focus_handler.focus_default( option_menu )
+		end
+
+
 	goto_quit_dialog( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
 			menu.rotate_to( 1 )
 			move_1.move_to( 1 )
+			quit_dialog.focus_handler.focus_default( quit_dialog )
 		end
 		
 	goto_game_menu( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
 			menu.rotate_to( 4 )
 			move_4.move_to( 0 )
+			game_menu.focus_handler.focus_default( game_menu )
 		end
 		
 	goto_new_game_dialog( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
 			menu.rotate_to( 4 )
-			move_4.move_to( 1 )			
+			move_4.move_to( 1 )
+			game_dialog.focus_handler.focus_default( game_dialog )
 		end
 		
 
@@ -363,6 +401,7 @@ feature{NONE} -- event-handling
 		do
 			menu.rotate_to( 1 )
 			move_1.move_to( 0 )
+			main_menu.focus_handler.focus_default( main_menu )
 		end
 		
 

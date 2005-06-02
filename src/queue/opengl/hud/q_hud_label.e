@@ -21,5 +21,8 @@ feature {NONE} -- creation
 			precursor
 			set_alignement_x( 0.0 )
 			set_alignement_y( 0.5 )
+			
+			background.set_alpha( 0.75 )
+			set_blend_background( true )
 		end
 end -- class Q_HUD_LABEL

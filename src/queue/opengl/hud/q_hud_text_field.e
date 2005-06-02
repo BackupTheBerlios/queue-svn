@@ -9,7 +9,6 @@ inherit
 	Q_HUD_TEXTED
 	redefine
 		draw_text,
-		draw_background,
 		process_mouse_button_down,
 		process_key_down,
 		set_text,
@@ -28,6 +27,8 @@ feature{NONE} -- creation
 			set_enabled( true )
 			
 			set_background( create {Q_GL_COLOR}.make_green )
+			background.set_alpha( 0.75 )
+			set_blend_background( true )
 
 			set_cursor( 1 )
 			
@@ -40,15 +41,6 @@ feature{NONE} -- creation
 		
 	
 feature -- drawing
-	draw_background( open_gl : Q_GL_DRAWABLE ) is
-		do
-			if background /= void then
-				background.set( open_gl )
-				open_gl.gl.gl_rectd( 0, 0, width, height )
-			end
-		end
-		
-		
 	draw_text (text_: STRING; x_, base_, ascent_, descent_: DOUBLE; open_gl: Q_GL_DRAWABLE) is
 		local
 			cursor_pos_ : DOUBLE

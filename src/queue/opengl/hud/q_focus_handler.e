@@ -7,6 +7,14 @@ deferred class
 	Q_FOCUS_HANDLER
 	
 feature -- focus handling
+	focus_default( parent_ : Q_HUD_CONTAINER ) is
+			-- Sets the focus to a default-component of the given container
+		require
+			parent_not_void : parent_ /= void
+		deferred
+		end
+		
+
 	next( component_ : Q_HUD_COMPONENT; parent_ : Q_HUD_CONTAINER; event_ : ESDL_KEYBOARD_EVENT ) : Q_HUD_COMPONENT is
 			-- Searches the next component witch should be focused.
 			-- if there was no old component, void is set as component_

@@ -48,9 +48,10 @@ feature {NONE} -- creation
 			set_alignement_x( 0.5 )
 			set_alignement_y( 0.5 )
 
-			set_background_normal( create {Q_GL_COLOR}.make_orange )	
-			set_background_pressed( create {Q_GL_COLOR}.make_red )
-			set_background_rollover( create {Q_GL_COLOR}.make_yellow )
+			set_background_normal( create {Q_GL_COLOR}.make_rgba( 1, 0.5, 0, 0.75 )) -- orange
+			set_background_pressed( create {Q_GL_COLOR}.make_rgba( 1, 0, 0, 0.75 )) -- red
+			set_background_rollover( create {Q_GL_COLOR}.make_rgba( 1, 1, 0, 0.75 )) -- yellow
+			set_blend_background( true ) 
 		end		
 
 feature -- eventhandling

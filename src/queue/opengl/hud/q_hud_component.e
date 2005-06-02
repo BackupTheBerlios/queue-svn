@@ -49,12 +49,23 @@ feature -- drawing
 			if background /= void then
 				background.set( open_gl )
 
+				if blend_background then
+					open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_blend )
+					open_gl.gl.gl_blend_func( 
+						open_gl.gl_constants.esdl_gl_src_alpha,
+						open_gl.gl_constants.esdl_gl_one_minus_src_alpha )
+				end
+
 				open_gl.gl.gl_begin( open_gl.gl_constants.esdl_gl_quads )
 				open_gl.gl.gl_vertex2d( 0, 0 )
 				open_gl.gl.gl_vertex2d( width, 0 )
 				open_gl.gl.gl_vertex2d( width, height )
 				open_gl.gl.gl_vertex2d( 0, height )
-				open_gl.gl.gl_end		
+				open_gl.gl.gl_end
+				
+				if blend_background then
+					open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_blend )
+				end
 			end
 		end		
 
@@ -208,6 +219,15 @@ feature -- Color
 		do
 			background := background_
 		end
+	
+	blend_background : BOOLEAN
+		-- if true, the alpha-value of the backgroundcolor will be used to create semitransparent backgrounds
+		
+	set_blend_background( blend_ : BOOLEAN ) is
+		do
+			blend_background := blend_
+		end
+		
 	
 	set_foreground( foreground_ : Q_GL_COLOR ) is
 		do

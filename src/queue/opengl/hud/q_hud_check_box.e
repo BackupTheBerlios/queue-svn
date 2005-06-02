@@ -22,6 +22,12 @@ feature {NONE} -- Creation
 			set_background_normal( create {Q_GL_COLOR}.make_rgb( 0.5, 0.5, 1 ) )
 			set_background_pressed( create {Q_GL_COLOR}.make_rgb( 0.25, 0.25, 1 ) )
 			set_background_rollover( create {Q_GL_COLOR}.make_rgb( 0.75, 0.75, 1 ) )
+			
+			background_normal.set_alpha( 0.75 )
+			background_pressed.set_alpha( 0.75 )
+			background_rollover.set_alpha( 0.75 )
+			
+			set_blend_background( true )
 		end
 		
 feature -- drawing

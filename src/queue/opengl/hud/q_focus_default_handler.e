@@ -10,6 +10,29 @@ inherit
 	Q_FOCUS_HANDLER
 	
 feature -- focus
+	focus_default( parent_ : Q_HUD_CONTAINER ) is
+		local
+			component_, start_ : Q_HUD_COMPONENT
+		do
+			component_ := go_down( parent_ )
+			if not component_.focusable or not component_.enabled then
+				from
+					start_ := component_
+					component_ := get_next( component_, component_, parent_ )
+				until
+					component_ = void or else
+					(component_.enabled and component_.focusable)
+				loop
+					component_ := get_next( component_, start_, parent_ )
+				end
+			end
+			
+			if component_ /= void then
+				component_.request_focus
+			end
+		end
+		
+
 	next( component__ : Q_HUD_COMPONENT; parent_ : Q_HUD_CONTAINER; event_ : ESDL_KEYBOARD_EVENT ) : Q_HUD_COMPONENT is
 		local
 			component_ : Q_HUD_COMPONENT
