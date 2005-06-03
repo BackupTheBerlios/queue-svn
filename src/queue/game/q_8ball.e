@@ -41,8 +41,16 @@ feature -- Interface
 		end
 		
 	ball_radius : DOUBLE is 5.0
-	width : DOUBLE is 400.0 -- size in x-direction
-	height: DOUBLE is 200.0 -- size in y-direction
+	width: DOUBLE is
+			-- the size of the table in x-direction
+		do
+			result := table_model.width
+		end
+	height: DOUBLE is
+			-- the size of the table in y-direction
+		do
+			result := table_model.height
+		end
 
 
 feature {NONE} -- Implementation
@@ -193,6 +201,8 @@ feature {NONE} -- Implementation
 			balls_.force (ball_,nr)
 			-- set the banks
 			table.set_banks (table_model.banks)
+			-- set the holes
+			table.set_holes (table_model.holes)
 		end
 		
 	new_table_model is

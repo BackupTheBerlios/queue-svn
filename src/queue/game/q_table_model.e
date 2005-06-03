@@ -36,11 +36,11 @@ feature -- Interface
 	holes: ARRAY[Q_HOLE]
 		-- the holes
 		
-	length: DOUBLE
-		-- the length in cm
+	height: DOUBLE
+		-- the size in cm in y direction
 		
 	width: DOUBLE
-		-- the width in cm
+		-- the size in cm in x direction
 		
 feature {NONE} -- internal properties
 	root: Q_VECTOR_2D
@@ -122,10 +122,10 @@ feature {NONE} -- Implementation
 			end
 			
 			-- calculate the length
-			length := root.x.abs * 2
+			width := root.x.abs * 2
 			
 			-- calculate the width
-			width := root.y.abs * 2
+			height := root.y.abs * 2
 		end
 	
 	make_holes (shapes_ : ARRAY[Q_GL_3D_ASE_SHAPEOBJ]) : ARRAY[Q_HOLE] is
