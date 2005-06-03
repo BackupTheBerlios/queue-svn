@@ -21,22 +21,34 @@ feature -- Interface
 		-- paint the table
 	do
 		model.draw (open_gl)
-		shapes.draw (open_gl)
+--		shapes.draw (open_gl)
 	end
 	
-	model : Q_GL_GROUP[Q_GL_MODEL]
+	model: Q_GL_GROUP[Q_GL_MODEL]
 		-- the model
 		
-	shapes : Q_GL_GROUP[Q_GL_OBJECT]
+--	shapes: Q_GL_GROUP[Q_GL_OBJECT]
 		-- bounding shapes
 		
-	banks : ARRAY[Q_BANK]
+	banks: ARRAY[Q_BANK]
 		-- the banks
+		
+	holes: ARRAY[Q_HOLE]
+		-- the holes
+		
+	length: DOUBLE
+		-- the length in cm
+		
+	width: DOUBLE
+		-- the width in cm
+		
+feature {NONE} -- internal properties
+	root: Q_VECTOR_2D
 
 feature -- coordinate-system
 	position_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
 		do
-			create result.make (table_.x, -2.86, table_.y)
+			create result.make (root.x - table_.x, -2.86, root.y - table_.y)
 		end
 	
 	direction_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
@@ -46,7 +58,7 @@ feature -- coordinate-system
 		
 	position_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
 		do
-			create result.make (world_.x, world_.z)
+			create result.make (root.x + world_.x, root.y + world_.z)
 		end
 		
 	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
@@ -71,8 +83,100 @@ feature {NONE} -- Implementation
 			
 			-- create the logical modell
 			banks := make_banks (loader.shape_objects)
+			holes := make_holes (loader.shape_objects)
+			make_table_size (holes)
 			
-			shapes := loader.create_shapes
+--			shapes := loader.create_shapes
+--			shapes.extend (
+--				create {Q_GL_LINE}.make_position_material (
+--					create {Q_VECTOR_3D}.make (0, 0, 0),
+--					create {Q_VECTOR_3D}.make (200, 0, 0),
+--					create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
+--					)
+--				)
+		end
+	
+	make_table_size (holes_ : ARRAY[Q_HOLE]) is 
+			-- calculates the width and the length
+		require
+			holes_ /= void
+		local
+			index_: INTEGER
+			
+			curr_: Q_VECTOR_2D
+		do
+			-- calculate the root point
+			create root
+			
+			from
+				index_ := holes_.lower
+			until
+				index_ > holes_.upper
+			loop
+				curr_ := holes_.item (index_).position
+				if curr_.x <= root.x and curr_.y <= root.y then
+					root.set_x_y (curr_.x, curr_.y)
+				end
+				
+				index_ := index_ + 1
+			end
+			
+			-- calculate the length
+			length := root.x.abs * 2
+			
+			-- calculate the width
+			width := root.y.abs * 2
+		end
+	
+	make_holes (shapes_ : ARRAY[Q_GL_3D_ASE_SHAPEOBJ]) : ARRAY[Q_HOLE] is
+			-- setup the logial bounds of the table
+		local
+			index_ : INTEGER
+			shape_ : Q_GL_3D_ASE_SHAPEOBJ
+			
+			inner_index_ : INTEGER
+			corner_ : Q_VECTOR_3D
+			
+			points_ : ARRAY[Q_VECTOR_2D]
+			
+			counter_ : INTEGER
+			
+			holes_count_ : INTEGER
+		do
+			-- create the holes
+			create result.make (0,1)
+			create points_.make (0,2)
+			
+			from
+				index_ := shapes_.lower
+			until
+				index_ > shapes_.upper
+			loop
+				shape_ := shapes_.item (index_)
+				if shape_.name.has_substring ("shape_loch") then
+					-- collect the knots and omit the interpolated points
+					
+					create corner_.default_create
+					from
+						counter_ := 0
+						inner_index_ := shape_.knots.lower
+					until
+						inner_index_ > shape_.knots.upper
+					loop
+						if shape_.knot_types.item(inner_index_) then
+							points_.force (create {Q_VECTOR_2D}.make( shape_.knots.item (inner_index_).x, shape_.knots.item (inner_index_).z), counter_)
+							counter_ := counter_ + 1
+						end
+						
+						inner_index_ := inner_index_ + 1
+					end
+					
+					result.force (create {Q_HOLE}.make_from_points (points_), holes_count_)
+					holes_count_ := holes_count_ + 1
+				end
+				
+				index_ := index_ + 1
+			end
 		end
 		
 	make_banks (shapes_ : ARRAY[Q_GL_3D_ASE_SHAPEOBJ]) : ARRAY[Q_BANK] is
