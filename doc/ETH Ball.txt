@@ -1,0 +1,14 @@
+Eine Idee zu ETH-Ball
+
+Es gibt 15 Kugeln, mit Zahlen 1 - 15
+
+Es gibt ein Konto "Punkte" p.
+
+Immer wenn eine Kugel versenkt wird, wird
+{ p > 150: p um die Zahl der Kugel verringert
+  p < 150: p um die Zahl der Kugel erhöht}
+
+Versenkte Kugeln können von demjenigen Spieler, der die Kugel versenkt hat, an beliebiger Stelle auf den Tisch gesetzt werden.
+
+Derjenige Spieler gewinnt, bei dem p=150 auftritt (erst, nachdem alle Kugeln zur Ruhe gekommen sind!)
+
