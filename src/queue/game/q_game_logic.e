@@ -68,6 +68,7 @@ feature {NONE} -- THE game loop
 			ressources.gl_manager.process( event_queue )
 				
 			-- Manage states
+			ressources.time.restart
 			state.step( ressources )
 			next_ := state.next( ressources )
 				

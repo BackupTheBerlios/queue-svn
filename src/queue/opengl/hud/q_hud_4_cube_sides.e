@@ -40,6 +40,8 @@ feature{NONE} -- creation
 			destination := 0
 			position := 0
 			velocity := 5000
+			
+			set_move_distance( 1 )
 		end
 		
 feature{NONE} -- sides
@@ -50,7 +52,38 @@ feature{NONE} -- sides
 			create result
 		end
 		
+	smooth( angle_ : DOUBLE ) : DOUBLE is
+		local
+			relative_, temp_ : DOUBLE
+		do
+			if angle_ > 0.75 then
+				relative_ := 0.75
+			elseif angle_ > 0.5 then
+				relative_ := 0.5
+			elseif angle_ > 0.25 then
+				relative_ := 0.25
+			else
+				relative_ := 0
+			end
+				
+			temp_ := angle_ - relative_
+			temp_ := temp_ * 4
+			temp_ := math.smooth( temp_ )
+			temp_ := temp_ / 4
+			result := relative_ + temp_
+		end
+		
+		
 feature -- sides
+	move_distance : DOUBLE
+	
+	set_move_distance( distance_ : DOUBLE ) is
+			-- Sets, how far the cube is moving into -z when rotating
+		do
+			move_distance := distance_
+		end
+		
+
 	side( index_ : INTEGER ) : Q_HUD_CONTAINER is
 			-- Returns a side of the cube
 		do
@@ -170,8 +203,10 @@ feature
 		do
 			queue_.push_matrix
 			
-			queue_.translate( 0, 0, -rotational_distance )
-			queue_.rotate_around( 0, 1, 0, math.pi*2*(1-position), 0.5, 0.5, -0.5 )
+			if move_distance /= 0 then
+				queue_.translate( 0, 0, -rotational_distance * move_distance )				
+			end
+			queue_.rotate_around( 0, 1, 0, math.pi*2*(1- smooth(position)), 0.5, 0.5, -0.5 )
 
 			precursor( queue_ )
 			

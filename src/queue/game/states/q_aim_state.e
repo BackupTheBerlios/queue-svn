@@ -6,25 +6,36 @@ deferred class
 	Q_AIM_STATE
 
 inherit
-	Q_GAME_STATE
+	Q_ESCAPABLE_STATE
 
+feature {Q_AIM_STATE}
+	make is
+		do
+			create line.make( 
+				create {Q_VECTOR_3D}, create {Q_VECTOR_3D}, 20 )
+		end
+
+feature {Q_AIM_STATE} -- event handling	
+	prepare_next_state( direction_ : Q_VECTOR_2D ) : Q_GAME_STATE is
+		require
+			direction_ /= void
+		deferred
+		end
+		
 feature
 	install( ressource_ : Q_GAME_RESSOURCES ) is
 		local
 			vector_ : Q_VECTOR_3D
 		do
-			if line = void then
-				create line.make( 
-					create {Q_VECTOR_3D}, create {Q_VECTOR_3D}, 20 )
-					
+			if behaviour = void then
 				create behaviour.make( ressource_.table_model )
-				
-				behaviour.set_ball( ball )
-				behaviour.set_zoom_max( ball.radius * 50 )
-				behaviour.set_zoom_min( ball.radius * 2 )
-				behaviour.set_rotate_vertical_min( -50 )
-				behaviour.set_rotate_vertical_max( -2.5 )					
 			end
+
+			behaviour.set_ball( ball )
+			behaviour.set_zoom_max( ball.radius * 50 )
+			behaviour.set_zoom_min( ball.radius * 2 )
+			behaviour.set_rotate_vertical_min( -50 )
+			behaviour.set_rotate_vertical_max( -2.5 )					
 				
 			ressource_.gl_manager.add_object( line )
 			ressource_.gl_manager.set_camera_behaviour( behaviour )
@@ -43,11 +54,35 @@ feature
 	step( ressource_ : Q_GAME_RESSOURCES ) is
 		local
 			camera_ : Q_VECTOR_3D
+			event_queue_ : Q_EVENT_QUEUE
+			key_event_ : ESDL_KEYBOARD_EVENT
 		do
+			-- camera
 			camera_ := ressource_.gl_manager.camera.view_direction
 			direction := ressource_.table_model.direction_world_to_table( camera_ )
+			
+			-- event-handling
+			from
+				event_queue_ := ressource_.event_queue
+			until
+				event_queue_.is_empty
+			loop
+				if event_queue_.is_key_down_event then
+					key_event_ := event_queue_.pop_keyboard_event
+					
+					if key_event_.key = key_event_.sdlk_space then
+						if direction /= void then
+							next_state := prepare_next_state( direction )
+						end
+					elseif key_event_.key = key_event_.sdlk_escape then
+						goto_escape_menu( ressource_ )
+					end
+				else
+					event_queue_.pop
+				end
+			end
 		end
-
+		
 feature {Q_AIM_STATE}
 	direction : Q_VECTOR_2D
 		-- the direction, where the ball should be fired to
@@ -66,7 +101,6 @@ feature {Q_AIM_STATE}
 		
 		
 feature{NONE} -- internals
-
 	line : Q_GL_BROKEN_LINE
 	
 	behaviour : Q_BALL_CAMERA_BEHAVIOUR

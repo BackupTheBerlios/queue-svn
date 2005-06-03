@@ -108,7 +108,7 @@ feature
 			behaviour_ : Q_SIMPLE_CAMERA_BEHAVIOUR
 		do
 			ressources := ressources_
-			ressources.gl_manager.set_hud( current )
+			ressources.gl_manager.add_hud( current )
 			
 			create behaviour_
 			behaviour_.set_rotation_distance( 40 )

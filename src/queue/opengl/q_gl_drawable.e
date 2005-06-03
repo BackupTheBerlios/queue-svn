@@ -5,6 +5,9 @@ indexing
 deferred class
 	Q_GL_DRAWABLE
 
+inherit
+	Q_TIME
+
 feature -- OpenGL
     gl : GL_FUNCTIONS is deferred
     	ensure
@@ -29,16 +32,5 @@ feature -- OpenGL
 		ensure
 			live_manager_not_void : result /= void
 	end
-
-	current_time_millis : INTEGER is
-			-- current time in millis
-		deferred
-		end
-	
-	delta_time_millis : INTEGER is
-			-- Time since last call of the game-loop
-		deferred
-		end
-		
 
 end -- class Q_GL_DRAWABLE

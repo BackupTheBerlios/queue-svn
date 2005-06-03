@@ -53,8 +53,8 @@ feature
 			create camera_
 			create navigator_.make_camera( camera_ )
 			
-			create ball_.make( create {Q_VECTOR_2D}.make( 0, 0 ), 2 )
-			create behaviour_.make
+	--		create ball_.make( create {Q_VECTOR_2D}.make( 0, 0 ), 2 )
+--			create behaviour_.make
 			
 			behaviour_.set_ball( ball_ )
 			navigator_.set_behaviour( behaviour_ )

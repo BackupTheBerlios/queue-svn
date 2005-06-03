@@ -13,10 +13,13 @@ feature{NONE} -- creation
 		do
 			create state_list.make( 20 )
 			create gl_manager.make
+			create time
 			
 			logic := logic_
 		end
-		
+
+feature -- time
+	time : Q_TIME
 
 feature	-- Physics
 	simulation : Q_SIMULATION

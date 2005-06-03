@@ -50,21 +50,17 @@ feature -- manage GL-Tree
 			result := root.hud.unused_events
 		end
 	
-	hud : Q_HUD_COMPONENT
-		-- the component set by a state
-		
-	set_hud( hud_ : Q_HUD_COMPONENT ) is
-			-- 
+
+	add_hud( hud_ : Q_HUD_COMPONENT ) is
+			-- Adds a component to the hud
 		do
-			if hud /= void then
-				navigator.remove( hud )
-			end
-			
-			hud := hud_
-			
-			if hud /= void then
-				navigator.add( hud )
-			end
+			navigator.add( hud_ )
+		end
+		
+	remove_hud( hud_ : Q_HUD_COMPONENT ) is
+			-- Removes a component from the hus
+		do
+			navigator.remove( hud_ )
 		end
 	
 	camera : Q_GL_CAMERA

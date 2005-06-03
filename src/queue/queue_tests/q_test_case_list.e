@@ -27,7 +27,7 @@ feature {NONE} -- creation
 			extend( create {BAS_TABLE_MODEL_TEST} )
 			extend( create {ACE_PHYS_TEST} )
 			extend( create {BEN_SLIDER_TEST} )
-			extend( create {BEN_BALL_CAMERA_BEHAVIOUR_TEST} )
+	--		extend( create {BEN_BALL_CAMERA_BEHAVIOUR_TEST} )
 			extend( create {BEN_LIGHT_TEST} )
 			extend( create {BEN_HUD_FONT_TEST} )
 			extend( create {BEN_COLOR_CUBE_TEST} )

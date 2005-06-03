@@ -254,8 +254,17 @@ feature -- access top
 		do
 			result := queue.count
 		end
-		
+
 feature -- pop	
+	pop is
+		require
+			not_empty : not is_empty
+		do
+			queue.start
+			queue.remove
+		end
+		
+
 	pop_event : ANY is
 			-- removes the event at the head, and returns it
 		require
@@ -568,6 +577,22 @@ feature -- loop
 feature -- additional informations
 	surface : ESDL_VIDEO_SUBSYSTEM
 		-- the surface from witch the events came
+
+	screen_to_hud( x_, y_ : DOUBLE ) : Q_VECTOR_2D is
+			-- translates a coordinate from the screen to coordinates
+			-- of the hud
+		do
+			create result.make( x_ / surface.video_surface_width,
+				y_ / surface.video_surface_height )
+		end
+		
+	hud_to_screen( x_, y_ : DOUBLE ) : Q_VECTOR_2D is
+			-- translates a coordinate of the hud to coordinates of the screen
+		do
+			create result.make( x_ * surface.video_surface_width,
+				y_ * surface.video_surface_height )
+		end
+		
 
 feature {NONE} -- fields
 	event_loop : ESDL_EVENT_LOOP
