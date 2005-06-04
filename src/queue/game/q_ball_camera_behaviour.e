@@ -18,9 +18,9 @@ creation
 	make
 
 feature{NONE}
-	make( table_ : Q_TABLE_MODEL )is
+	make( ressources_ : Q_GAME_RESSOURCES )is
 		do
-			table := table_
+			ressources := ressources_
 			
 			zoom_factor := 2.0
 			zoom_max := 100
@@ -37,11 +37,11 @@ feature{NONE}
 feature -- the ball & table
 	ball : Q_BALL
 	
-	table : Q_TABLE_MODEL
+	ressources : Q_GAME_RESSOURCES
 	
-	set_table( table_ : Q_TABLE_MODEL ) is
+	set_ressources( ressources_ : Q_GAME_RESSOURCES ) is
 		do
-			table := table_
+			ressources := ressources_
 		end
 		
 	
@@ -59,7 +59,7 @@ feature -- update
 				vector_ := camera.view_direction_by_angles( alpha, beta )
 				vector_.normaliced
 				vector_.scaled( -distance )
-				vector_.add( table.position_table_to_world( ball.center ) )
+				vector_.add( ressources.mode.position_table_to_world( ball.center ) )
 				vector_.add_xyz( 0, ball.radius, 0 )
 				
 				camera.set_position( vector_.x, vector_.y, vector_.z )

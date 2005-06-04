@@ -31,7 +31,7 @@ feature
 			vector_ : Q_VECTOR_3D
 		do
 			if behaviour = void then
-				create behaviour.make( ressource_.mode.table_model )
+				create behaviour.make( ressource_ )
 			end
 
 			behaviour.set_ball( ball )
@@ -43,7 +43,7 @@ feature
 			ressource_.gl_manager.add_object( line )
 			ressource_.gl_manager.set_camera_behaviour( behaviour )
 			
-			vector_ := ressource_.mode.table_model.position_table_to_world( ball.center )
+			vector_ := ressource_.mode.position_table_to_world( ball.center )
 			line.set_a( vector_ )
 			line.set_b( create {Q_VECTOR_3D}.make( vector_.x, vector_.y + 20 * ball.radius, vector_.z ) )
 		end
@@ -62,7 +62,7 @@ feature
 		do
 			-- camera
 			camera_ := ressource_.gl_manager.camera.view_direction
-			direction := ressource_.mode.table_model.direction_world_to_table( camera_ )
+			direction := ressource_.mode.direction_world_to_table( camera_ )
 			
 			-- event-handling
 			from

@@ -16,13 +16,7 @@ feature{NONE}--creation
 		do
 			create_menus( move_ )
 		end
-		
-a : Q_AIM_STATE
-b : Q_RESET_STATE
-c : Q_SHOT_STATE
-d : Q_SIMULATION_STATE
-e : Q_SPIN_STATE
-		
+
 feature
 	install( ressources_: Q_GAME_RESSOURCES ) is
 		do			
