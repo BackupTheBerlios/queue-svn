@@ -81,25 +81,27 @@ feature  -- Commands
 			until
 				index_ > geometric_objects.upper
 			loop
-				geom_obj_ := geometric_objects.item(index_)
-				model_ := geom_obj_.create_flat_model
-				
-				-- set the material
-				if geom_obj_.color /= void then
-					model_.set_material (create {Q_GL_MATERIAL}.make_single_colored (geom_obj_.color))
-				else
-					-- a material is present
-					ase_material_ := materials.item(geom_obj_.material_index)
-					create material_.make_empty
-					material_.set_ambient (ase_material_.ambient)
-					material_.set_diffuse (ase_material_.diffuse)
-					material_.set_specular (ase_material_.specular)
-					model_.set_material (material_)
+				if geometric_objects.item(index_) /= void then
+					geom_obj_ := geometric_objects.item(index_)
+					model_ := geom_obj_.create_flat_model
 					
-					model_.set_diffuse_texture (create {Q_GL_TEXTURE}.make (ase_material_.diffuse_texutre))
+					-- set the material
+					if geom_obj_.color /= void then
+						model_.set_material (create {Q_GL_MATERIAL}.make_single_colored (geom_obj_.color))
+					else
+						-- a material is present
+						ase_material_ := materials.item(geom_obj_.material_index)
+						create material_.make_empty
+						material_.set_ambient (ase_material_.ambient)
+						material_.set_diffuse (ase_material_.diffuse)
+						material_.set_specular (ase_material_.specular)
+						model_.set_material (material_)
+						
+						model_.set_diffuse_texture (create {Q_GL_TEXTURE}.make (ase_material_.diffuse_texutre))
+					end
+					
+					result.extend (model_)
 				end
-				
-				result.extend (model_)
 				index_ := index_ + 1
 			end
 		end
@@ -118,7 +120,9 @@ feature  -- Commands
 			until
 				index_ > shape_objects.upper
 			loop
-				result.extend( shape_objects.item(index_).create_primitve )
+				if shape_objects.item (index_) /= void then
+					result.extend( shape_objects.item(index_).create_primitve )	
+				end
 				index_ := index_ + 1
 			end
 		end

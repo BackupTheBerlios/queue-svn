@@ -223,6 +223,7 @@ feature {NONE} -- Implementation
 				index_ := index_ + 1	
 			end
 			
+			-- copy the banks to the result set
 			create result.make (0, list_.count -1 )
 			
 			from
