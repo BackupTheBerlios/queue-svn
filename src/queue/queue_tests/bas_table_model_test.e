@@ -33,6 +33,7 @@ feature
 			group.force (ball1_)
 			group.force (ball2_)
 
+			ball1_.set_position (table_model.position_table_to_world (create {Q_VECTOR_2D}.make (200, 80)))
 			ball2_.set_position (table_model.position_table_to_world (create {Q_VECTOR_2D}.make (100, 50)))
 			
 			create light_1.make( 0 )

@@ -29,7 +29,7 @@ feature -- Interface
 		require
 			new_position /= void
 		do
-			transformation.set_translation (new_position)	
+			transformation.set_translation (new_position + height_translation)
 		end
 		
 	
@@ -43,6 +43,8 @@ feature {NONE} -- Properties
 	middle_point: Q_VECTOR_3D
 
 	transformation: Q_GL_TRANSLATION
+	
+	height_translation: Q_VECTOR_3D
 feature {NONE} -- Creation
 	make_from_file (file_name_: STRING) is
 			-- Create a new ball model
@@ -51,7 +53,6 @@ feature {NONE} -- Creation
 		local
 			loader : Q_GL_3D_ASE_LOADER
 		do	
-			create transformation.make_from_vector (create {Q_VECTOR_3D}.default_create)
 			create loader.make
 		
 			-- create the modell	
@@ -59,6 +60,9 @@ feature {NONE} -- Creation
 			model := loader.create_flat_model.first
 			
 			calc_middle_point
+			
+			create height_translation.make (0, radius, 0)
+			create transformation.make_from_vector (height_translation)
 		end
 		
 	calc_middle_point is
@@ -93,5 +97,6 @@ feature {NONE} -- Creation
 		
 invariant
 	model /= void
+	height_translation/= void
 
 end -- class Q_BALL_MODEL

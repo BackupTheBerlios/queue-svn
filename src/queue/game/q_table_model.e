@@ -44,7 +44,7 @@ feature -- Interface
 		
 	position_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
 		do
-			create result.make (root.x + table_.x, 0, root.y + table_.y)
+			create result.make (root.x + table_.x, zero_level, root.y + table_.y)
 		end
 	
 	direction_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
@@ -63,6 +63,8 @@ feature -- Interface
 		end
 feature {NONE} -- internal properties
 	root: Q_VECTOR_2D
+	
+	zero_level: DOUBLE
 
 feature {NONE} -- Implementation
 	make_from_file (file_name_: STRING) is
@@ -167,6 +169,8 @@ feature {NONE} -- Implementation
 						
 						inner_index_ := inner_index_ + 1
 					end
+					
+					zero_level := shape_.knots.item (index_).y
 					
 					result.force (create {Q_HOLE}.make_from_points (points_), holes_count_)
 					holes_count_ := holes_count_ + 1
