@@ -25,9 +25,39 @@ feature -- Interface
 		end
 		
 	table : Q_TABLE	
-	table_model: Q_TABLE_MODEL	
+	table_model: Q_TABLE_MODEL
+	ball_models: ARRAY[Q_BALL_MODEL]
 	ai_player : Q_AI_PLAYER
 	
+	ball_to_ball_model(ball_ :Q_BALL):Q_BALL_MODEL is
+			-- see base class
+		do
+			
+		end
+		
+	root: Q_VECTOR_2D
+
+	position_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
+		do
+			create result.make (root.x + table_.x, 0, root.y + table_.y)
+		end
+	
+	direction_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
+		do
+			create result.make (table_.x, 0, table_.y)
+		end
+		
+	position_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
+		do
+			create result.make (world_.x - root.x, world_.z - root.y)
+		end
+		
+	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
+		do
+			create result.make (world_.x, world_.z)
+		end
+		
+
 	root_point :Q_VECTOR_2D is
 		-- fusspunkt of the table
 		do

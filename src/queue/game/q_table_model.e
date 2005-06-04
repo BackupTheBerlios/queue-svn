@@ -45,28 +45,6 @@ feature -- Interface
 feature {NONE} -- internal properties
 	root: Q_VECTOR_2D
 
-feature -- coordinate-system
-	position_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
-		do
-			create result.make (root.x + table_.x, 0, root.y + table_.y)
-		end
-	
-	direction_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
-		do
-			create result.make (table_.x, 0, table_.y)
-		end
-		
-	position_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
-		do
-			create result.make (world_.x - root.x, world_.z - root.y)
-		end
-		
-	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
-		do
-			create result.make (world_.x, world_.z)
-		end
-		
-
 feature {NONE} -- Implementation
 	make_from_file (file_name_: STRING) is
 			-- create the model from out of a file

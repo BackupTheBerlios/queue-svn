@@ -19,11 +19,37 @@ feature -- Interface
 		deferred
 		end
 		
+	ball_models: ARRAY[Q_BALL_MODEL] is
+			-- creates/returns an array of all 3D-models for this game mode
+		deferred
+		end
+	
+	ball_to_ball_model (ball_: Q_BALL) : Q_BALL_MODEL is
+			-- maps a ball to its ball_model
+		deferred
+		end
+		
+		
 	ai_player: Q_AI_PLAYER is
 			-- creates/returns an AI-Player for this game mode
 		deferred
 		end
 		
+	position_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
+		deferred
+		end
+	
+	direction_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
+		deferred
+		end
+		
+	position_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
+		deferred
+		end
+		
+	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
+		deferred
+		end
 
 	is_correct_opening (collisions_: LIST[Q_COLLISION_EVENT]): BOOLEAN is
 			-- was this sequence of collisions a legal opening for this game mode

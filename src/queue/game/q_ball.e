@@ -63,6 +63,12 @@ feature -- interface
 			owner.force (owner_)
 		end
 
+	set_ball_model (ball_model_:Q_BALL_MODEL) is
+			-- set the ball model of this ball
+		do
+			ball_model := ball_model_
+		end
+		
 	update_position (step: DOUBLE) is
 			-- Update object position for one time step (given in ms).
 		local
