@@ -16,9 +16,7 @@ feature{NONE}--creation
 		do
 			create_menus
 		end
-
-fda : Q_SHOT_STATE
-
+		
 feature
 	install( ressources_: Q_GAME_RESSOURCES ) is
 		do			

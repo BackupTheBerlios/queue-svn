@@ -39,9 +39,11 @@ feature -- managing
 		end
 		
 	
-	kill is
+	kill( open_gl : Q_GL_DRAWABLE ) is
 			-- kills all livables witch did not call alive, since the last grow-call
-		do
+		local
+			livable_ : Q_GL_LIVABLE
+		do		
 			from
 				livables.start
 			until
@@ -50,7 +52,9 @@ feature -- managing
 				if livables.item_for_iteration then
 					livables.forth
 				else
-					livables.remove( livables.key_for_iteration )
+					livable_ := livables.key_for_iteration
+					livables.remove( livable_ )
+					livable_.death( open_gl )
 				end
 			end
 		end

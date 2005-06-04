@@ -17,6 +17,9 @@ inherit
 		set_camera
 	end
 
+creation
+	make
+
 feature{NONE} -- creation
 	make is
 		do
@@ -106,6 +109,9 @@ feature{NONE} -- event handling
 				
 				if beta_ < rotate_vertical_min then beta_ := rotate_vertical_min end
 				if beta_ > rotate_vertical_max then beta_ := rotate_vertical_max end
+				
+				camera.set_alpha( alpha_ )
+				camera.set_beta( beta_ )
 				
 				result := true
 			else

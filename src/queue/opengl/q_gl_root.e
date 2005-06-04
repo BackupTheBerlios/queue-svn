@@ -99,7 +99,7 @@ feature -- visualisation
 			end
 			
 			-- delete no longer used objects
-			live_manager.kill
+			live_manager.kill( open_gl )
 		end
 
 feature {NONE} -- helpfeatures

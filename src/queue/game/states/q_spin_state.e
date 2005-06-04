@@ -7,6 +7,9 @@ deferred class
 
 inherit
 	Q_ESCAPABLE_STATE
+	redefine
+		step
+	end
 	
 feature{Q_SPIN_STATE}
 	make is
