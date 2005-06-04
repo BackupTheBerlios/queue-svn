@@ -19,8 +19,19 @@ feature -- Interface
 	draw( open_gl : Q_GL_DRAWABLE ) is
 		-- paint the table
 	do
+		transformation.transform (open_gl)
 		model.draw (open_gl)
+		transformation.untransform (open_gl)
 	end
+	
+	set_position (new_position: Q_VECTOR_3D) is
+			-- set a new position
+		require
+			new_position /= void
+		do
+			transformation.set_translation (new_position)	
+		end
+		
 	
 	model: Q_GL_FLAT_MODEL
 		-- the model
@@ -31,6 +42,7 @@ feature -- Interface
 feature {NONE} -- Properties
 	middle_point: Q_VECTOR_3D
 
+	transformation: Q_GL_TRANSLATION
 feature {NONE} -- Creation
 	make_from_file (file_name_: STRING) is
 			-- Create a new ball model
@@ -38,7 +50,8 @@ feature {NONE} -- Creation
 			file_name_ /= void
 		local
 			loader : Q_GL_3D_ASE_LOADER
-		do
+		do	
+			create transformation.make_from_vector (create {Q_VECTOR_3D}.default_create)
 			create loader.make
 		
 			-- create the modell	

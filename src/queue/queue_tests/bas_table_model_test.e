@@ -20,16 +20,20 @@ feature
 		local 
 			group : Q_GL_GROUP[Q_GL_OBJECT]
 			table_model : Q_TABLE_MODEL
-			ball_model: Q_BALL_MODEL
+			ball1_, ball2_: Q_BALL_MODEL
 			
 			light_1, light_2 :Q_GL_LIGHT
 		do
 			create table_model.make_from_file ("model/pool.ase")
-			create ball_model.make_from_file ("model/kugel.ase")
+			create ball1_.make_from_file ("model/kugel.ase")
+			create ball2_.make_from_file ("model/kugel.ase")
 			create group.make
 			
 			group.force (table_model)
-			group.force (ball_model)
+			group.force (ball1_)
+			group.force (ball2_)
+
+			ball2_.set_position (table_model.position_table_to_world (create {Q_VECTOR_2D}.make (100, 50)))
 			
 			create light_1.make( 0 )
 			create light_2.make( 1 )
