@@ -22,20 +22,39 @@ creation
 feature{NONE} -- creation
 	make is
 		do
+			zoom_factor := 2.0
 			
+			rotate_factor := 1000.0
+			rotate_vertical_min := -80
+			rotate_vertical_max := 10
+			
+			create center.make( 0, 0, 0 )
+			max_distance := 1000
 		end
 		
 feature -- factors
-	move_factor, zoom_factor, rotate_factor : DOUBLE
+	zoom_factor, rotate_factor : DOUBLE
+		-- the factor with witch the mouse-motion is multiplied
+		
 	rotate_vertical_min, rotate_vertical_max : DOUBLE
+		-- minimal and maximal beta-angle
+		
+	unit_move_duration : INTEGER
+		-- how many milliseconds the move of one unit will take
 
 	center : Q_VECTOR_3D
-	max_distance : DOUBLE
+		-- The center of the sphere, in witch the camera should remain
 		
-	set_move_factor( factor_ : DOUBLE ) is
+	max_distance : DOUBLE
+		-- the maximal distance of the camera to the center
+		
+	set_unit_move_duration( duration_ : INTEGER ) is
+		require
+			duration_ > 0
 		do
-			move_factor := factor_
+			unit_move_duration := duration_
 		end
+		
 	
 	set_zoom_factor( factor_ : DOUBLE ) is
 		do
@@ -67,15 +86,66 @@ feature -- factors
 			max_distance := distance_
 		end
 		
+	ensure_valid_position is
+		local
+			diff_ : Q_VECTOR_3D
+			length_ : DOUBLE
+		do
+			if camera /= void then
+				create diff_.make( camera.x, camera.y, camera.z )
+				diff_.sub( center )
+				length_ := diff_.length
+				
+				if length_ > max_distance then
+					diff_.scaled( max_distance / length_ )
+					diff_.add( center )
+					camera.set_position( diff_.x, diff_.y, diff_.z )
+				end
+			end
+		end
+		
+		
 feature{NONE} -- event handling
 	key_map : Q_KEY_MAP
 	first_mouse_down, second_mouse_down : BOOLEAN
 
 	last_x, last_y : DOUBLE
+	
+	time : Q_TIME
 
 	update is
+		local
+			dx_, dy_, dt_ : DOUBLE
 		do
+			if key_map /= void then
+				dx_ := 0
+				dy_ := 0
+				
+				if key_map.pressed( key_map.sdlk_up ) then
+					dy_ := dy_ + 1
+				end
+				
+				if key_map.pressed( key_map.sdlk_down ) then
+					dy_ := dy_ - 1
+				end
+				
+				if key_map.pressed( key_map.sdlk_left ) then
+					dx_ := dx_ - 1
+				end
+				
+				if key_map.pressed( key_map.sdlk_right ) then
+					dx_ := dx_ + 1
+				end				
+				
+				if dx_ /= 0 or dy_ /= 0 then
+					dt_ := time.delta_time_millis / unit_move_duration
+					
+					camera.move( 100 * dx_ * dt_, 100 * dy_ * dt_ )
+					ensure_valid_position
+				end
+			end
 			
+			time.restart
 		end
 
 	process_mouse_moved( event_: ESDL_MOUSEMOTION_EVENT; x_: DOUBLE; y_: DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
@@ -94,7 +164,8 @@ feature{NONE} -- event handling
 			if second_mouse_down then
 				-- zoom
 				camera.zoom( dy_ * zoom_factor )
-				result := true	
+				ensure_valid_position
+				result := true
 			elseif first_mouse_down then
 				alpha_ := camera.alpha
 				beta_ := camera.beta
@@ -114,6 +185,7 @@ feature{NONE} -- event handling
 				camera.set_alpha( alpha_ )
 				camera.set_beta( beta_ )
 				
+				ensure_valid_position
 				result := true
 			else
 				result := false
@@ -164,6 +236,6 @@ feature -- table and camera
 		do
 			table := table_
 		end
-		
+
 		
 end -- class Q_FREE_CAMERA_BEHAVIOUR

@@ -41,7 +41,7 @@ feature{Q_DEFAULT_GAME_STATE}
 		do
 			escape_ ?= ressources_.request_state( "escape" )
 			if escape_ = void then
-				create escape_.make
+				create escape_.make( true )
 				ressources_.put_state( escape_ )
 			end
 			

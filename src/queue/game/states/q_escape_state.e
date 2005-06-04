@@ -12,15 +12,15 @@ creation
 	make
 	
 feature{NONE}--creation
-	make is
+	make( move_ : BOOLEAN ) is
 		do
-			create_menus
+			create_menus( move_ )
 		end
 		
 feature
 	install( ressources_: Q_GAME_RESSOURCES ) is
 		do			
-			ressources_.gl_manager.add_hud( menu )
+			ressources_.gl_manager.add_hud( container )
 			ressources := ressources_
 			
 			goto_main_menu( void, void )
@@ -28,7 +28,7 @@ feature
 
 	uninstall( ressources_: Q_GAME_RESSOURCES ) is
 		do
-			ressources_.gl_manager.remove_hud( menu )
+			ressources_.gl_manager.remove_hud( container )
 			ressources := void
 			
 			human_player_one.set_enabled( true )
@@ -87,6 +87,7 @@ feature{NONE} -- temporaly values
 		-- next state to set
 	
 feature{NONE} -- menus
+	container : Q_HUD_CONTAINER
 	menu : Q_HUD_4_CUBE_SIDES
 	move_1 : Q_HUD_SLIDING
 	move_4 : Q_HUD_SLIDING
@@ -110,7 +111,7 @@ feature{NONE} -- menus
 		end
 		
 feature{NONE} -- menu creation
-	create_menus is
+	create_menus( move_ : BOOLEAN ) is
 		do
 			create menu.make
 			create move_1.make
@@ -139,21 +140,27 @@ feature{NONE} -- menu creation
 			create_background( quit_dialog )
 			create_background( game_menu )
 			create_background( game_dialog )
+			
+			if move_ then
+				container := menu
+			else
+				create_container
+			end
 		end
 	
---	create_container is
---		local
---			container_ : Q_HUD_CONTAINER_3D
---		do
---			create container_.make
---			container_.scale( 2, 2, 2 )
---			container_.translate( -0.25, -0.25, -0.5 )
---			container_.set_bounds( 0, 0, 1, 1 )
---			container_.add( menu )
---			menu.set_move_distance( 0 )
---			
---			container := container_
---		end
+	create_container is
+		local
+			container_ : Q_HUD_CONTAINER_3D
+		do
+			create container_.make
+			container_.scale( 2, 2, 2 )
+			container_.translate( -0.25, -0.25, -0.5 )
+			container_.set_bounds( 0, 0, 1, 1 )
+			container_.add( menu )
+			menu.set_move_distance( 0 )
+			
+			container := container_
+		end
 		
 	
 	create_background( container_ : Q_HUD_CONTAINER ) is

@@ -47,7 +47,7 @@ feature{NONE} -- creation
 			create event_queue.make( event_loop, video_subsystem )
 			
 			-- create first state
-			state := create {Q_ESCAPE_STATE}.make
+			state := create {Q_ESCAPE_STATE}.make( false )
 			state.install( ressources )
 			
 			-- Set and launch the first scene.
