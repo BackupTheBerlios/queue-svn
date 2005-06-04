@@ -37,7 +37,7 @@ feature -- Interface
 
 	position_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
 		do
-			create result.make (root_point.x + table_.x, 0, root_point.y + table_.y)
+			create result.make (origin.x + table_.x, 0, origin.y + table_.y)
 		end
 	
 	direction_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
@@ -47,7 +47,7 @@ feature -- Interface
 		
 	position_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
 		do
-			create result.make (world_.x - root_point.x, world_.z - root_point.y)
+			create result.make (world_.x - origin.x, world_.z - origin.y)
 		end
 		
 	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
@@ -55,7 +55,12 @@ feature -- Interface
 			create result.make (world_.x, world_.z)
 		end
 		
-
+	origin: Q_VECTOR_2D is
+			-- the (0,0) of the table, this is the lower left corner, when the triangle is in the upper half
+		do
+			
+		end
+		
 	root_point :Q_VECTOR_2D is
 		-- fusspunkt of the table
 		do
