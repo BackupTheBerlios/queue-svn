@@ -31,7 +31,7 @@ feature
 	draw( open_gl : Q_GL_DRAWABLE ) is
 		do
 --			set_text( open_gl.current_time_millis.out )
-			set_text( open_gl.delta_time_millis.out + " - " + open_gl.current_time_millis.out )
+			set_text( open_gl.time.delta_time_millis.out + " - " + open_gl.time.current_time.out )
 			precursor( open_gl )
 		end
 

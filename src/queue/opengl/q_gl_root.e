@@ -7,13 +7,25 @@ class
 
 creation
 	init,
-	init_lighting
+	init_lighting,
+	init_timed
 
 feature{NONE} -- initialisation
 	init is
 		do
 			init_lighting( true )
 		end
+		
+	init_timed( time_ : Q_TIME ) is
+		do
+			lighting := true
+			
+			create live_manager.make
+			create open_gl_impl.make_timed( live_manager, time_ )
+			
+			init_intern
+		end
+		
 
 	init_lighting( lighting_ : BOOLEAN ) is
 		do
@@ -22,6 +34,11 @@ feature{NONE} -- initialisation
 			create live_manager.make
 			create open_gl_impl.make( live_manager )
 			
+			init_intern
+		end
+			
+	init_intern is
+		do
 			set_left( -1.0 )
 			set_right( 1.0 )
 			set_top( 1.0 )
@@ -31,7 +48,7 @@ feature{NONE} -- initialisation
 			
 			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_depth_test )
 			
-			if lighting_ then
+			if lighting then
 				open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_lighting )
 			end
 			

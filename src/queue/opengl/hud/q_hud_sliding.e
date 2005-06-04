@@ -44,13 +44,13 @@ feature
 			
 			-- change position
 			if position < destination then
-				position := position + open_gl.delta_time_millis / velocity
+				position := position + open_gl.time.delta_time_millis / velocity
 				
 				if position > destination then
 					position := destination
 				end
 			else
-				position := position - open_gl.delta_time_millis / velocity
+				position := position - open_gl.time.delta_time_millis / velocity
 				
 				if position < destination then
 					position := destination

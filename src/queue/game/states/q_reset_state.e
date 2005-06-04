@@ -97,14 +97,14 @@ feature -- 3d & table
 				ressources_.gl_manager.position_hud_to_world( x_, y_ ),
 				ressources_.gl_manager.direction_hud_to_world( x_, y_ ))
 				
-			vector_ := ressources_.table_model.direction_table_to_world( create {Q_VECTOR_2D}.make( 0, 0 ) )
+			vector_ := ressources_.mode.table_model.direction_table_to_world( create {Q_VECTOR_2D}.make( 0, 0 ) )
 			vector_.add_xyz( 0, ball.radius, 0 )
 			
 			create plane_.make_normal( vector_, create {Q_VECTOR_3D}.make( 0, 1, 0 ))
 			
 			vector_ := plane_.cut( line_ )
 			if vector_ /= void then
-				result := ressources_.table_model.position_world_to_table( vector_ )
+				result := ressources_.mode.table_model.position_world_to_table( vector_ )
 			else
 				result := void
 			end

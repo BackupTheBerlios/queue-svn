@@ -39,7 +39,7 @@ feature
 	--		matrix_.translate( 0.5, 0, -1 )
 	
 			matrix_.rotate_at( 
-				0, 1, 0, open_gl.current_time_millis / 1000,
+				0, 1, 0, open_gl.time.current_time / 1000,
 				0.5, 0.5, 0 )
 
 --			matrix_.rotate_at( 

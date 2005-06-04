@@ -97,7 +97,7 @@ feature -- 3d calculation
 				ressources_.gl_manager.position_hud_to_world( x_, y_ ),
 				ressources_.gl_manager.direction_hud_to_world( x_, y_ ) )
 				
-			ball_center := ressources_.table_model.position_table_to_world( ball.center )
+			ball_center := ressources_.mode.table_model.position_table_to_world( ball.center )
 			ball_center.add_xyz( 0, ball.radius, 0 )
 			
 			create ball_plane.make_normal( ball_center, line_.direction )

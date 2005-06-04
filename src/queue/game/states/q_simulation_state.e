@@ -18,7 +18,7 @@ feature{NONE} -- creation
 		end
 
 feature{NONE} -- values
-	behaviour : Q_CAMERA_FREE_BEHAVIOUR
+	behaviour : Q_FREE_CAMERA_BEHAVIOUR
 
 feature
 	install( ressources_: Q_GAME_RESSOURCES ) is

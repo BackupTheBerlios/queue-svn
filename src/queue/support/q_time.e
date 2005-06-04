@@ -6,7 +6,7 @@ class
 	Q_TIME
 
 feature
-	last_time : INTEGER
+	current_time : INTEGER
 	delta_time_millis : INTEGER
 
 	restart is
@@ -15,10 +15,11 @@ feature
 		do
 			time_ := current_time_millis
 			
-			delta_time_millis := time_ - last_time
-			last_time := time_
+			delta_time_millis := time_ - current_time
+			current_time := time_
 		end
-		
+
+feature{NONE}
 	current_time_millis : INTEGER is
 		external
 			"C [macro <ewg_esdl_function_c_glue_code.h>] :Uint32"

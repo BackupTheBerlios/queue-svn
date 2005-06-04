@@ -36,7 +36,7 @@ feature
 			create matrix_.identity
 	
 			matrix_.rotate_at( 
-				0, 1, 0, open_gl.current_time_millis / 1000,
+				0, 1, 0, open_gl.time.current_time / 1000,
 				0.5, 0.5, 0 )
 
 			vector_ := matrix_.translation_3

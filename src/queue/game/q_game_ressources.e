@@ -11,9 +11,9 @@ creation
 feature{NONE} -- creation
 	make( logic_ : Q_GAME_LOGIC ) is
 		do
-			create state_list.make( 20 )
-			create gl_manager.make
 			create time
+			create state_list.make( 20 )
+			create gl_manager.make_timed( time )
 			
 			logic := logic_
 		end
@@ -26,14 +26,11 @@ feature	-- Physics
 	
 feature  -- game logic
 	logic : Q_GAME_LOGIC
-	
-	table: Q_TABLE -- the table of the game
 	mode : Q_MODE -- the mode of the game
 	player_A : Q_PLAYER -- the first player
 	player_B : Q_PLAYER -- the second player
 
 feature  -- graphics
-	table_model : Q_TABLE_MODEL -- the table model of the game
 	gl_manager : Q_GL_MANAGER -- manager of the OpenGL-Tree
 
 feature  -- I/O

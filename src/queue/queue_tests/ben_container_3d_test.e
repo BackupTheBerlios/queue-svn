@@ -24,13 +24,13 @@ feature
 			vector_ : Q_VECTOR_3D
 		do
 			create matrix_.identity
-			matrix_.rotate_at( 0, 0, 1, open_gl.current_time_millis / 2000,
+			matrix_.rotate_at( 0, 0, 1, open_gl.time.current_time / 2000,
 				0.5, 0.5, 0 )
 	--		vector_ := matrix_.translation_3
 	--		matrix_.translate( vector_.x, vector_.y, vector_.z - 1 )
 			container_b.set_matrix( matrix_ )
 
-			matrix_.rotate_at( 0, 1, 0, open_gl.current_time_millis / 5000,
+			matrix_.rotate_at( 0, 1, 0, open_gl.time.current_time / 5000,
 				0.5, 0.5, 0 )
 			vector_ := matrix_.translation_3
 			matrix_.translate( vector_.x, vector_.y, vector_.z - 1 )

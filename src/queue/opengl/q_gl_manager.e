@@ -6,13 +6,24 @@ class
 	Q_GL_MANAGER
 
 creation
-	make
+	make, make_timed
 	
 feature{NONE} -- creation
 	make is
 			-- Creates the manager
 		do
-			create root.init_lighting( false )
+			create root.init_lighting( true )
+			make_intern
+		end
+		
+	make_timed( time_ : Q_TIME ) is
+		do
+			create root.init_timed( time_ )
+			make_intern
+		end
+		
+	make_intern is
+		do
 			create group.make
 			
 			create camera
@@ -23,6 +34,7 @@ feature{NONE} -- creation
 			root.hud.add( navigator )
 			root.set_inside( group )
 		end
+		
 		
 feature{NONE} -- internal values
 	root : Q_GL_ROOT

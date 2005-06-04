@@ -164,13 +164,13 @@ feature
 				
 				if destination > position then
 					if destination - position > 0.5 then
-						position := position - open_gl.delta_time_millis / velocity
+						position := position - open_gl.time.delta_time_millis / velocity
 						if position < 0 then
 							position := position + 1
 							wrap_ := true
 						end
 					else
-						position := position + open_gl.delta_time_millis / velocity
+						position := position + open_gl.time.delta_time_millis / velocity
 						if position > 1 then
 							position := position - 1
 							wrap_ := true
@@ -178,13 +178,13 @@ feature
 					end
 				else
 					if position - destination > 0.5 then
-						position := position + open_gl.delta_time_millis / velocity
+						position := position + open_gl.time.delta_time_millis / velocity
 						if position > 1 then
 							position := position - 1
 							wrap_ := true
 						end
 					else
-						position := position - open_gl.delta_time_millis / velocity
+						position := position - open_gl.time.delta_time_millis / velocity
 						if position < 0 then
 							position := position + 1
 							wrap_ := true

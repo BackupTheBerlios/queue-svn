@@ -5,9 +5,6 @@ indexing
 deferred class
 	Q_GL_DRAWABLE
 
-inherit
-	Q_TIME
-
 feature -- OpenGL
     gl : GL_FUNCTIONS is deferred
     	ensure
@@ -32,5 +29,12 @@ feature -- OpenGL
 		ensure
 			live_manager_not_void : result /= void
 	end
+	
+	time : Q_TIME is
+		deferred
+		ensure
+			result /= void
+		end
+		
 
 end -- class Q_GL_DRAWABLE
