@@ -40,6 +40,8 @@ feature -- interface
 	number: INTEGER -- the number of the ball, 0 is the white ball
 	owner : LINKED_LIST[Q_PLAYER] -- the owners of the ball, null if no owner yet specified, usually the list has only one owner
 	
+	ball_model : Q_BALL_MODEL -- the 3d model of this ball
+	
 	set_color(color_:INTEGER) is
 			-- Set the color of the ball
 		require

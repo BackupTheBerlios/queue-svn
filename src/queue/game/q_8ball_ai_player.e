@@ -34,7 +34,7 @@ feature
 		end
 		
 	next_shot(gr_ : Q_GAME_RESSOURCES) : Q_SHOT is
-			-- compute the "best" next shot
+			-- compute the  next shot
 		local
 			possible_direct_shots_ : LINKED_LIST[Q_SHOT]
 			i,j :INTEGER
