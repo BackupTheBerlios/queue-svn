@@ -72,18 +72,6 @@ feature -- Interface
 		do
 			create Result.make(100,100)
 		end
-		
-	ball_radius : DOUBLE is 5.0
-	width: DOUBLE is
-			-- the size of the table in x-direction
-		do
-			result := table_model.width
-		end
-	height: DOUBLE is
-			-- the size of the table in y-direction
-		do
-			result := table_model.height
-		end
 
 
 feature {NONE} -- Implementation
@@ -347,6 +335,23 @@ feature {NONE} -- Implementation
 			collisions_ /= Void
 		do
 			Result ?= collisions_.first.defendent	
+		end
+		
+	ball_radius : DOUBLE is
+		-- the radius of the balls
+		do
+			Result := ball_models.item (ball_models.lower).radius
+		end
+		
+	width: DOUBLE is
+			-- the size of the table in x-direction
+		do
+			result := table_model.width
+		end
+	height: DOUBLE is
+			-- the size of the table in y-direction
+		do
+			result := table_model.height
 		end
 		
 invariant
