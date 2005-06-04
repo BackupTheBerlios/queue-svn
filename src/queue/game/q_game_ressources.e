@@ -43,8 +43,7 @@ feature  -- I/O
 			result := gl_manager.unused_events
 		end
 		
-	
-	-- und Rest aus Game-Logic (Severin!)
+
 
 feature -- states
 	request_state( name_ : STRING ) : Q_GAME_STATE is

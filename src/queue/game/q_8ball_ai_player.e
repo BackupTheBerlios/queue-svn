@@ -1,17 +1,18 @@
 indexing
 --	description: "Objects that implement a simple AI player. The algorithm computes for all balls
---	the nearest hole and looks whether a direct shot might bring the ball into the hole. The ability
+--	and all holes whether a direct shot might bring the ball into the hole. The ability
 --	of the AI player can vary with random variations in the shot direction and shot strength."
 	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	Q_8BALL_AI_PLAYER
+	Q_8BALL_NAIVE_AI_PLAYER
 
 inherit
 	Q_AI_PLAYER
 	MATH_CONST
+	Q_CONSTANTS
 
 create
 	make
@@ -58,7 +59,7 @@ feature
 						j > table.holes.upper
 					loop
 						create shot_.make(gr_.simulation.cue_vector_for_collision (table.balls.item (i), table.holes.item(j).position))
-						obstacle_free := is_obstacle_free (table.balls.item(i), table.holes.item(j).position)
+						obstacle_free := is_obstacle_free(table.balls.item (white_number),table.balls.item(i).center) and then is_obstacle_free (table.balls.item(i), table.holes.item(j).position)
 						if shot_ /= void and then obstacle_free then
 							possible_direct_shots_.force (shot_)
 						end
@@ -121,6 +122,7 @@ feature {NONE}
 			ball_to_target_: Q_VECTOR_2D
 			ortho_ : Q_VECTOR_2D
 		do
+			-- no collision ball / ball
 			ball_to_target_ := target_.deep_twin
 			ball_to_target_ := ball_to_target_ - (ball_.center)
 			ortho_ := ball_to_target_.deep_twin
@@ -133,7 +135,19 @@ feature {NONE}
 			until
 				i > table.balls.upper
 			loop
-				Result := Result and gliding_area_.has (table.balls.item (i).center)
+				Result := Result and then not gliding_area_.has (table.balls.item (i).center)
+				i := i+1
+			end
+			-- no collision ball / bank
+			ortho_.scale_to (ball_.radius)
+			create gliding_area_.make (ball_.center+ ortho_, ball_.center+ball_to_target_-ortho_)
+			from 
+				i := table.banks.lower
+			until
+				i > table.banks.upper
+			loop
+				-- not sure if this check is correct
+				Result := Result and then not (gliding_area_.has (table.banks.item (i).edge1) or gliding_area_.has (table.banks.item (i).edge2))
 				i := i+1
 			end
 		end

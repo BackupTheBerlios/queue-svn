@@ -36,11 +36,25 @@ feature -- interface
 	holes:ARRAY[Q_HOLE]
 		-- All holes of the table
 		
-	width: REAL
+	width: DOUBLE
 		-- The width of the table
 	
-	height: REAL
+	height: DOUBLE
 		-- The height of the table
+		
+	set_width (w_:DOUBLE) is
+			-- set the width of the table
+		do
+			width := w_
+		end
+	
+	set_height (h_:DOUBLE) is
+			-- set the width of the table
+		do
+			height := h_
+		end
+	
+	
 	
 	set_balls (balls_: ARRAY[Q_BALL]) is
 			-- Set balls.

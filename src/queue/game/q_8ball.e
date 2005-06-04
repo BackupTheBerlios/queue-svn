@@ -199,10 +199,7 @@ feature {NONE} -- Implementation
 			ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x,root_point.y))
 			used_integers.force(nr)
 			balls_.force (ball_,nr)
-			-- set the banks
-			table.set_banks (table_model.banks)
-			-- set the holes
-			table.set_holes (table_model.holes)
+			create table.make (balls_, table_model.banks, table_model.holes)
 		end
 		
 	new_table_model is
@@ -261,8 +258,7 @@ feature {NONE} -- Implementation
 			any_bank_touched_ : BOOLEAN
 		do
 			own_colored_first_ := first_ball_collision (collisions_).owner.has (player_)
-			colored_ball_fallen_ := is_any_ball_in_hole (collisions_) and not is_ball_in_hole (white_number,collisions_)
-			
+			colored_ball_fallen_ := is_any_ball_in_hole (collisions_) and not is_ball_in_hole (white_number,collisions_)	
 			from
 				collisions_.start
 			until
