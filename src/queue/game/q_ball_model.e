@@ -22,8 +22,14 @@ feature -- Interface
 		model.draw (open_gl)
 	end
 	
-	model: Q_GL_GROUP[Q_GL_MODEL]
+	model: Q_GL_FLAT_MODEL
 		-- the model
+
+	radius: DOUBLE
+		-- the radius of the ball
+
+feature {NONE} -- Properties
+	middle_point: Q_VECTOR_3D
 
 feature {NONE} -- Creation
 	make_from_file (file_name_: STRING) is
@@ -37,8 +43,42 @@ feature {NONE} -- Creation
 		
 			-- create the modell	
 			loader.load_file (file_name_)
-			model := loader.create_flat_model
+			model := loader.create_flat_model.first
+			
+			calc_middle_point
 		end
 		
+	calc_middle_point is
+			-- calculates the middle point
+		local
+			index_ : INTEGER
+			
+			positions_: ARRAY[Q_GL_VERTEX]
+			curr_: Q_GL_VERTEX
+		do
+			-- calculate the middle point
+			create middle_point.default_create
+			
+			positions_ := model.vertices
+			
+			from
+				index_ := positions_.lower
+			until
+				index_ > positions_.upper
+			loop
+				curr_ := positions_.item (index_)
+				middle_point.add_xyz (curr_.x, curr_.y, curr_.z)
+				
+				index_ := index_ + 1
+			end
+			
+			middle_point.scaled (1.0 / index_)
+
+			curr_ := positions_.item (0)
+			radius := (middle_point - create {Q_VECTOR_3D}.make (curr_.x, curr_.y, curr_.z)).length
+		end
+		
+invariant
+	model /= void
 
 end -- class Q_BALL_MODEL
