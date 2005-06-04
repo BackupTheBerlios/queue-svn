@@ -131,20 +131,20 @@ feature -- eventhandling
 		end
 		
 feature -- listeners
-	mouse_button_up_listener   : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_MOUSEBUTTON_EVENT, DOUBLE, DOUBLE, BOOLEAN], BOOLEAN]]
-		-- event, x, y, consumed
+	mouse_button_up_listener   : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_MOUSEBUTTON_EVENT, DOUBLE, DOUBLE, Q_KEY_MAP, BOOLEAN], BOOLEAN]]
+		-- event, x, y, map, consumed
 		
-	mouse_button_down_listener : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_MOUSEBUTTON_EVENT, DOUBLE, DOUBLE, BOOLEAN], BOOLEAN]]
-		-- event, x, y, consumed
+	mouse_button_down_listener : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_MOUSEBUTTON_EVENT, DOUBLE, DOUBLE, Q_KEY_MAP, BOOLEAN], BOOLEAN]]
+		-- event, x, y, map, consumed
 	
-	mouse_moved_listener       : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_MOUSEMOTION_EVENT, DOUBLE, DOUBLE, BOOLEAN], BOOLEAN]]
-		-- event, x, y, consumed
+	mouse_moved_listener       : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_MOUSEMOTION_EVENT, DOUBLE, DOUBLE, Q_KEY_MAP, BOOLEAN], BOOLEAN]]
+		-- event, x, y, map, consumed
 	
-	mouse_enter_listener : LINKED_LIST[ PROCEDURE[ ANY, TUPLE[ DOUBLE, DOUBLE]]]
-		-- x, y
+	mouse_enter_listener : LINKED_LIST[ PROCEDURE[ ANY, TUPLE[ DOUBLE, DOUBLE, Q_KEY_MAP]]]
+		-- x, y, map
 		
-	mouse_exit_listener : LINKED_LIST[ PROCEDURE[ ANY, TUPLE[ DOUBLE, DOUBLE]]]	
-		-- x, y
+	mouse_exit_listener : LINKED_LIST[ PROCEDURE[ ANY, TUPLE[ DOUBLE, DOUBLE, Q_KEY_MAP]]]	
+		-- x, y, map
 	
 	component_added_listener  : LINKED_LIST[ PROCEDURE[ ANY, TUPLE[ Q_HUD_COMPONENT, Q_HUD_COMPONENT ]]]
 		-- parent, child
@@ -152,94 +152,94 @@ feature -- listeners
 	component_removed_listener : LINKED_LIST[ PROCEDURE[ ANY, TUPLE[ Q_HUD_COMPONENT, Q_HUD_COMPONENT ]]]
 		-- parent, child
 	
-	key_up_listener   : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_KEYBOARD_EVENT, BOOLEAN], BOOLEAN]]
-		-- event, consumed
+	key_up_listener   : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_KEYBOARD_EVENT, Q_KEY_MAP, BOOLEAN], BOOLEAN]]
+		-- event, map, consumed
 		
-	key_down_listener : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_KEYBOARD_EVENT, BOOLEAN], BOOLEAN]]
-		-- event, consumed
+	key_down_listener : LINKED_LIST[ FUNCTION[ ANY, TUPLE[ESDL_KEYBOARD_EVENT, Q_KEY_MAP, BOOLEAN], BOOLEAN]]
+		-- event, map, consumed
 		
 feature{Q_HUD_ROOT_PANE, Q_HUD_COMPONENT} -- eventhandling
-	process_key_down( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
+	process_key_down( event_ : ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP ) : BOOLEAN is
 			-- invoked when a keyevent happens, and this component has the focus and is enabled
 			-- returns true if the event is consumed, false if the parent should be invoked with the event
 		local
 			consumed_ : BOOLEAN
 		do
 			from key_down_listener.start until key_down_listener.after loop
-				consumed_ := key_down_listener.item.item( [ event_, result ])
+				consumed_ := key_down_listener.item.item( [ event_, map_, result ])
 				result := result or consumed_
 				key_down_listener.forth
 			end
 		end
 
-	process_key_up( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
+	process_key_up( event_ : ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP ) : BOOLEAN is
 			-- invoked when a keyevent happens, and this component has the focus and is enabled
 			-- returns true if the event is consumed, false if the parent should be invoked with the event
 		local
 			consumed_ : BOOLEAN
 		do
 			from key_up_listener.start until key_up_listener.after loop
-				consumed_ := key_up_listener.item.item( [ event_, result ])
+				consumed_ := key_up_listener.item.item( [ event_, map_, result ])
 				result := result or consumed_
 				key_up_listener.forth
 			end
 		end
 		
-	process_mouse_enter( x_, y_ : DOUBLE ) is
+	process_mouse_enter( x_, y_ : DOUBLE; map_ : Q_KEY_MAP ) is
 			-- invoked when the Mouse enters this component
 		do
 			from mouse_enter_listener.start until mouse_enter_listener.after loop
-				mouse_enter_listener.item.call([x_, y_])
+				mouse_enter_listener.item.call([x_, y_, map_])
 				mouse_enter_listener.forth
 			end			
 		end
 		
-	process_mouse_exit( x_, y_ : DOUBLE ) is
+	process_mouse_exit( x_, y_ : DOUBLE; map_ : Q_KEY_MAP ) is
 			-- invoked when the Mouse exites this component.
 			-- this method will perhaps not be called, if the enabled-state is set to false,
 			-- or the component is removed from its parent
 		do
 			from mouse_exit_listener.start until mouse_exit_listener.after loop
-				mouse_exit_listener.item.call([x_, y_])
+				mouse_exit_listener.item.call([x_, y_, map_])
 				mouse_exit_listener.forth
 			end				
 		end
 		
 		
-	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
+	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
 			-- invoked when a Mousebutton is pressed, and the Mouse is over this Component
 			-- returns true if the event is consumed, false if the parent should be invoked with the event			
 		local
 			consumed_ : BOOLEAN
 		do
 			from mouse_button_down_listener.start until mouse_button_down_listener.after loop
-				consumed_ := mouse_button_down_listener.item.item( [ event_, x_, y_, result ])
+				consumed_ := mouse_button_down_listener.item.item( [ event_, x_, y_, map_, result ])
 				result := result or consumed_
 				mouse_button_down_listener.forth
 			end
 		end
 		
-	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
+	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
 			-- invoked when a Mousebutton is released, witch was earlier pressed over this Component
 			-- returns true if the event is consumed, false if the parent should be invoked with the event
 		local
 			consumed_ : BOOLEAN
 		do
 			from mouse_button_up_listener.start until mouse_button_up_listener.after loop
-				consumed_ := mouse_button_up_listener.item.item( [ event_, x_, y_, result ])
+				consumed_ := mouse_button_up_listener.item.item( [ event_, x_, y_, map_, result ])
 				result := result or consumed_
 				mouse_button_up_listener.forth
 			end
 		end
 		
-	process_mouse_moved( event_ : ESDL_MOUSEMOTION_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
+	process_mouse_moved( event_ : ESDL_MOUSEMOTION_EVENT; x_, y_ : DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
 			-- invoked the mouse is moved over this component, but not if a mousebutton was pressed over another component
 			-- returns true if the event is consumed, false if the parent should be invoked with the event
 		local
 			consumed_ : BOOLEAN
 		do
 			from mouse_moved_listener.start until mouse_moved_listener.after loop
-				consumed_ := mouse_moved_listener.item.item( [ event_, x_, y_, result ])
+				consumed_ := mouse_moved_listener.item.item( [ event_, x_, y_, map_, result ])
 				result := result or consumed_
 				mouse_moved_listener.forth
 			end

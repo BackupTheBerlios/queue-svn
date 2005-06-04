@@ -74,7 +74,7 @@ feature -- event-handling
 	
 	last_x, last_y : DOUBLE
 
-	process_mouse_button_down (event_: ESDL_MOUSEBUTTON_EVENT; x_, y_: DOUBLE): BOOLEAN is
+	process_mouse_button_down (event_: ESDL_MOUSEBUTTON_EVENT; x_, y_: DOUBLE; map_ : Q_KEY_MAP): BOOLEAN is
 		do
 			if mouse_pressed then
 				secondary_mouse := true
@@ -88,7 +88,7 @@ feature -- event-handling
 			result := true
 		end
 
-	process_mouse_button_up (event_: ESDL_MOUSEBUTTON_EVENT; x_, y_: DOUBLE): BOOLEAN is
+	process_mouse_button_up (event_: ESDL_MOUSEBUTTON_EVENT; x_, y_: DOUBLE; map_ : Q_KEY_MAP): BOOLEAN is
 		do
 			if secondary_mouse then
 				secondary_mouse := false
@@ -99,7 +99,7 @@ feature -- event-handling
 			result := true
 		end
 
-	process_mouse_moved (event_: ESDL_MOUSEMOTION_EVENT; x_, y_: DOUBLE): BOOLEAN is
+	process_mouse_moved (event_: ESDL_MOUSEMOTION_EVENT; x_, y_: DOUBLE; map_ : Q_KEY_MAP): BOOLEAN is
 		local
 			exp_ : DOUBLE
 			d_alpha_, d_beta_ : DOUBLE

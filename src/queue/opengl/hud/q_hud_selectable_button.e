@@ -50,7 +50,7 @@ feature {Q_HUD_SELECTABLE_BUTTON} -- Creation
 			set_enabled( true )
 			set_focusable( true )
 			
-			key_down_listener.extend( agent key_down( ?,? ))
+			key_down_listener.extend( agent key_down( ?,?,? ))
 			
 			create actions
 		end
@@ -61,7 +61,7 @@ feature {Q_HUD_CHECK_BOX} -- eventhandling
 			set_selected( not selected )
 		end
 		
-	key_down( event_ : ESDL_KEYBOARD_EVENT; consumed_ : BOOLEAN ) : BOOLEAN is
+	key_down( event_ : ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
 			if not consumed_ then
 				if event_.key = event_.sdlk_space or event_.key = event_.sdlk_return then

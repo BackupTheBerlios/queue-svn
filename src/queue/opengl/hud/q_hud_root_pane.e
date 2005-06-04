@@ -100,7 +100,6 @@ feature -- Eventhandling
 			events_not_empty : not events_.is_empty
 			event_is_handable : events_.is_top( events_.input_event )
 		local
-			any_ : ANY
 			consumed_ : BOOLEAN
 		do
 			if unused_events = void then
@@ -109,36 +108,37 @@ feature -- Eventhandling
 			
 			consumed_ := false
 			if events_.is_key_down_event then
-				consumed_ := process_key_down( events_.peek_keyboard_event )
+				consumed_ := process_key_down( events_.peek_keyboard_event, events_.key_map )
 			elseif events_.is_key_up_event then
-				consumed_ := process_key_up( events_.peek_keyboard_event )
+				consumed_ := process_key_up( events_.peek_keyboard_event, events_.key_map )
 			elseif events_.is_mouse_button_down_event then
 				consumed_ := process_mouse_button_down( 
 					events_.peek_mouse_button_event, 
+					events_.key_map,
 					events_.surface.video_surface_width,
 					events_.surface.video_surface_height )
 			elseif events_.is_mouse_button_up_event then
 				consumed_ := process_mouse_button_up( 
 					events_.peek_mouse_button_event, 
+					events_.key_map,
 					events_.surface.video_surface_width,
 					events_.surface.video_surface_height )				
 			elseif events_.is_mouse_motion_event then
 				consumed_ := process_mouse_motion(
 					events_.peek_mouse_motion_event, 
+					events_.key_map,
 					events_.surface.video_surface_width,
-					events_.surface.video_surface_height )								
-			else
-				any_ := events_.peek_event
+					events_.surface.video_surface_height )
 			end
 			
 			if not consumed_ then
 				events_.throw_away( unused_events )
 			else
-				any_ := events_.pop_event
+				events_.hidden_throw_away( unused_events )
 			end
 		end
 		
-	process_key_down( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
+	process_key_down( event_ : ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP ) : BOOLEAN is
 		local
 			component_ : Q_HUD_COMPONENT
 			stop_ : BOOLEAN
@@ -151,7 +151,7 @@ feature -- Eventhandling
 				stop_ or component_ = void
 			loop
 				if component_.enabled then
-					stop_ := component_.process_key_down ( event_ ) or not component_.lightweight
+					stop_ := component_.process_key_down ( event_, map_ ) or not component_.lightweight
 				else
 					stop_ := not component_.lightweight
 				end
@@ -160,13 +160,13 @@ feature -- Eventhandling
 			
 			if not stop_ and component_ = void then
 				-- perhaps the root-focus manager is interested in this event
-				stop_ := component_key_down( event_ )
+				stop_ := component_key_down( event_, map_ )
 			end
 			
 			result := stop_
 		end
 		
-	process_key_up( event_ : ESDL_KEYBOARD_EVENT ) : BOOLEAN is
+	process_key_up( event_ : ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP ) : BOOLEAN is
 		local
 			component_ : Q_HUD_COMPONENT
 			stop_ : BOOLEAN
@@ -179,7 +179,7 @@ feature -- Eventhandling
 				stop_ or component_ = void
 			loop
 				if component_.enabled then
-					stop_ := component_.process_key_up ( event_ ) or not component_.lightweight
+					stop_ := component_.process_key_up ( event_, map_ ) or not component_.lightweight
 				else
 					stop_ := not component_.lightweight
 				end
@@ -189,7 +189,7 @@ feature -- Eventhandling
 			result := stop_
 		end
 
-	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; screen_width_, screen_height_ : INTEGER ) : BOOLEAN is
+	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; map_ : Q_KEY_MAP; screen_width_, screen_height_ : INTEGER ) : BOOLEAN is
 		local
 			x_, y_ : DOUBLE
 			component_ : Q_HUD_COMPONENT
@@ -200,7 +200,7 @@ feature -- Eventhandling
 	
 			-- perhaps another component must be selected
 			if not mouse_button_pressed then
-				component_select_and_focus( x_, y_ )
+				component_select_and_focus( x_, y_, map_ )
 				create_components_under_mouse_stack( x_, y_, selected_component )
 				mouse_button_pressed := true
 			end
@@ -219,7 +219,7 @@ feature -- Eventhandling
 				
 					if component_.enabled then
 						mouse_ := absolut_location( x_, y_, component_ )
-						result := component_.process_mouse_button_down( event_, mouse_.x, mouse_.y )
+						result := component_.process_mouse_button_down( event_, mouse_.x, mouse_.y, map_ )
 						if not result and not component_.lightweight then
 							result := true
 						end	
@@ -230,7 +230,7 @@ feature -- Eventhandling
 			end
 		end
 
-	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; screen_width_, screen_height_ : INTEGER ) : BOOLEAN is
+	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; map_ : Q_KEY_MAP; screen_width_, screen_height_ : INTEGER ) : BOOLEAN is
 		local
 			component_ : Q_HUD_COMPONENT
 			mouse_ : Q_VECTOR_2D
@@ -255,7 +255,7 @@ feature -- Eventhandling
 					
 					if component_.enabled then
 						mouse_ := absolut_location( x_, y_, component_ )
-						result := component_.process_mouse_button_up( event_, mouse_.x, mouse_.y )
+						result := component_.process_mouse_button_up( event_, mouse_.x, mouse_.y, map_ )
 						if not result and not component_.lightweight then
 							result := true
 						end
@@ -266,10 +266,10 @@ feature -- Eventhandling
 				
 				--components_under_mouse := void
 			end
-			component_select( x_, y_ )
+			component_select( x_, y_, map_ )
 		end
 		
-	process_mouse_motion( event_ : ESDL_MOUSEMOTION_EVENT; screen_width_, screen_height_ : INTEGER ) : BOOLEAN is
+	process_mouse_motion( event_ : ESDL_MOUSEMOTION_EVENT; map_ : Q_KEY_MAP; screen_width_, screen_height_ : INTEGER ) : BOOLEAN is
 		local
 			mouse_ : Q_VECTOR_2D
 			component_ : Q_HUD_COMPONENT
@@ -290,7 +290,7 @@ feature -- Eventhandling
 					
 					if component_.enabled then
 						mouse_ := absolut_location( x_, y_, component_ )
-						result := component_.process_mouse_moved( event_, mouse_.x, mouse_.y )
+						result := component_.process_mouse_moved( event_, mouse_.x, mouse_.y, map_ )
 						if not result and not component_.lightweight then
 							result := true
 						end
@@ -299,7 +299,7 @@ feature -- Eventhandling
 					components_under_mouse.forth
 				end
 			else
-				component_select( x_, y_ )
+				component_select( x_, y_, map_ )
 				
 				if selected_component /= void then
 					from
@@ -309,7 +309,7 @@ feature -- Eventhandling
 						result or found_ = void
 					loop
 						component_ := found_.component
-						result := component_.process_mouse_moved( event_, found_.position.x, found_.position.y )
+						result := component_.process_mouse_moved( event_, found_.position.x, found_.position.y, map_ )
 						if not result and not component_.lightweight then
 							result := true
 						else
@@ -440,7 +440,7 @@ absolut_location( x_, y_ : DOUBLE; component_ : Q_HUD_COMPONENT ) : Q_VECTOR_2D 
 	end
 	
 
-component_select( x_, y_ : DOUBLE ) is
+component_select( x_, y_ : DOUBLE; map_ : Q_KEY_MAP ) is
 	local
 		found_ : Q_HUD_QUEUE_SEARCH_RESULT
 		old_selected_component_ : Q_HUD_COMPONENT
@@ -459,7 +459,7 @@ component_select( x_, y_ : DOUBLE ) is
 			if old_selected_component_ /= void then
 				location_ := absolut_location( x_, y_, old_selected_component_ )
 				if location_ /= void then
-					old_selected_component_.process_mouse_exit( location_.x, location_.y )					
+					old_selected_component_.process_mouse_exit( location_.x, location_.y, map_ )					
 				end
 			end
 			
@@ -467,17 +467,17 @@ component_select( x_, y_ : DOUBLE ) is
 			
 			if selected_component /= void then
 				location_ := found_.position
-				selected_component.process_mouse_enter( location_.x, location_.y )
+				selected_component.process_mouse_enter( location_.x, location_.y, map_ )
 			end
 		end
 	end
 
-component_select_and_focus( x_, y_ : DOUBLE ) is
+component_select_and_focus( x_, y_ : DOUBLE; map_ : Q_KEY_MAP ) is
 	local
 		index_ : INTEGER
 		found_ : Q_HUD_QUEUE_SEARCH_RESULT
 	do
-		component_select( x_, y_ )
+		component_select( x_, y_, map_ )
 	
 		if selected_component = void then
 			focused_component := void

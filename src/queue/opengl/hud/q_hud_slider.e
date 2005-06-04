@@ -24,9 +24,9 @@ feature{NONE}--creation
 			set_foreground( create {Q_GL_COLOR}.make_magenta )
 			set_background( create {Q_GL_COLOR}.make_magenta )
 			
-			mouse_button_up_listener.extend( agent mouse_button_up( ?,?,?,? ))
-			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,? ))
-			mouse_moved_listener.extend( agent mouse_moved( ?,?,?,?))
+			mouse_button_up_listener.extend( agent mouse_button_up( ?,?,?,?,? ))
+			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,?,? ))
+			mouse_moved_listener.extend( agent mouse_moved( ?,?,?,?,? ))
 		end
 		
 feature
@@ -114,7 +114,7 @@ feature -- calclations
 feature -- event - handling
 	mouse_pressed : BOOLEAN
 
-	mouse_button_down( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
+	mouse_button_down( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE; map_ : Q_KEY_MAP; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
 			if not consumed_ then
 				mouse_pressed := true
@@ -123,7 +123,7 @@ feature -- event - handling
 			end
 		end
 		
-	mouse_button_up( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
+	mouse_button_up( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE; map_ : Q_KEY_MAP; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
 			if not consumed_ then
 				mouse_pressed := false
@@ -131,7 +131,7 @@ feature -- event - handling
 			end
 		end
 	
-	mouse_moved( event_: ESDL_MOUSEMOTION_EVENT; x_: DOUBLE; y_: DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
+	mouse_moved( event_: ESDL_MOUSEMOTION_EVENT; x_: DOUBLE; y_: DOUBLE; map_ : Q_KEY_MAP; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
 			if not consumed_ then		
 				if mouse_pressed then

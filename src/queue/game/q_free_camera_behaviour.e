@@ -1,9 +1,9 @@
 indexing
-	description: "Allows to freely move the camera"
+	description: "A camerabehaviour allowing to freely move the camera"
 	author: "Benjamin Sigg"
 
 class
-	Q_CAMERA_FREE_BEHAVIOUR
+	Q_FREE_CAMERA_BEHAVIOUR
 
 inherit
 	Q_CAMERA_BEHAVIOUR
@@ -13,8 +13,7 @@ inherit
 		process_key_up,
 		process_mouse_button_down,
 		process_mouse_button_up,
-		process_mouse_moved,
-		set_camera
+		process_mouse_moved
 	end
 
 creation
@@ -69,7 +68,7 @@ feature -- factors
 		end
 		
 feature{NONE} -- event handling
-	move_up, move_down, move_left, move_right : BOOLEAN
+	key_map : Q_KEY_MAP
 	first_mouse_down, second_mouse_down : BOOLEAN
 
 	last_x, last_y : DOUBLE
@@ -79,11 +78,13 @@ feature{NONE} -- event handling
 			
 		end
 
-	process_mouse_moved( event_: ESDL_MOUSEMOTION_EVENT; x_: DOUBLE; y_: DOUBLE ) : BOOLEAN is
+	process_mouse_moved( event_: ESDL_MOUSEMOTION_EVENT; x_: DOUBLE; y_: DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
 		local
 			dx_, dy_ : DOUBLE
 			beta_, alpha_ : DOUBLE
 		do
+			key_map := map_
+			
 			dx_ := x_ - last_x
 			dy_ := y_ - last_y
 			
@@ -119,8 +120,10 @@ feature{NONE} -- event handling
 			end
 		end
 
-	process_mouse_button_down( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE ) : BOOLEAN is
+	process_mouse_button_down( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
 		do
+			key_map := map_
+			
 			last_x := x_
 			last_y := y_
 			
@@ -133,8 +136,10 @@ feature{NONE} -- event handling
 			result := true
 		end
 		
-	process_mouse_button_up( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE ) : BOOLEAN is
+	process_mouse_button_up( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
 		do
+			key_map := map_
+			
 			if second_mouse_down then
 				second_mouse_down := false
 			else
@@ -142,31 +147,14 @@ feature{NONE} -- event handling
 			end
 		end
 	
-	process_key_down( event_: ESDL_KEYBOARD_EVENT ) : BOOLEAN is
+	process_key_down( event_: ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP ) : BOOLEAN is
 		do
-			result := process_key( event_, true )
+			key_map := map_
 		end
 	
-	process_key_up( event_: ESDL_KEYBOARD_EVENT ) : BOOLEAN is
+	process_key_up( event_: ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP ) : BOOLEAN is
 		do
-			result := process_key( event_, false )
-		end
-		
-	process_key( event_ : ESDL_KEYBOARD_EVENT; set : BOOLEAN ) : BOOLEAN is
-		do
-			if event_.key = event_.sdlk_left then
-				move_left := set
-				result := true
-			elseif event_.key = event_.sdlk_right then
-				move_right := set
-				result := true
-			elseif event_.key = event_.sdlk_up then
-				move_up := set
-				result := true
-			elseif event_.key = event_.sdlk_down then
-				move_down := set
-				result := true
-			end	
+			key_map := map_
 		end
 		
 feature -- table and camera
@@ -177,14 +165,5 @@ feature -- table and camera
 			table := table_
 		end
 		
-	set_camera( camera_: Q_GL_CAMERA ) is
-		do
-			precursor( camera_ )
-			move_down := false
-			move_up := false
-			move_left := false
-			move_down := false
-		end
 		
-		
-end -- class Q_CAMERA_FREE_BEHAVIOUR
+end -- class Q_FREE_CAMERA_BEHAVIOUR

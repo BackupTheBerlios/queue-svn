@@ -27,7 +27,7 @@ feature {NONE} -- creation
 			set_background( void )
 			set_foreground( create {Q_GL_COLOR}.make_black )
 			
-			key_down_listener.extend( agent key_down( ?,? ))
+			key_down_listener.extend( agent key_down( ?,?,? ))
 		end
 		
 
@@ -84,7 +84,7 @@ feature -- eventhandling
 		end
 		
 feature{Q_HUD_CONTAINER} -- eventhandling
-	key_down( event_ : ESDL_KEYBOARD_EVENT; consumed_ : BOOLEAN ) : BOOLEAN is
+	key_down( event_ : ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP; consumed_ : BOOLEAN ) : BOOLEAN is
 		local
 			component_, focused_component_ : Q_HUD_COMPONENT
 		do

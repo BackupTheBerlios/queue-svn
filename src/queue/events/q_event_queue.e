@@ -20,6 +20,7 @@ feature{NONE} -- creation
 			surface := surface_
 			
 			create queue.make	
+			create key_map.make
 
 			event_loop.active_event.force( agent handle_active_event(?) )
 			event_loop.key_down_event.force( agent handle_key_down_event(?) )
@@ -44,10 +45,13 @@ feature{NONE} -- creation
 		require
 			surface_not_void : surface_ /= void
 		do
+			create key_map.make
 			create queue.make
 			surface := surface_
 		end
 		
+feature -- map
+	key_map : Q_KEY_MAP
 
 feature -- information top
 	top_flag : INTEGER is
@@ -240,28 +244,82 @@ feature -- access top
 		require
 			queue_ /= void
 			not is_empty
-		local
-			type_ : INTEGER
-			event_ : ANY
 		do
-			type_ := top_flag
-			event_ := pop_event
-			
-			queue_.append( type_, event_ )
+			queue_.append( top_flag, pop_event )
 		end
+		
+	hidden_throw_away( queue_ : Q_EVENT_QUEUE ) is
+			-- Removes the top event, and perhaps add it
+			-- to another queue (the other queue will noone tell, that she has this event)
+		require
+			queue_ /= void
+			not is_empty
+		do
+			if is_key_down_event then
+				queue_.append( hidden_key_down, pop_keyboard_event )
+			elseif is_key_up_event then
+				queue_.append( hidden_key_up, pop_keyboard_event )
+			else
+				pop
+			end
+		end		
 		
 	count : INTEGER is
 		do
 			result := queue.count
 		end
 
+
+feature{NONE} -- hidden
+	is_hidden_key_up : BOOLEAN is
+		do
+			result := is_top( hidden_key_up )
+		end
+	
+	is_hidden_key_down : BOOLEAN is
+		do
+			result := is_top( hidden_key_down )
+		end
+		
+	
+	update_key_map is
+		local
+			stop_ : BOOLEAN
+		do
+			from stop_ := false	until stop_ or is_empty	loop
+				if is_key_down_event then
+					key_map.tell_pressed( peek_keyboard_event.key )
+					stop_ := true
+				elseif is_key_up_event then
+					key_map.tell_released( peek_keyboard_event.key )
+					stop_ := true
+				elseif is_hidden_key_down then
+					key_map.tell_pressed( pop_keyboard_event_no_update.key )
+				elseif is_hidden_key_up then
+					key_map.tell_released( pop_keyboard_event_no_update.key )
+				else
+					stop_ := true
+				end
+			end
+		end
+	
+	pop_keyboard_event_no_update : ESDL_KEYBOARD_EVENT is
+		do
+			queue.start
+			result ?= queue.item.item( 2 )
+			queue.remove
+		end
+		
+	
 feature -- pop	
 	pop is
 		require
 			not_empty : not is_empty
 		do
+			update_key_map
 			queue.start
 			queue.remove
+			update_key_map
 		end
 		
 
@@ -270,9 +328,11 @@ feature -- pop
 		require
 			not_empty : is_empty = false
 		do
+			update_key_map
 			queue.start
 			result := queue.item.item( 2 )
 			queue.remove
+			update_key_map
 		end
 		
 
@@ -539,6 +599,8 @@ feature -- constants
 	user_event : INTEGER					is     8192
 	expose_event : INTEGER					is    16384
 	quit_event : INTEGER					is    32768
+	hidden_key_up : INTEGER					is	  65536
+	hidden_key_down : INTEGER				is   131072
 
 	key_event : INTEGER is
 		once

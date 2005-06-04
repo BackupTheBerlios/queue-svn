@@ -36,8 +36,8 @@ feature{NONE} -- creation
 			set_insets( create {Q_HUD_INSETS}.make( 0, 0.1, 0, 0.1 ))
 			set_text( "" )
 			
-			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,? ))
-			key_down_listener.extend( agent key_down( ?,? ))
+			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,?,? ))
+			key_down_listener.extend( agent key_down( ?,?,? ))
 		end
 		
 	
@@ -88,7 +88,7 @@ feature {NONE} -- event handling
 	-- calculated by the Superclass, when it is painted (so its that, what the user
 	-- sees, not a bad compromis, i think)
 	
-	mouse_button_down (event_: ESDL_MOUSEBUTTON_EVENT; x__, y_: DOUBLE; consumed_ : BOOLEAN): BOOLEAN is
+	mouse_button_down (event_: ESDL_MOUSEBUTTON_EVENT; x__, y_: DOUBLE; map_ : Q_KEY_MAP; consumed_ : BOOLEAN): BOOLEAN is
 		local
 			count_ : INTEGER
 			stop_ : BOOLEAN
@@ -135,7 +135,7 @@ feature {NONE} -- event handling
 			end
 		end
 
-	key_down (event_: ESDL_KEYBOARD_EVENT; consumed_ : BOOLEAN ): BOOLEAN is
+	key_down (event_: ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP; consumed_ : BOOLEAN ): BOOLEAN is
 		local
 			delete_ : BOOLEAN
 			character_ : CHARACTER

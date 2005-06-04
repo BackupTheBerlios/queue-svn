@@ -24,13 +24,13 @@ feature{NONE} -- creation
 			precursor
 			set_enabled( true )
 
-			mouse_moved_listener.extend( agent mouse_moved( ?,?,?,? ))
-			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,? ))
-			mouse_button_up_listener.extend( agent mouse_button_up( ?,?,?,? ))
-			mouse_enter_listener.extend( agent mouse_enter( ?,? ))
-			mouse_exit_listener.extend( agent mouse_exit( ?,? ))
-			key_down_listener.extend( agent key_down( ?,? ))
-			key_up_listener.extend( agent key_up( ?,? ))			
+			mouse_moved_listener.extend( agent mouse_moved( ?,?,?,?,? ))
+			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,?,? ))
+			mouse_button_up_listener.extend( agent mouse_button_up( ?,?,?,?,? ))
+			mouse_enter_listener.extend( agent mouse_enter( ?,?,? ))
+			mouse_exit_listener.extend( agent mouse_exit( ?,?,? ))
+			key_down_listener.extend( agent key_down( ?,?,? ))
+			key_up_listener.extend( agent key_up( ?,?,? ))			
 		end
 
 	make_camera( camera_ : Q_GL_CAMERA ) is
@@ -78,52 +78,52 @@ feature -- camera
 	
 feature{NONE} -- event-handling
 
-	mouse_moved( event_ : ESDL_MOUSEMOTION_EVENT; x_, y_ : DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
+	mouse_moved( event_ : ESDL_MOUSEMOTION_EVENT; x_, y_ : DOUBLE; map_ : Q_KEY_MAP; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
 			if not consumed_ then
-				result := behaviour /= void and then behaviour.process_mouse_moved( event_, x_, y_ )
+				result := behaviour /= void and then behaviour.process_mouse_moved( event_, x_, y_, map_ )
 			end
 		end
 	
-	mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
+	mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE; map_ : Q_KEY_MAP; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
 			if not consumed_ then
-				result := behaviour /= void and then behaviour.process_mouse_button_down( event_, x_, y_ )
+				result := behaviour /= void and then behaviour.process_mouse_button_down( event_, x_, y_, map_ )
 			end
 		end
 		
-	mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE; consumed_ : BOOLEAN ) : BOOLEAN is
+	mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE; map_ : Q_KEY_MAP; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
 			if not consumed_ then
-				result := behaviour /= void and then behaviour.process_mouse_button_up( event_, x_, y_ )
+				result := behaviour /= void and then behaviour.process_mouse_button_up( event_, x_, y_, map_ )
 			end
 		end
 		
-	key_down( event_: ESDL_KEYBOARD_EVENT; consumed_ : BOOLEAN ): BOOLEAN is
+	key_down( event_: ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP; consumed_ : BOOLEAN ): BOOLEAN is
 		do
 			if not consumed_ then
-				result := behaviour /= void and then behaviour.process_key_down( event_ )
+				result := behaviour /= void and then behaviour.process_key_down( event_, map_ )
 			end
 		end
 
-	key_up( event_: ESDL_KEYBOARD_EVENT; consumed_ : BOOLEAN ): BOOLEAN is
+	key_up( event_: ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP; consumed_ : BOOLEAN ): BOOLEAN is
 		do
 			if not consumed_ then
-				result := behaviour /= void and then behaviour.process_key_up( event_ )
+				result := behaviour /= void and then behaviour.process_key_up( event_, map_ )
 			end
 		end
 		
-	mouse_enter( x_, y_: DOUBLE) is
+	mouse_enter( x_, y_: DOUBLE; map_ : Q_KEY_MAP) is
 		do
 			if behaviour /= void then
-				behaviour.process_mouse_enter( x_, y_ )				
+				behaviour.process_mouse_enter( x_, y_, map_ )
 			end
 		end
 		
-	mouse_exit( x_, y_: DOUBLE) is
+	mouse_exit( x_, y_: DOUBLE; map_ : Q_KEY_MAP) is
 		do
 			if behaviour /= void then
-				behaviour.process_mouse_exit( x_, y_ )				
+				behaviour.process_mouse_exit( x_, y_, map_ )
 			end
 		end		
 

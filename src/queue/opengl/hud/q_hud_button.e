@@ -52,7 +52,7 @@ feature {NONE} -- creation
 			set_background_rollover( create {Q_GL_COLOR}.make_rgba( 1, 1, 0, 0.75 )) -- yellow
 			set_blend_background( true )
 			
-			key_down_listener.extend( agent do_click_on_event( ?, ? ))
+			key_down_listener.extend( agent do_click_on_event( ?,?,? ))
 		end		
 
 feature -- eventhandling
@@ -80,7 +80,7 @@ feature -- eventhandling
 			end
 		end
 
-	do_click_on_event( event_ : ESDL_KEYBOARD_EVENT; consumed_ : BOOLEAN ) : BOOLEAN is
+	do_click_on_event( event_ : ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP; consumed_ : BOOLEAN ) : BOOLEAN is
 		do
 			if not consumed_ then
 				if event_.key = event_.sdlk_return then

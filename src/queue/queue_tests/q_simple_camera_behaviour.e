@@ -25,7 +25,7 @@ feature{NONE} -- event-handling
 	zooming, rotating, moving : BOOLEAN
 	last_x, last_y : DOUBLE
 
-	process_mouse_moved( event_ : ESDL_MOUSEMOTION_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
+	process_mouse_moved( event_ : ESDL_MOUSEMOTION_EVENT; x_, y_ : DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
 		local
 			delta_x_, delta_y_ : DOUBLE
 		do
@@ -49,7 +49,7 @@ feature{NONE} -- event-handling
 			end
 		end
 	
-	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
+	process_mouse_button_down( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
 		do
 			last_x := x_
 			last_y := y_
@@ -69,7 +69,7 @@ feature{NONE} -- event-handling
 			result := rotating or zooming or moving
 		end
 		
-	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE ) : BOOLEAN is
+	process_mouse_button_up( event_ : ESDL_MOUSEBUTTON_EVENT; x_, y_ : DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
 		do
 			if rotating or zooming or moving then
 				rotating := false
