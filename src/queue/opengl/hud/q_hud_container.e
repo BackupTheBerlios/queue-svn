@@ -163,13 +163,10 @@ feature -- childs
 			-- removes the given component, if it is child of this container
 		require
 			component_not_void : component_ /= void
-		local
-			index_ : INTEGER
 		do
-			index_ := children.index_of( component_, 0 )+1
-			if index_ > 0 then
-				children.go_i_th( index_ )
-				children.remove
+			if children.has( component_ ) then
+				children.start
+				children.prune( component_ )
 				
 				component_.set_parent( void )
 				tell_removed( component_, current, component_ )

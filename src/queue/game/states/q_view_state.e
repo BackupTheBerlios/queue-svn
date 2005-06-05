@@ -10,12 +10,24 @@ class
 inherit
 	Q_ESCAPABLE_STATE
 	
+creation
+	make
+	
+feature{NONE}
+	make is
+		do
+			create behaviour.make
+		end
+		
+feature{NONE} -- values
+	behaviour : Q_FREE_CAMERA_BEHAVIOUR
+	
 feature -- from Q_GAME_STATE
-
 	install( ressources_ : Q_GAME_RESSOURCES ) is
 		-- Installs this mode. For example, the mode can add
 		-- a speciall button to the hud
 		do
+			ressources_.gl_manager.set_camera_behaviour( behaviour )
 		end
 	
 	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
@@ -23,6 +35,7 @@ feature -- from Q_GAME_STATE
 		-- did add a button to the hud, it must now 
 		-- remove this button.
 		do
+			ressources_.gl_manager.set_camera_behaviour( void )
 		end
 	
 	identifier : STRING is

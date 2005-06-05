@@ -22,6 +22,7 @@ feature
 		do			
 			ressources_.gl_manager.add_hud( container )
 			ressources := ressources_
+			ressources_.put_state ( current )
 			
 			goto_main_menu( void, void )
 		end
@@ -37,6 +38,7 @@ feature
 			
 			main_menu.remove( return_button )
 			return_state := void
+			do_return := false
 		end
 
 	step( ressources_: Q_GAME_RESSOURCES ) is
@@ -52,8 +54,10 @@ feature
 				result := next_state
 			end
 			
-			return_state := void
-			next_state := void
+			if result /= void then
+				return_state := void
+				next_state := void				
+			end
 		end
 
 	identifier: STRING is
@@ -372,7 +376,11 @@ feature{NONE} -- menu creation
 feature{NONE} -- event-handling
 	new_game( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
-			goto_new_game_dialog( command_, button_ )
+			if return_state = void then
+				goto_game_menu( command_, button_ )
+			else
+				goto_new_game_dialog( command_, button_ )
+			end
 		end
 
 	help( command_ : STRING; button_ : Q_HUD_BUTTON ) is
@@ -437,8 +445,6 @@ feature{NONE} -- new games
 		do
 			result := menu.rotated_to = 4 and move_4.location.rounded = 0
 		end
-		
-		
 
 	start_8_ball( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 			-- 
@@ -469,7 +475,7 @@ feature{NONE} -- new games
 				light_1.set_position( 0, 200, 200 )
 				light_1.set_constant_attenuation( 0 )
 				light_1.set_attenuation( 1, 0, 0 )
-				next_state := create {Q_BIRD_STATE}
+				next_state := create {Q_BIRD_STATE}.make
 				ressources.gl_manager.add_object (light_1)
 				
 			else
