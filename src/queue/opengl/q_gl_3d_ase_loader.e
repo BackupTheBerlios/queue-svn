@@ -11,7 +11,7 @@ inherit
 	Q_GL_3D_LOADER
 
 create
-	make, load_file
+	make
 
 feature -- Initialization
 

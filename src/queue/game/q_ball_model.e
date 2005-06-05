@@ -13,7 +13,8 @@ inherit
 	end
 
 create
-	make_from_file
+	make_from_file,
+	make_from_loader_and_texture
 
 feature -- Interface
 	draw( open_gl : Q_GL_DRAWABLE ) is
@@ -58,6 +59,21 @@ feature {NONE} -- Creation
 			-- create the modell	
 			loader.load_file (file_name_)
 			model := loader.create_flat_model.first
+			
+			calc_middle_point
+			
+			create height_translation.make (0, radius, 0)
+			create transformation.make_from_vector (height_translation)
+		end
+		
+	make_from_loader_and_texture (loader_: Q_GL_3D_ASE_LOADER; texture_: STRING) is
+			-- Create a new ball model from preparsed geom-obj.
+		require
+			loader_ /= void
+			texture_ /= void
+		do
+			loader_.materials.item (loader_.materials.lower).set_diffuse_texture (texture_)
+			model := loader_.create_flat_model.first
 			
 			calc_middle_point
 			

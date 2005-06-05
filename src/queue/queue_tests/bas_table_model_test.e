@@ -23,10 +23,14 @@ feature
 			ball1_, ball2_: Q_BALL_MODEL
 			
 			light_1, light_2 :Q_GL_LIGHT
+			
+			loader_: Q_GL_3D_ASE_LOADER
 		do
 			create table_model.make_from_file ("model/pool.ase")
-			create ball1_.make_from_file ("model/pool_ball.ase")
-			create ball2_.make_from_file ("model/pool_ball.ase")
+			create loader_.make
+			loader_.load_file ("model/pool_ball.ase")
+			create ball1_.make_from_loader_and_texture (loader_, "model/voll_00_weiss.png")
+			create ball2_.make_from_loader_and_texture (loader_, "model/halb_08_schwarz.png")
 			create group.make
 			
 			group.force (table_model)

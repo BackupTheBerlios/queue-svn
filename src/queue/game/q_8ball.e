@@ -223,14 +223,55 @@ feature {NONE} -- Implementation
 		
 	new_ball_models is
 			-- creates the 3d-models of the balls (creates ball_models)
-		do
+		local
+			loader_: Q_GL_3D_ASE_LOADER
 			
+			index_: INTEGER
+		do
+			create ball_models.make (0, 15)
+			create loader_.make
+			
+			loader_.load_file ("model/pool_ball.ase")
+			
+			from
+				index_ := ball_models.lower
+			until
+				index_ > ball_models.upper
+			loop
+				ball_models.put (create {Q_BALL_MODEL}.make_from_loader_and_texture (loader_, ball_number_to_texture_name (index_)), index_)
+				
+				index_ := index_ + 1
+			end
 		end
 		
 		
 	new_ai_player is
 			-- creates/returns an AI-Player for this game mode
 		do
+		end
+		
+	ball_number_to_texture_name (number_: INTEGER):STRING is
+			-- convertes the ball number to the apropriate texture name
+		do
+			inspect number_
+				when  0 then result := "model/voll_00_weiss.png"
+				when  1 then result := "model/voll_01_gelb.png"
+				when  2 then result := "model/voll_02_blau.png"
+				when  3 then result := "model/voll_03_rot.png"
+				when  4 then result := "model/voll_04_violett.png"
+				when  5 then result := "model/voll_05_orange.png"
+				when  6 then result := "model/voll_06_gruen.png"
+				when  7 then result := "model/voll_07_braun.png"
+				when  8 then result := "model/voll_08_schwarz.png"
+				when  9 then result := "model/halb_09_gelb.png"
+				when 10 then result := "model/halb_10_blau.png"
+				when 11 then result := "model/halb_11_rot.png"
+				when 12 then result := "model/halb_12_violett.png"
+				when 13 then result := "model/halb_13_orange.png"
+				when 14 then result := "model/halb_14_gruen.png"
+				when 15 then result := "model/halb_15_braun.png"
+			end
+				
 		end
 		
 

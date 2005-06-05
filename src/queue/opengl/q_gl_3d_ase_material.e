@@ -155,6 +155,16 @@ feature {NONE} -- Initialization
 			name := line_.substring (start_ + 1, end_ - 1)
 		end
 
+feature -- Settings
+	set_diffuse_texture (new_texture: STRING) is
+			-- set a new diffuse texture
+		require
+			new_texture /= void
+		do
+			diffuse_texutre := new_texture
+		end
+		
+
 feature -- Access
 	name : STRING
 	
