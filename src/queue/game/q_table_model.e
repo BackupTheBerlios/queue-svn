@@ -21,14 +21,10 @@ feature -- Interface
 		-- paint the table
 	do
 		model.draw (open_gl)
---		shapes.draw (open_gl)
 	end
 	
 	model: Q_GL_GROUP[Q_GL_MODEL]
 		-- the model
-		
---	shapes: Q_GL_GROUP[Q_GL_OBJECT]
-		-- bounding shapes
 		
 	banks: ARRAY[Q_BANK]
 		-- the banks
@@ -84,15 +80,6 @@ feature {NONE} -- Implementation
 			banks := make_banks (loader.shape_objects)
 			holes := make_holes (loader.shape_objects)
 			make_table_size (holes)
-			
---			shapes := loader.create_shapes
---			shapes.extend (
---				create {Q_GL_LINE}.make_position_material (
---					create {Q_VECTOR_3D}.make (0, 0, 0),
---					create {Q_VECTOR_3D}.make (200, 0, 0),
---					create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
---					)
---				)
 		end
 	
 	make_table_size (holes_ : ARRAY[Q_HOLE]) is 
