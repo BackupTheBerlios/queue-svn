@@ -56,13 +56,13 @@ feature -- Interface
 	root_point :Q_VECTOR_2D is
 		-- fusspunkt of the table
 		do
-			--Result := table_model.root
+			create Result.make (3 * table_model.width / 4, table_model.height / 2)
 		end
 		
 	head_point : Q_VECTOR_2D is
 		-- the point in the middle of the head line (kopflinie)
 		do
-			create Result.make(100,100)
+			create Result.make (table_model.width / 4, table_model.height / 2)
 		end
 
 
