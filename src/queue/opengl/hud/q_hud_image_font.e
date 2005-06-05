@@ -152,7 +152,9 @@ feature -- Interface
 
 	draw_letter( letter_ : CHARACTER; x_, base_, size_ : DOUBLE; open_gl : Q_GL_DRAWABLE;  ) is
 		do
+			texture.transform (open_gl)
 			letters.item( letter_ ).draw ( x_, base_, to_factor( size_ ), open_gl, image_width, image_height )
+			texture.untransform (open_gl)
 		end	
 		
 	width( letter_ : CHARACTER; size_ : DOUBLE ) : DOUBLE is

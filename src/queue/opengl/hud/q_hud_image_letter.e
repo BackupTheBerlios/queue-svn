@@ -32,14 +32,14 @@ feature -- draw
 			open_gl.gl.gl_color3f( 1, 1, 1)
 
 			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_blend )
-			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_texture_2d )
+			--open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_texture_2d )
 			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_alpha_test )
 			
-			open_gl.gl.gl_tex_envi( 
-				open_gl.gl_constants.esdl_gl_texture_env,
-				open_gl.gl_constants.esdl_gl_texture_env_mode,
-				open_gl.gl_constants.esdl_gl_modulate )
-		
+--			open_gl.gl.gl_tex_envi( 
+--				open_gl.gl_constants.esdl_gl_texture_env,
+--				open_gl.gl_constants.esdl_gl_texture_env_mode,
+--				open_gl.gl_constants.esdl_gl_modulate )
+--		
 			open_gl.gl.gl_blend_func( 
 				open_gl.gl_constants.esdl_gl_zero, 
 				open_gl.gl_constants.esdl_gl_src_color )
@@ -67,7 +67,7 @@ feature -- draw
 			
 			open_gl.gl.gl_end
 		
-			open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_texture_2d )
+			--open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_texture_2d )
 			open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_alpha_test )
 			open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_blend )
 		end

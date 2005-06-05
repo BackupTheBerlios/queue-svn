@@ -54,8 +54,6 @@ feature -- visualisation
 			gl_.gl_shade_model (open_gl.gl_constants.esdl_gl_smooth)
 			gl_.gl_enable (open_gl.gl_constants.esdl_gl_color_material)
 			
-			gl_.gl_color_material (open_gl.gl_constants.esdl_gl_front_and_back, open_gl.gl_constants.esdl_gl_ambient_and_diffuse)
-			
 			material.set ( open_gl )
 			
 			if diffuse_texture /= void then
