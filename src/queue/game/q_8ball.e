@@ -19,6 +19,8 @@ feature -- Interface
 	make is
 			-- creation procedure
 		do
+			-- create the ball_models
+			new_ball_models
 			-- create the model and the table
 			new_table_model
 			new_table
@@ -33,26 +35,6 @@ feature -- Interface
 			-- see base class
 		do
 			
-		end
-
-	position_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
-		do
-			Result := table_model.position_table_to_world (table_)
-		end
-	
-	direction_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
-		do
-			Result := table_model.direction_table_to_world (table_)
-		end
-		
-	position_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
-		do
-			Result := table_model.position_world_to_table (world_)
-		end
-		
-	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
-		do
-			Result := table_model.position_world_to_table (world_)
 		end
 		
 	origin: Q_VECTOR_2D is
@@ -228,6 +210,13 @@ feature {NONE} -- Implementation
 		do
 			create table_model.make_from_file ("model/pool.ase")
 		end
+		
+	new_ball_models is
+			-- creates the 3d-models of the balls (creates ball_models)
+		do
+			
+		end
+		
 		
 	new_ai_player is
 			-- creates/returns an AI-Player for this game mode
