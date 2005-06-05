@@ -44,6 +44,8 @@ feature -- Interface
 				if table.balls.item(i) = ball_ then
 					Result := ball_models.item (i)
 				end
+				
+				i := i + 1
 			end
 		end
 		
