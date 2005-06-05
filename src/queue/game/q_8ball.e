@@ -338,18 +338,24 @@ feature {NONE} -- Implementation
 		end
 		
 	ball_radius : DOUBLE is
-		-- the radius of the balls
+			-- the radius of the balls
+		require
+			ball_models /= void
 		do
 			Result := ball_models.item (ball_models.lower).radius
 		end
 		
 	width: DOUBLE is
 			-- the size of the table in x-direction
+		require
+			table_model /= void
 		do
 			result := table_model.width
 		end
 	height: DOUBLE is
 			-- the size of the table in y-direction
+		require
+			table_model /= void
 		do
 			result := table_model.height
 		end

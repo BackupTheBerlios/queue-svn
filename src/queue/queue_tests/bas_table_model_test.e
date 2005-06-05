@@ -25,8 +25,8 @@ feature
 			light_1, light_2 :Q_GL_LIGHT
 		do
 			create table_model.make_from_file ("model/pool.ase")
-			create ball1_.make_from_file ("model/kugel.ase")
-			create ball2_.make_from_file ("model/kugel.ase")
+			create ball1_.make_from_file ("model/pool_ball.ase")
+			create ball2_.make_from_file ("model/pool_ball.ase")
 			create group.make
 			
 			group.force (table_model)
