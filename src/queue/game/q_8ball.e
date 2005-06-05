@@ -89,15 +89,15 @@ feature {NONE} -- Implementation
 			-- create the white ball
 			create ball_.make_empty
 			ball_.set_radius (ball_radius)
-			
 			ball_.set_number (white_number)
-			ball_.set_center (head_point)		
+			ball_.set_center (head_point)
 			balls_.force (ball_,white_number)
+			
 			used_integers.force (white_number)
 			-- create the 8 (black) ball
 			ball_ := ball_.deep_twin
 			ball_.set_number(8)
-			ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(4*ball_radius),root_point.y))
+			ball_.set_center (triangle_position (11))
 			balls_.force (ball_,8)
 			used_integers.force (8)
 			
@@ -110,7 +110,7 @@ feature {NONE} -- Implementation
 				nr := rand_.random_range(1,15)
 			end
 			ball_.set_number (nr)
-			ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(8*ball_radius), root_point.y-4*ball_radius))
+			ball_.set_center (triangle_position (1))
 			balls_.force (ball_,nr)
 			used_integers.force(nr)
 			
@@ -122,15 +122,15 @@ feature {NONE} -- Implementation
 				nr := rand_.random_range(1,7)
 			end
 			ball_.set_number (nr)
-			ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(8*ball_radius), root_point.y+4*ball_radius))
+			ball_.set_center (triangle_position (5))
 			balls_.force (ball_,nr)
 			used_integers.force(nr)
 			
-			-- create the last line
+			-- create the rest of the balls
 			from
-				y := -2
+				y := 2
 			until
-				y > 2
+				y > 4
 			loop
 				ball_ := ball_.deep_twin				
 				from
@@ -140,16 +140,16 @@ feature {NONE} -- Implementation
 					nr := rand_.random_range(1,15)
 				end
 				ball_.set_number (nr)
-				ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(8*ball_radius), root_point.y+(y*ball_radius)))
+				ball_.set_center (triangle_position (y))
 				used_integers.force(nr)
 				balls_.force (ball_,nr)
-				y := y +2
+				y := y +1
 			end
-			-- create the second last line
+			-- skip the rack
 			from
-				y := -3
+				y := 6
 			until
-				y > 3
+				y > 10
 			loop
 				ball_ := ball_.deep_twin				
 				from
@@ -159,16 +159,16 @@ feature {NONE} -- Implementation
 					nr := rand_.random_range(1,15)
 				end
 				ball_.set_number (nr)
-				ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(6*ball_radius), root_point.y+(y*ball_radius)))
+				ball_.set_center (triangle_position (y))
 				used_integers.force(nr)
 				balls_.force (ball_,nr)
-				y := y +2
+				y := y +1
 			end
-			-- create the middle line
+			-- skip the black
 			from
-				y := -2
+				y := 12
 			until
-				y > 2
+				y > 15
 			loop
 				ball_ := ball_.deep_twin				
 				from
@@ -178,42 +178,11 @@ feature {NONE} -- Implementation
 					nr := rand_.random_range(1,15)
 				end
 				ball_.set_number (nr)
-				ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(4*ball_radius), root_point.y+(y*ball_radius)))
+				ball_.set_center (triangle_position (y))
 				used_integers.force(nr)
 				balls_.force (ball_,nr)
-				y := y +4 -- skip the black ball
+				y := y +1
 			end
-			-- create the second line
-			from
-				y := -1
-			until
-				y > 1
-			loop
-				ball_ := ball_.deep_twin				
-				from
-				until
-					not used_integers.has (nr)
-				loop				
-					nr := rand_.random_range(1,15)
-				end
-				ball_.set_number (nr)
-				ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x+0.866025*(2*ball_radius), root_point.y+(y*ball_radius)))
-				used_integers.force(nr)
-				balls_.force (ball_,nr)
-				y := y +2
-			end
-			-- create first ball
-			ball_ := ball_.deep_twin				
-			from
-			until
-				not used_integers.has (nr)
-			loop				
-				nr := rand_.random_range(1,15)
-			end
-			ball_.set_number (nr)
-			ball_.set_center (create {Q_VECTOR_2D}.make (root_point.x,root_point.y))
-			used_integers.force(nr)
-			balls_.force (ball_,nr)
 			create table.make (balls_, table_model.banks, table_model.holes)
 		end
 		
@@ -275,6 +244,35 @@ feature {NONE} -- Implementation
 			end
 				
 		end
+		
+	triangle_position (nr_: INTEGER):Q_VECTOR_2D is
+			-- the nr_'s position in the opening triangle
+			-- the ordering is from 1-5 last row left to right, 6-9 second last row, 10-12 middle row, 13-14 second row, 15 first row
+		require
+			nr_ <= 15 and nr_>=1
+		local
+			factor_: DOUBLE
+		do
+			factor_ := 0.86602540378445
+			inspect nr_
+			when 1 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y-4*ball_radius)
+			when 2 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y-2*ball_radius)
+			when 3 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y)
+			when 4 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y+2*ball_radius)
+			when 5 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y+4*ball_radius)
+			when 6 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y-3*ball_radius)
+			when 7 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y-1*ball_radius)
+			when 8 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y+1*ball_radius)
+			when 9 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y+3*ball_radius)
+			when 10 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y-2*ball_radius)
+			when 11 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y)
+			when 12 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y+2*ball_radius)
+			when 13 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y-ball_radius)
+			when 14 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y+ball_radius)
+			when 15 then create result.make(root_point.x, root_point.y)
+			end
+		end
+		
 		
 
 	is_correct_opening(collisions_: LIST[Q_COLLISION_EVENT]):BOOLEAN is
