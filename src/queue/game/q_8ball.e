@@ -33,8 +33,18 @@ feature -- Interface
 	
 	ball_to_ball_model(ball_ :Q_BALL):Q_BALL_MODEL is
 			-- see base class
+		local 
+			i:INTEGER
 		do
-			
+			from
+				i := table.balls.lower
+			until
+				i > table.balls.upper
+			loop
+				if table.balls.item(i) = ball_ then
+					Result := ball_models.item (i)
+				end
+			end
 		end
 		
 	origin: Q_VECTOR_2D is
