@@ -22,14 +22,19 @@ creation
 feature{NONE} -- creation
 	make is
 		do
-			zoom_factor := 2.0
+			zoom_factor := 10.0
 			
-			rotate_factor := 1000.0
+			rotate_factor := 100.0
 			rotate_vertical_min := -80
 			rotate_vertical_max := 10
 			
 			create center.make( 0, 0, 0 )
 			max_distance := 1000
+			
+			unit_move_duration := 1000
+			rotation_duration := 3000
+			
+			create time
 		end
 		
 feature -- factors
@@ -41,6 +46,9 @@ feature -- factors
 		
 	unit_move_duration : INTEGER
 		-- how many milliseconds the move of one unit will take
+		
+	rotation_duration : INTEGER
+		-- how many milliseconds the rotation of 360 Degrees needs
 
 	center : Q_VECTOR_3D
 		-- The center of the sphere, in witch the camera should remain
@@ -104,7 +112,25 @@ feature -- factors
 			end
 		end
 		
+feature -- key requirement
+	ctrl, shift, alt : BOOLEAN
+	
+	set_ctrl( ctrl_ : BOOLEAN ) is
+		do
+			ctrl := ctrl_
+		end
 		
+	set_shift( shift_ : BOOLEAN ) is
+		do
+			shift := shift_
+		end
+		
+	set_alt( alt_ : BOOLEAN ) is
+		do
+			alt := alt_
+		end
+		
+	
 feature{NONE} -- event handling
 	key_map : Q_KEY_MAP
 	first_mouse_down, second_mouse_down : BOOLEAN
@@ -115,33 +141,89 @@ feature{NONE} -- event handling
 
 	update is
 		local
-			dx_, dy_, dt_ : DOUBLE
+			dx_, dy_, dz_, da_, db_, dt_ : DOUBLE
+			alpha_, beta_ : DOUBLE
+			change_ : BOOLEAN
 		do
 			if key_map /= void then
-				dx_ := 0
-				dy_ := 0
-				
-				if key_map.pressed( key_map.sdlk_up ) then
-					dy_ := dy_ + 1
-				end
-				
-				if key_map.pressed( key_map.sdlk_down ) then
-					dy_ := dy_ - 1
-				end
-				
-				if key_map.pressed( key_map.sdlk_left ) then
-					dx_ := dx_ - 1
-				end
-				
-				if key_map.pressed( key_map.sdlk_right ) then
-					dx_ := dx_ + 1
-				end				
-				
-				if dx_ /= 0 or dy_ /= 0 then
-					dt_ := time.delta_time_millis / unit_move_duration
+				if key_map.ctrl = ctrl and key_map.alt = alt and key_map.shift = shift then				
+					dx_ := 0
+					dy_ := 0
+					dy_ := 0
 					
-					camera.move( 100 * dx_ * dt_, 100 * dy_ * dt_ )
-					ensure_valid_position
+					-- move
+					if key_map.pressed( key_map.sdlk_up ) then
+						dy_ := dy_ + 1
+					end
+					
+					if key_map.pressed( key_map.sdlk_down ) then
+						dy_ := dy_ - 1
+					end
+					
+					if key_map.pressed( key_map.sdlk_left ) then
+						dx_ := dx_ + 1
+					end
+					
+					if key_map.pressed( key_map.sdlk_right ) then
+						dx_ := dx_ - 1
+					end
+					
+					-- zoom
+					if key_map.pressed( key_map.sdlk_q ) then
+						dz_ := dz_ + 1
+					end
+					
+					if key_map.pressed( key_map.sdlk_e ) then
+						dz_ := dz_ - 1
+					end
+					
+					-- angles
+					if key_map.pressed( key_map.sdlk_w ) then
+						db_ := db_ + 1
+					end
+					
+					if key_map.pressed( key_map.sdlk_s ) then
+						db_ := db_ - 1
+					end
+					
+					if key_map.pressed( key_map.sdlk_a ) then
+						da_ := da_ - 1
+					end
+					
+					if key_map.pressed( key_map.sdlk_d ) then
+						da_ := da_ + 1
+					end
+					
+					if dx_ /= 0 or dy_ /= 0 or dz_ /= 0 then
+						dt_ := time.delta_time_millis / unit_move_duration
+						
+						camera.move( 100 * dx_ * dt_, 100 * dy_ * dt_ )
+						camera.zoom( 100 * dz_ * dt_ )
+						
+						change_ := true
+					end
+					
+					if da_ /= 0 or db_ /= 0 then
+						dt_ := time.delta_time_millis / rotation_duration * 360
+						
+						alpha_ := camera.alpha
+						beta_ := camera.beta
+						
+						alpha_ := alpha_ + da_ * dt_
+						beta_ := beta_ + db_ * dt_
+				
+						alpha_ := valid_alpha( alpha_ )
+						beta_ := valid_beta( beta_, db_ )
+				
+						camera.set_alpha( alpha_ )
+						camera.set_beta( beta_ )
+						
+						change_ := true
+					end
+					
+					if change_ then					
+						ensure_valid_position
+					end
 				end
 			end
 			
@@ -170,17 +252,11 @@ feature{NONE} -- event handling
 				alpha_ := camera.alpha
 				beta_ := camera.beta
 				
-				alpha_ := alpha_ + rotate_factor * dx_
+				alpha_ := alpha_ - rotate_factor * dx_
 				beta_ := beta_ + rotate_factor * dy_
 				
-				if alpha_ < 0 then alpha_ := alpha_ + 360 end
-				if alpha_ > 360 then alpha_ := alpha_ - 360 end
-				
-				if beta_ < 0 then beta_ := beta_ + 360 end
-				if beta_ > 360 then beta_ := beta_ - 360 end
-				
-				if beta_ < rotate_vertical_min then beta_ := rotate_vertical_min end
-				if beta_ > rotate_vertical_max then beta_ := rotate_vertical_max end
+				alpha_ := valid_alpha( alpha_ )
+				beta_ := valid_beta( beta_, dy_ )
 				
 				camera.set_alpha( alpha_ )
 				camera.set_beta( beta_ )
@@ -191,21 +267,47 @@ feature{NONE} -- event handling
 				result := false
 			end
 		end
+		
+	valid_alpha( alpha_ : DOUBLE ) : DOUBLE is
+		do
+			result := alpha_
+			if result < 0 then result := result + 360 end
+			if result > 360 then result := result - 360 end
+		end
+	
+	valid_beta( beta_, dy_ : DOUBLE ) : DOUBLE is
+		do
+			result := beta_
+			
+			if result < 0 then result := result + 360 end
+			if result > 360 then result := result - 360 end
+				
+			if result > rotate_vertical_max and result < rotate_vertical_min+360 then
+				if dy_ > 0 then
+					result := rotate_vertical_max
+				else
+					result := rotate_vertical_min
+				end
+			end
+		end
+		
 
 	process_mouse_button_down( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
 		do
 			key_map := map_
 			
-			last_x := x_
-			last_y := y_
+			if key_map.ctrl = ctrl and key_map.shift = shift and key_map.alt = alt then
+				last_x := x_
+				last_y := y_
+				
+				if not first_mouse_down then
+					first_mouse_down := true
+				else
+					second_mouse_down := true
+				end
 			
-			if not first_mouse_down then
-				first_mouse_down := true
-			else
-				second_mouse_down := true
+				result := true
 			end
-			
-			result := true
 		end
 		
 	process_mouse_button_up( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is

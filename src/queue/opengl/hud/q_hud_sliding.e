@@ -23,19 +23,28 @@ feature{NONE} -- creation
 			source := 0
 			destination := 0
 			position := 0
-			velocity := 1500
+			duration := 1500
 		end
 		
 feature{NONE}
 	source, destination : DOUBLE
 	position : DOUBLE
-	
-	velocity : DOUBLE
 
 	math : Q_MATH is
 		once
 			create result
 		end
+
+feature -- fields
+	duration : DOUBLE
+	
+	set_duration( duration_ : DOUBLE ) is
+		require
+			duration >= 0
+		do
+			duration := duration_
+		end
+		
 		
 feature
 	draw( open_gl: Q_GL_DRAWABLE ) is
@@ -44,13 +53,13 @@ feature
 			
 			-- change position
 			if position < destination then
-				position := position + open_gl.time.delta_time_millis / velocity
+				position := position + open_gl.time.delta_time_millis / duration
 				
 				if position > destination then
 					position := destination
 				end
 			else
-				position := position - open_gl.time.delta_time_millis / velocity
+				position := position - open_gl.time.delta_time_millis / duration
 				
 				if position < destination then
 					position := destination

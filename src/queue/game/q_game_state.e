@@ -48,8 +48,8 @@ feature
 	identifier : STRING is
 		-- A String witch is used as unique identifier for this state
 		-- The string should contain the name of the class, withoud the "q_"
-		-- and withoud a "state", ans only lower-case characters
-		-- Example: Q_VIEW_MODE will return "view"
+		-- and without a "state", and only lower-case characters
+		-- Example: Q_VIEW_STATE will return "view"
 		deferred
 		ensure
 			result_exists : result /= void

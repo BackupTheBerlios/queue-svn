@@ -450,28 +450,28 @@ feature{NONE} -- new games
 			index_: INTEGER
 		do
 			if game_menu_armed then
-					-- create the 8ball model
-					create eball.make
-					ressources.gl_manager.add_object (eball.table_model)
-					balls := eball.table.balls
-					from
-						index_ := balls.lower
-					until
-						index_ > balls.upper
-					loop
-						ball_model := eball.ball_to_ball_model (balls.item (index_))			
-						ball_model.set_position (eball.position_table_to_world (balls.item (index_).center))
-						ressources.gl_manager.add_object (ball_model)				
-						index_ := index_ + 1
-					end
-					create light_1.make( 0 )
-					light_1.set_diffuse( 1, 1, 1, 0 )
-					light_1.set_position( 0, 200, 200 )
-					light_1.set_constant_attenuation( 0 )
-					light_1.set_attenuation( 1, 0, 0 )
-					next_state := create {Q_BIRD_STATE}
-					ressources.gl_manager.add_object (light_1)
-					
+				-- create the 8ball model
+				create eball.make
+				ressources.gl_manager.add_object (eball.table_model)
+				balls := eball.table.balls
+				from
+					index_ := balls.lower
+				until
+					index_ > balls.upper
+				loop
+					ball_model := eball.ball_to_ball_model (balls.item (index_))			
+					ball_model.set_position (eball.position_table_to_world (balls.item (index_).center))
+					ressources.gl_manager.add_object (ball_model)				
+					index_ := index_ + 1
+				end
+				create light_1.make( 0 )
+				light_1.set_diffuse( 1, 1, 1, 0 )
+				light_1.set_position( 0, 200, 200 )
+				light_1.set_constant_attenuation( 0 )
+				light_1.set_attenuation( 1, 0, 0 )
+				next_state := create {Q_BIRD_STATE}
+				ressources.gl_manager.add_object (light_1)
+				
 			else
 				goto_game_menu( command_, button_ )
 			end

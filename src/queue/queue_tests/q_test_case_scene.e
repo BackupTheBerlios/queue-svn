@@ -29,10 +29,11 @@ feature -- Initialization
 
 	initialize_scene is
 			-- Initialize the scene.
+		local
+			behaviour_ : Q_FREE_CAMERA_BEHAVIOUR
 		do	
 			if not initialized then
 				initialized := true
-				create menus.make( 10 )
 				create cases.make
 				create root.init_lighting( false )
 				create navigation.make
@@ -40,8 +41,13 @@ feature -- Initialization
 				generate_menus
 			
 				root.hud.add( navigation )
+				
+				create behaviour_.make
+				behaviour_.set_max_distance( 1000 )
+				
 				navigation.set_bounds( 0, 0, 1, 1 )
-				navigation.add( menus.first )
+				navigation.add( menu )
+				navigation.set_behaviour( behaviour_ )
 				create events.make( event_loop, surface )
 			end
 		end		
@@ -51,26 +57,34 @@ feature{NONE} -- hud
 
 	cases : Q_TEST_CASE_LIST
 	
-	menus : ARRAYED_LIST[ Q_HUD_COMPONENT ]
+--	menus : ARRAYED_LIST[ Q_HUD_COMPONENT ]
+	
+	menu : Q_HUD_SLIDING
 	
 	generate_menus is
 		local
 			menu_ : Q_HUD_CONTAINER
-			count_, index_ : INTEGER
+			count_, index_, menu_count_ : INTEGER
 			button_ : Q_HUD_BUTTON
 			test_case_ : Q_TEST_CASE
 			command_ : STRING
 		do
+			create menu.make
+			menu.set_duration( 750 )
+			menu.set_bounds( 0, 0, 1, 1 )
+			
 			from
 				index_ := 1
+				menu_count_ := 0
 			until
 				index_ > cases.count
 			loop
 				from
 					count_ := 0	
 					create menu_.make
-					menu_.set_bounds ( 0, 0, 1, 1 )
-					menus.extend( menu_ )
+					menu_.set_bounds ( 0, menu_count_-0.05, 1, 1 )
+--					menus.extend( menu_ )
+					menu.add( menu_ )
 				until
 					count_ = 8 or index_ > cases.count
 				loop
@@ -93,7 +107,8 @@ feature{NONE} -- hud
 				if count_+1 < index_ then
 					-- return-button
 					command_ := "m"
-					command_.append_integer( menus.count-1 )
+				--	command_.append_integer( menus.count-1 )
+					command_.append_integer( menu_count_ - 1 )
 					
 					create button_.make
 					button_.set_text( "Back" )
@@ -108,7 +123,8 @@ feature{NONE} -- hud
 					-- forward-button
 					
 					command_ := "m"
-					command_.append_integer( menus.count+1 )
+				--	command_.append_integer( menus.count+1 )
+					command_.append_integer( menu_count_+1 )
 					
 					create button_.make
 					button_.set_text( "Next" )
@@ -118,6 +134,8 @@ feature{NONE} -- hud
 					
 					menu_.add( button_ )					
 				end
+				
+				menu_count_ := menu_count_ + 1
 			end
 		end
 
@@ -128,8 +146,9 @@ feature{NONE} -- hud
 			index_ := command_.substring ( 2, command_.count ).to_integer
 				
 			if command_.item ( 1 ) = 'm' then
-				navigation.remove_all
-				navigation.add( menus.i_th ( index_ ) )
+				menu.move_to( index_ )
+--				navigation.remove_all
+--				navigation.add( menus.i_th ( index_ ) )
 			elseif command_.item( 1 ) = 's' then
 				navigation.remove_all
 				set_test_case( cases.i_th ( index_ ) )
@@ -150,7 +169,7 @@ feature {NONE} -- values
 			object_ : Q_GL_OBJECT
 			camera_ : Q_GL_CAMERA
 			min_, max_, pos_, dir_ : Q_VECTOR_3D
-			behaviour_ : Q_SIMPLE_CAMERA_BEHAVIOUR
+	--		behaviour_ : Q_SIMPLE_CAMERA_BEHAVIOUR
 		do
 			create root.init_lighting( test_case_.lighting )
 			test_case_.init
@@ -187,9 +206,9 @@ feature {NONE} -- values
 				camera_.set_beta( -45 )
 				
 				camera_.zoom( -dir_.length )
-				create behaviour_
-				behaviour_.set_rotation_distance( dir_.length )
-				navigation.set_behaviour( behaviour_ )
+			--	create behaviour_
+			--	behaviour_.set_rotation_distance( dir_.length )
+			--	navigation.set_behaviour( behaviour_ )
 			end
 			
 			test_case_.initialized( root )

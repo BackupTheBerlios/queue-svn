@@ -27,9 +27,9 @@ feature -- from Q_GAME_STATE
 	
 	identifier : STRING is
 		-- A String witch is used as unique identifier for this state
-		-- The string should contain the name of the class, withoud the "q_"
-		-- and withoud a "state", ans only lower-case characters
-		-- Example: Q_VIEW_MODE will return "view"
+		-- The string should contain the name of the class, without the "q_"
+		-- and withoud a "state", and only lower-case characters
+		-- Example: Q_VIEW_STATE will return "view"
 		do
 			result := "bird state"
 		end
