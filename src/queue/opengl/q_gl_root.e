@@ -41,8 +41,8 @@ feature{NONE} -- initialisation
 		do
 			set_left( -1.0 )
 			set_right( 1.0 )
-			set_top( 1.0 )
-			set_bottom( -1.0 )
+			set_top( 0.75 )
+			set_bottom( -0.75 )
 			set_near( 1 )
 			set_far( 10000 )
 			
