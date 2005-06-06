@@ -13,6 +13,7 @@ feature{NONE} -- creation
 		do
 			create time
 			create state_list.make( 20 )
+			create mode_list.make( 20 )
 			create gl_manager.make_timed( logic_.screen.width, logic_.screen.height, time )
 			
 			logic := logic_
@@ -26,9 +27,22 @@ feature	-- Physics
 	
 feature  -- game logic
 	logic : Q_GAME_LOGIC
+	
 	mode : Q_MODE -- the mode of the game
-	player_A : Q_PLAYER -- the first player
-	player_B : Q_PLAYER -- the second player
+	
+	set_mode( mode_ : Q_MODE ) is
+		do
+			if mode /= void then
+				mode.uninstall( current )
+			end
+			
+			mode := mode_
+			
+			if mode /= void then
+				mode.install( current )
+			end
+		end
+		
 
 feature  -- graphics
 	gl_manager : Q_GL_MANAGER -- manager of the OpenGL-Tree
@@ -76,9 +90,46 @@ feature -- states
 		do
 			state_list.remove( state_.identifier )
 		end
+
+feature -- modes
+	request_mode( name_ : STRING ) : Q_MODE is
+			-- Searches a state. If the mode is found, it is
+			-- returned, otherwise a result is set to void
+		require
+			name_ /= void
+		do
+			if mode_list.has( name_ ) then
+				result := mode_list.item( name_ ) 
+			else
+				result := void
+			end
+		end
+	
+	put_mode( mode_ : Q_MODE ) is
+			-- Inserts a new mode in the list of all states.
+			-- The feature "identifier" of Q_MODE is used, to create
+			-- an identifier. With this identifier, its possible to
+			-- refind a state by calling the "request_mode"-feature
+		require
+			mode_ /= void
+		do
+			 mode_list.put( mode_, mode_.identifier )
+		end
+		
+	drop_mode( mode_ : Q_GAME_STATE ) is
+			-- Removes a state from the list.
+			-- Be extremly carefull with this method, a state may
+			-- hold some important informations about the game-state
+		require
+			mode_ /= void
+		do
+			mode_list.remove( mode_.identifier )
+		end
 		
 		
 feature{NONE} -- state
 	state_list : HASH_TABLE[ Q_GAME_STATE, STRING ]
+	
+	mode_list : HASH_TABLE[ Q_MODE, STRING ]
 
 end -- class Q_GAME_RESSOURCES

@@ -30,16 +30,5 @@ feature
 		do
 			ressources_.gl_manager.set_camera_behaviour( void )
 		end
-		
-	step( ressources_: Q_GAME_RESSOURCES ) is
-		do
-			precursor( ressources_ )
-			simulation_step( ressources_ )
-		end
 	
-	simulation_step( ressources_ : Q_GAME_RESSOURCES ) is
-		deferred
-		end
-		
-
 end -- class Q_SIMULATION_STATE

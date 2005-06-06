@@ -1,5 +1,6 @@
 indexing
-	description: "Objects that represent the View Mode for human-user-interaction. User can fly over the table and look at the situation"
+	-- Objects that represent the View Mode for human-user-interaction.
+	-- User can fly over the table and look at the situation
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -37,6 +38,12 @@ feature -- from Q_GAME_STATE
 		do
 			ressources_.gl_manager.set_camera_behaviour( void )
 		end
+	
+	step( ressources_: Q_GAME_RESSOURCES ) is
+		do
+			-- do nothing
+		end
+		
 	
 	identifier : STRING is
 		-- A String witch is used as unique identifier for this state

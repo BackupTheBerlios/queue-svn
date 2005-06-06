@@ -25,6 +25,16 @@ feature -- Interface
 			
 		end
 		
+	hit_point : Q_VECTOR_3D
+	hit_plane : Q_PLANE
+	
+	set_hit( point_ : Q_VECTOR_3D; plane_ : Q_PLANE ) is
+		do
+			hit_point := point_
+			hit_plane := plane_
+		end
+		
+		
 	direction: Q_VECTOR_2D -- the direction of the shot in (x,y) coordinates
 	
 	-- hackers: commented out because strength = |direction| = length of direction vector

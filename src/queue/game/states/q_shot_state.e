@@ -33,7 +33,7 @@ feature{NONE} -- event-handling
 				elseif event_.key = event_.sdlk_escape then
 					goto_escape_menu( ressources_ )
 				elseif next_state = void and event_.key = event_.sdlk_space then
-					next_state := prepare_next_state( slider.value )
+					next_state := prepare_next_state( slider.value, ressources_ )
 				end
 			else
 				if event_.key = event_.sdlk_plus then
@@ -87,9 +87,11 @@ feature -- interface
 			end
 		end
 	
-	prepare_next_state( pressure_ : DOUBLE ) : Q_GAME_STATE is
-			-- Creates the next state.
+	prepare_next_state( pressure_ : DOUBLE; ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
+			-- Creates the next state. This involvs, saving the pressur.
 			-- Returns void, if no next state should be choosen
+			-- pressure_ : A value between slider.minimum and slider.maximum (default is 0 and 1).
+			-- ressources_ : additional informations
 		deferred
 		end
 		

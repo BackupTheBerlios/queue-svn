@@ -16,10 +16,17 @@ feature {Q_AIM_STATE}
 		do
 			create line.make( 
 				create {Q_VECTOR_3D}, create {Q_VECTOR_3D}, 20 )
+				
+			line.set_color( create {Q_GL_COLOR}.make_white )
 		end
 
 feature {Q_AIM_STATE} -- event handling	
-	prepare_next_state( direction_ : Q_VECTOR_2D ) : Q_GAME_STATE is
+	prepare_next_state( direction_ : Q_VECTOR_2D; ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
+			-- Prepares the next state. This involves: findig out, if the direction is allowed, and
+			-- save the direction somewhere (for example, forward it to the next state).
+			-- If, for any reason, no next state is available, return void.
+			-- direction_ : Direction in witch the ball will be shot
+			-- ressources_ : The game-ressources, for additional informations
 		require
 			direction_ /= void
 		deferred
@@ -75,7 +82,7 @@ feature
 					
 					if key_event_.key = key_event_.sdlk_space then
 						if direction /= void then
-							next_state := prepare_next_state( direction )
+							set_next_state( prepare_next_state( direction, ressource_ ))
 						end
 					elseif key_event_.key = key_event_.sdlk_escape then
 						goto_escape_menu( ressource_ )

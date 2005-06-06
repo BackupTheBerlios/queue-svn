@@ -17,7 +17,7 @@ feature
 		do
 			position := position_
 			
-			create caught_balls.make (0, 4)
+			create caught_balls.make
 		end
 		
 	make_from_points (positions_: ARRAY[Q_VECTOR_2D]) is
@@ -27,7 +27,7 @@ feature
 		local
 			index_ : INTEGER
 		do
-			create caught_balls.make (0, 4)
+			create caught_balls.make
 			
 			create position.default_create
 			from
@@ -49,7 +49,7 @@ feature
 	position : Q_VECTOR_2D
 		-- the position of the hole
 		
-	caught_balls: ARRAY[Q_BALL]
+	caught_balls: LINKED_LIST[Q_BALL]
 		-- the balls that fell in this hole
 
 	radius : DOUBLE

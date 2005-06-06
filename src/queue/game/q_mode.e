@@ -31,9 +31,15 @@ feature -- Interface
 		
 		
 	ai_player: Q_AI_PLAYER is
-			-- creates/returns an AI-Player for this game mode
+			-- create a new AI-Player for this game mode
 		deferred
 		end
+		
+	human_player : Q_HUMAN_PLAYER is
+			-- create a new human player for this game mode
+		deferred
+		end
+		
 		
 	position_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
 		do
@@ -55,21 +61,44 @@ feature -- Interface
 			Result := table_model.position_world_to_table (world_)
 		end
 
-	is_correct_opening (collisions_: LIST[Q_COLLISION_EVENT]): BOOLEAN is
-			-- was this sequence of collisions a legal opening for this game mode
-		require
-			collisions_ /= Void
+	next_state : Q_GAME_STATE is
+			-- next state according to the ruleset
 		deferred
 		end
 		
 		
+	identifier : STRING is
+		-- A String witch is used as unique identifier for this mode
+		-- The string should contain the name of the class, withoud the "q_"
+		-- and without a "mode", and only lower-case characters
+		-- Example: Q_8BALL_MODE will return "8ball"
+		deferred
+		ensure
+			result_exists : result /= void
+		end		
 		
+	install( ressources_ : Q_GAME_RESSOURCES ) is
+		-- Installs this mode. For example, the mode can add
+		-- a light to the world
+		require
+			ressources_ /= void
+		deferred
+		end
 	
+	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
+		-- Uninstalls this state. For example, if the mode
+		-- did add a light to the world, it must now 
+		-- remove this light.
+		require
+			ressources_ /= void
+		deferred
+		end
 		
-
-feature {NONE} -- Implementation
-
-invariant
-	invariant_clause: True -- Your invariant here
-
+	valid_position( ball_position_ : Q_VECTOR_2D ) : BOOLEAN is
+			-- true if the given ball-position is valid, otherwise false
+		require
+			ball_position_ /= void
+		deferred
+		end	
+	
 end -- class Q_MODE

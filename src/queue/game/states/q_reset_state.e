@@ -32,14 +32,14 @@ feature -- interface
 				if event_queue_.is_mouse_button_down_event then
 					--event_queue_.pop_mouse_button_event
 					event_queue_.pop
-					pressed
+					pressed( ressources_ )
 				elseif event_queue_.is_mouse_motion_event then
 					motion_event_ := event_queue_.pop_mouse_motion_event
 					motion( motion_event_, event_queue_.screen_to_hud( motion_event_.x, motion_event_.y ), ressources_ )
 				elseif event_queue_.is_key_down_event  then
 					key_event_ := event_queue_.pop_keyboard_event
 					if key_event_.key = key_event_.sdlk_space then
-						pressed
+						pressed( ressources_ )
 					elseif key_event_.key = key_event_.sdlk_escape then
 						goto_escape_menu( ressources_ )
 					end
@@ -63,10 +63,10 @@ feature -- event handling
 			end
 		end
 	
-	pressed is
+	pressed( ressources_ : Q_GAME_RESSOURCES ) is
 		do
 			if ball_position /= void then
-				next_state := prepare_next_state( ball_position )
+				set_next_state( prepare_next_state( ball_position, ressources_ ))
 			end
 		end
 		
@@ -75,7 +75,12 @@ feature -- event handling
 		deferred
 		end
 		
-	prepare_next_state( ball_position_ : Q_VECTOR_2D ) : Q_GAME_STATE is
+	prepare_next_state( ball_position_ : Q_VECTOR_2D; ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
+			-- Calculates the next state. This means, saving the position of the ball, and
+			-- searching/creating a new state.
+			-- If no next state is available, return void
+			-- ball_position_ : Where the user wants to put the ball
+			-- ressources_ : Additional informations
 		require
 			valid_position( ball_position_ )
 		deferred

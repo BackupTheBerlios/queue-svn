@@ -15,6 +15,30 @@ create
 	make	
 
 feature -- Interface
+	light : Q_GL_LIGHT	
+	player_A : Q_PLAYER -- the first player
+	player_B : Q_PLAYER -- the second player
+	
+	set_player_a( player_ : Q_PLAYER ) is
+		do
+			player_a := player_
+		end
+	
+	set_player_b( player_ : Q_PLAYER ) is
+		do
+			player_b := player_
+		end
+		
+	first_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
+		do
+			result := player_a.first_state( ressources_ )
+		end
+		
+	valid_position( v_ : Q_VECTOR_2D ) : BOOLEAN is
+		do
+			
+		end
+		
 	
 	make is
 			-- creation procedure
@@ -29,8 +53,25 @@ feature -- Interface
 	table : Q_TABLE	
 	table_model: Q_TABLE_MODEL
 	ball_models: ARRAY[Q_BALL_MODEL]
-	ai_player : Q_AI_PLAYER
+
+	ai_player : Q_AI_PLAYER is
+		do
+			result := create {Q_8BALL_NAIVE_AI_PLAYER}.make
+		end
+		
 	
+	
+	human_player : Q_HUMAN_PLAYER is
+			-- create a new human player for this game mode
+		do
+			result := create {Q_8BALL_HUMAN_PLAYER}.make_mode( current )
+		end
+	
+	next_state : Q_GAME_STATE is
+			-- next state according to the ruleset
+		do
+		end
+		
 	ball_to_ball_model(ball_ :Q_BALL):Q_BALL_MODEL is
 			-- see base class
 		local 
@@ -67,6 +108,65 @@ feature -- Interface
 			create Result.make (table_model.width / 4, table_model.height / 2)
 		end
 
+	identifier : STRING is
+		do
+			result := "8ball"
+		end
+	
+	install( ressources_ : Q_GAME_RESSOURCES ) is
+		local
+			balls: ARRAY[Q_BALL]
+			ball_model: Q_BALL_MODEL
+			index_: INTEGER
+		do
+			ressources_.gl_manager.add_object (table_model)
+			balls := table.balls
+			from
+				index_ := balls.lower
+			until
+				index_ > balls.upper
+			loop
+				ball_model := ball_to_ball_model (balls.item (index_))			
+				ball_model.set_position (position_table_to_world (balls.item (index_).center))
+				ressources_.gl_manager.add_object (ball_model)				
+				index_ := index_ + 1
+			end
+			
+			if light = void then
+				create light.make( 0 )
+				
+				light.set_diffuse( 1, 1, 1, 0 )
+				light.set_position( 0, 200, 200 )
+				light.set_constant_attenuation( 0 )
+				light.set_attenuation( 1, 0, 0 )
+		
+			end
+			
+			ressources_.gl_manager.add_object( light )
+		end
+		
+	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
+		local
+			balls: ARRAY[Q_BALL]
+			ball_model: Q_BALL_MODEL
+			index_: INTEGER
+		do
+			ressources_.gl_manager.remove_object (table_model)
+			balls := table.balls
+			from
+				index_ := balls.lower
+			until
+				index_ > balls.upper
+			loop
+				ball_model := ball_to_ball_model (balls.item (index_))			
+				ball_model.set_position (position_table_to_world (balls.item (index_).center))
+				ressources_.gl_manager.remove_object (ball_model)				
+				index_ := index_ + 1
+			end
+			
+			ressources_.gl_manager.remove_object( light )	
+		end
+		
 
 feature {NONE} -- Implementation
 

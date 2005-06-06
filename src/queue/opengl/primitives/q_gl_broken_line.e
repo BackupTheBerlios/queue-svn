@@ -9,7 +9,7 @@ inherit
 	Q_GL_OBJECT
 	
 creation
-	make_empty, make, make_normal
+	make_empty, make
 	
 feature{NONE} -- creation
 	make_empty is
@@ -20,15 +20,8 @@ feature{NONE} -- creation
 		
 	make( a_, b_ : Q_VECTOR_3D; pieces_ : INTEGER ) is
 		do
-			make_normal( a_, b_, 
-				create {Q_VECTOR_3D}.make( 0, 1, 0 ), pieces_ )
-		end
-		
-	make_normal( a_, b_, normal_ : Q_VECTOR_3D; pieces_ : INTEGER ) is
-		do
 			set_a( a_ )
 			set_b( b_ )
-			set_normal( normal_ )
 			set_pieces( pieces_ )
 		end
 		
@@ -49,13 +42,13 @@ feature -- draw
 			bz_ := b.z
 			
 			points_ := pieces * 2
-			
-			if material /= void then
-				material.set( open_gl )				
-			end
 
+			open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_lighting )
 			open_gl.gl.gl_begin( open_gl.gl_constants.esdl_gl_lines )
-			normal.set( open_gl )
+			
+			if color /= void then
+				color.set( open_gl )
+			end			
 			
 			from index_ := 0 until index_ >= points_ loop
 				relative_ := index_ / (points_-1)
@@ -69,6 +62,7 @@ feature -- draw
 			end
 			
 			open_gl.gl.gl_end
+			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_lighting )
 		end
 		
 
@@ -79,7 +73,7 @@ feature -- values
 	pieces : INTEGER
 		-- The number of pieces this line contains
 		
-	material : Q_GL_MATERIAL
+	color : Q_GL_COLOR
 		-- the material
 		
 	normal : Q_VECTOR_3D
@@ -100,15 +94,9 @@ feature -- values
 			pieces := pieces_
 		end
 	
-	set_material( material_ : Q_GL_MATERIAL ) is
+	set_color( color_ : Q_GL_COLOR ) is
 		do
-			material := material_
+			color := color_
 		end
 	
-	set_normal( normal_ : Q_VECTOR_3D ) is
-		do
-			normal := normal_
-		end
-		
-
 end -- class Q_GL_BROKEN_LINE

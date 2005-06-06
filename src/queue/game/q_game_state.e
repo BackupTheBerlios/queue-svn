@@ -7,7 +7,7 @@ deferred class
 	
 feature
 	install( ressources_ : Q_GAME_RESSOURCES ) is
-		-- Installs this mode. For example, the mode can add
+		-- Installs this state. For example, the state can add
 		-- a speciall button to the hud
 		require
 			ressources_ /= void
@@ -15,7 +15,7 @@ feature
 		end
 	
 	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
-		-- Uninstalls this mode. For example, if the mode
+		-- Uninstalls this state. For example, if the state
 		-- did add a button to the hud, it must now 
 		-- remove this button.
 		require

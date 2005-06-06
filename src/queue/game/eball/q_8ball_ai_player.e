@@ -18,6 +18,11 @@ create
 	make
 	
 feature
+	first_state( ressources_  : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
+		do
+			result := void
+		end
+		
 	
 	ability : INTEGER
 	
@@ -43,7 +48,7 @@ feature
 			rand_ : Q_RANDOM
 		do
 			create rand_
-			table := gr_.table
+			table := gr_.mode.table
 			create possible_direct_shots_.make
 			-- compute possible shots
 			from

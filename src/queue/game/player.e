@@ -20,6 +20,12 @@ feature -- Interface
 			name = name_
 		end
 
+	first_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
+			-- returns the first state, when this player wants to play
+		deferred
+		ensure
+			result /= void
+		end
 		
 
 feature {NONE} -- Implementation

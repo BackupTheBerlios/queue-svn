@@ -61,14 +61,20 @@ feature -- event-handling
 	key_pressed( event_ : ESDL_KEYBOARD_EVENT; ressources_ : Q_GAME_RESSOURCES ) is
 		do
 			if next_state = void and hit_point /= void and event_.key = event_.sdlk_space then
-				next_state := prepare_next( hit_point, hit_plane )
+				next_state := prepare_next( hit_point, hit_plane, ressources_ )
 			elseif event_.key = event_.sdlk_escape then
 				goto_escape_menu( ressources_ )
 			end
 		end
 		
 		
-	prepare_next( hit_point_ : Q_VECTOR_3D; hit_plane_ : Q_PLANE ) : Q_GAME_STATE is
+	prepare_next( hit_point_ : Q_VECTOR_3D; hit_plane_ : Q_PLANE; ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
+			-- creates or searches the next state. This involves saving the hit-point
+			-- and the hit-plane
+			-- Returns the next state or void, if no next state could be detemined.
+			-- hit_point_ : where the queue hits the ball
+			-- hit_plane_ : in whitch plane the queue hits the ball
+			-- ressources_ : additional informations
 		require
 			hit_point_ /= void
 			hit_plane_ /= void

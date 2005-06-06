@@ -116,8 +116,8 @@ feature -- event-handling
 				exp_ := math.exp( exp_ - zoom_factor * dy_).max( zoom_min ).min( zoom_max )
 				set_distance( exp_ )
 			elseif mouse_pressed then
-				dx_ := x_ - last_x
-				dy_ := y_ - last_y
+				dx_ := -(x_ - last_x)
+				dy_ :=  (y_ - last_y)
 				
 				last_x := x_
 				last_y := y_

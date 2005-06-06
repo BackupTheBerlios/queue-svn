@@ -107,6 +107,7 @@ feature -- manage GL-Tree
 		
 	remove_object( object_ : Q_GL_OBJECT ) is
 		do
+			group.start
 			group.prune( object_ )
 		end
 		
