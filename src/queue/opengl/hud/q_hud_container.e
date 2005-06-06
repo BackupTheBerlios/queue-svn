@@ -157,6 +157,10 @@ feature -- childs
 			component_.set_parent( current )
 			children.extend( component_ )
 			tell_added( component_, current, component_ )
+			
+			if root_pane /= void then
+				root_pane.added( component_ )
+			end
 		end
 		
 	remove( component_ : Q_HUD_COMPONENT ) is

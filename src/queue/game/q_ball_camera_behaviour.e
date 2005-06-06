@@ -11,7 +11,8 @@ inherit
 		update,
 		process_mouse_button_up,
 		process_mouse_button_down,
-		process_mouse_moved
+		process_mouse_moved,
+		process_key_down
 	end
 
 creation
@@ -31,6 +32,11 @@ feature{NONE}
 			rotate_vertical_max := 10
 			
 			distance := zoom_min
+			
+			create key_map.make
+			
+			set_unit_move_duration( 1500 )
+			set_rotation_duration( 20000 )
 		end
 		
 
@@ -50,11 +56,140 @@ feature -- the ball & table
 			ball := ball_
 		end
 	
+feature -- velocity
+	unit_move_duration : INTEGER
+	
+	rotation_duration : INTEGER
+	
+	set_unit_move_duration( duration_ : INTEGER ) is
+			-- sets, how long the camera would need to move
+			-- one unit (= 1 meter), if the user presses the 
+			-- assigned key
+		require
+			duration_ > 0
+		do
+			unit_move_duration := duration_
+		end
+		
+	set_rotation_duration( duration_ : INTEGER ) is
+			-- Sets, how long the camera would need to
+			-- move one time around the ball, if the user
+			-- presses the assigned key
+		require
+			duration_ > 0
+		do
+			rotation_duration := duration_
+		end
+
+feature -- keys
+	ctrl, shift, alt : BOOLEAN
+	
+	set_ctrl( ctrl_ : BOOLEAN ) is
+			-- If true, the user must press the ctrl-key to
+			-- control the camera by keys. If false, the camera
+			-- will only react, if the key is not pressed.
+		do
+			ctrl := ctrl_
+		end
+
+	set_alt( alt_ : BOOLEAN ) is
+			-- If true, the user must press the alt-key to
+			-- control the camera by keys. If false, the camera
+			-- will only react, if the key is not pressed.
+		do
+			alt := alt_
+		end
+		
+	set_shift( shift_ : BOOLEAN ) is
+			-- If true, the user must press the shift-key to
+			-- control the camera by keys. If false, the camera
+			-- will only react, if the key is not pressed.
+		do
+			shift := shift_
+		end
+	
 feature -- update
-	update is
+	update( time_ : Q_TIME ) is
 		local
 			vector_ : Q_VECTOR_3D
+			
+			da_, db_, dz_, dt_ : DOUBLE
 		do
+			if original_key_map /= void then
+				original_key_map.ensure_subset( key_map )
+				
+				if original_key_map.alt = alt and
+					original_key_map.ctrl = ctrl and
+					original_key_map.shift = shift then
+					
+					da_ := 0
+					db_ := 0
+					dz_ := 0
+					
+					-- zoom
+					if key_map.pressed( key_map.sdlk_q ) then
+						dz_ := dz_ + 1
+					end
+					
+					if key_map.pressed( key_map.sdlk_e ) then
+						dz_ := dz_ - 1
+					end
+					
+					-- angle, fast
+					if key_map.pressed( key_map.sdlk_w ) then
+						db_ := db_ + 5
+					end
+					
+					if key_map.pressed( key_map.sdlk_s ) then
+						db_ := db_ - 5
+					end
+					
+					if key_map.pressed( key_map.sdlk_a ) then
+						da_ := da_ + 5
+					end
+					
+					if key_map.pressed( key_map.sdlk_d ) then
+						da_ := da_ - 5
+					end
+					
+					-- angle, slow
+					if key_map.pressed( key_map.sdlk_up ) then
+						db_ := db_ + 1
+					end
+					
+					if key_map.pressed( key_map.sdlk_down ) then
+						db_ := db_ - 1
+					end
+					
+					if key_map.pressed( key_map.sdlk_left ) then
+						da_ := da_ + 1
+					end
+					
+					if key_map.pressed( key_map.sdlk_right ) then
+						da_ := da_ - 1
+					end
+					
+					if dz_ /= 0 then
+						dt_ := time_.delta_time_millis / unit_move_duration
+						
+						distance := distance - dz_ * dt_ * 100
+						distance := zoom_min.max( zoom_max.min( distance ) )
+					end
+					
+					if da_ /= 0 or db_ /= 0 then
+						dt_ := time_.delta_time_millis / rotation_duration
+						
+						alpha := alpha + da_ * dt_ * 360
+						beta := beta + db_ * dt_ * 360
+						
+						if alpha < 0 then alpha := alpha + 360 end
+						if alpha > 360 then alpha := alpha - 360 end
+						
+						beta := rotate_vertical_min.max( rotate_vertical_max.min( beta ))
+					end
+				end
+			end
+			
 			if camera /= void and ball /= void then
 				vector_ := camera.view_direction_by_angles( alpha, beta )
 				vector_.normaliced
@@ -72,7 +207,16 @@ feature -- event-handling
 	mouse_pressed : BOOLEAN
 	secondary_mouse : BOOLEAN
 	
+	key_map, original_key_map : Q_KEY_MAP
+	
 	last_x, last_y : DOUBLE
+
+	process_key_down( event_: ESDL_KEYBOARD_EVENT; map_: Q_KEY_MAP ) : BOOLEAN is
+		do
+			original_key_map := map_
+			key_map.tell_pressed( event_.key )
+		end
+		
 
 	process_mouse_button_down (event_: ESDL_MOUSEBUTTON_EVENT; x_, y_: DOUBLE; map_ : Q_KEY_MAP): BOOLEAN is
 		do

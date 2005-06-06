@@ -49,6 +49,16 @@ feature{Q_GL_ROOT}
 feature -- Eventhandling
 	focused_component : Q_HUD_COMPONENT
 		-- the component witch has currently the focus
+	
+	focus_default_component is
+			-- Focuses the default-component, if there is a 
+			-- focusable component and a focus_handler
+		do
+			if focus_handler /= void then
+				focus_handler.focus_default( current )
+			end
+		end
+		
 		
 	selected_component : Q_HUD_COMPONENT
 		-- the component witch is selected by the mouse. If it is a focusable component, its the same as focused_component
@@ -319,7 +329,15 @@ feature -- Eventhandling
 					end
 				end
 			end
-		end			
+		end	
+		
+	added( component_ : Q_HUD_COMPONENT ) is
+		do
+			if focused_component = void then
+				focus_default_component
+			end
+		end
+		
 	
 removed( component_ : Q_HUD_COMPONENT ) is
 	-- called from the container, if a component is removed
@@ -339,22 +357,11 @@ removed( component_ : Q_HUD_COMPONENT ) is
 			child_ := child_.parent
 		end
 		
-		if selected_component /= void then
-			from child_ := selected_component until child_ = void loop
-				if child_ = component_ then
-					selected_component := void
-				end
-				child_ := child_.parent
-			end
-		end
+		ensure_selected_component
+		ensure_focused_component
 		
-		if focused_component /= void then
-			from child_ := focused_component until child_ = void loop
-				if child_ = component_ then
-					selected_component := void
-				end
-				child_ := child_.parent
-			end
+		if focused_component = void then
+			focus_default_component
 		end
 	end
 	

@@ -17,6 +17,24 @@ feature{NONE}
 			create keys.make( 20 )
 		end
 		
+feature -- interaction
+	ensure_subset( map_ : Q_KEY_MAP ) is
+			-- Ensures only keys that are marked as pressed in this
+			-- map are also marked as pressed in map_
+		do
+			from
+				map_.keys.start
+			until
+				map_.keys.after
+			loop
+				if pressed( map_.keys.item ) then
+					map_.keys.forth
+				else
+					map_.keys.remove
+				end
+			end
+		end
+		
 
 feature -- access
 	pressed( key_ : INTEGER ) : BOOLEAN is
@@ -41,7 +59,7 @@ feature -- access
 		end
 		
 
-feature{Q_EVENT_QUEUE} -- set
+feature -- set
 	tell_pressed( key_ : INTEGER ) is
 		do
 			if not keys.has( key_ ) then
@@ -54,7 +72,7 @@ feature{Q_EVENT_QUEUE} -- set
 			keys.prune_all( key_ )
 		end
 		
-feature{NONE}
+feature{Q_KEY_MAP}
 	keys : ARRAYED_LIST[ INTEGER ]
 
 end -- class Q_KEY_MAP

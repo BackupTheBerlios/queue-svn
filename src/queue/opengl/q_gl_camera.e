@@ -182,6 +182,26 @@ feature -- additional information
 				sin_alpha_ * cos_beta_, -sin_beta_, -cos_alpha_ * cos_beta_ )
 		end
 
+	view_direction_xz_parallel : Q_VECTOR_3D is
+		do
+			result := view_direction_xz_parallel_by_angle( alpha )
+		end
+		
+
+	view_direction_xz_parallel_by_angle( alpha_ : DOUBLE ) : Q_VECTOR_3D is
+		local
+			rad_alpha_, sin_alpha_, cos_alpha_ : DOUBLE
+		do
+			rad_alpha_ := alpha_ * pi / 180
+
+			sin_alpha_ := math.sine( rad_alpha_ )
+			cos_alpha_ := math.cosine( rad_alpha_ )
+			
+			create result.make(
+				sin_alpha_, 0, -cos_alpha_ )
+		end
+		
+
 	to_right_vector: Q_VECTOR_3D is
 			-- Calculates a vector pointing to the right of this camera
 		do
@@ -270,6 +290,15 @@ feature -- movement
 			set_position( x + right_.x, y + right_.y, z + right_.z )
 		end
 		
+	slide( delta_forward_ : DOUBLE ) is
+		local
+			forward_ : Q_VECTOR_3D
+		do
+			forward_ := view_direction_xz_parallel
+			forward_.normaliced
+			forward_.scaled( delta_forward_ )
+			set_position( x + forward_.x, y + forward_.y, z + forward_.z )
+		end
 
 feature{NONE} -- math
 	math : DOUBLE_MATH is

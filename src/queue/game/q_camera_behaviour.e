@@ -16,7 +16,7 @@ feature -- camera
 			camera := camera_
 		end
 		
-	update is
+	update( time_ : Q_TIME ) is
 			-- Called all few milliseconds. The Behaviour can
 			-- change the position of the camera.
 		do

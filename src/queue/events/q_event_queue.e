@@ -200,6 +200,7 @@ feature{Q_EVENT_QUEUE} -- append
 			-- Adds an event of a given type to the queue
 		do
 			queue.force([type_, event_])
+			update_key_map
 		end
 	
 feature -- access top

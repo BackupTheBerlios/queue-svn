@@ -23,6 +23,7 @@ feature{NONE} -- creation
 		do
 			precursor
 			set_enabled( true )
+			set_focusable( true )
 
 			mouse_moved_listener.extend( agent mouse_moved( ?,?,?,?,? ))
 			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,?,? ))
@@ -71,7 +72,7 @@ feature -- camera
 		do
 			precursor( open_gl )
 			if behaviour /= void then
-				behaviour.update
+				behaviour.update( open_gl.time )
 			end
 		end
 		

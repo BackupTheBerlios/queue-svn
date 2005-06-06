@@ -34,7 +34,7 @@ feature{NONE} -- creation
 			unit_move_duration := 1000
 			rotation_duration := 3000
 			
-			create time
+			create key_map.make
 		end
 		
 feature -- factors
@@ -132,40 +132,58 @@ feature -- key requirement
 		
 	
 feature{NONE} -- event handling
-	key_map : Q_KEY_MAP
+	key_map, original_key_map : Q_KEY_MAP
 	first_mouse_down, second_mouse_down : BOOLEAN
 
 	last_x, last_y : DOUBLE
-	
-	time : Q_TIME
 
-	update is
+	update( time_ : Q_TIME ) is
 		local
-			dx_, dy_, dz_, da_, db_, dt_ : DOUBLE
+			dx_, dy_, dz_, ds_, da_, db_, dt_ : DOUBLE
 			alpha_, beta_ : DOUBLE
 			change_ : BOOLEAN
 		do
-			if key_map /= void then
-				if key_map.ctrl = ctrl and key_map.alt = alt and key_map.shift = shift then				
+			if original_key_map /= void then
+				original_key_map.ensure_subset( key_map )
+				
+				if original_key_map.ctrl = ctrl and 
+					original_key_map.alt = alt and 
+					original_key_map.shift = shift then
+					
 					dx_ := 0
 					dy_ := 0
 					dy_ := 0
+					ds_ := 0
+					da_ := 0
+					db_ := 0
+					dt_ := 0
 					
 					-- move
-					if key_map.pressed( key_map.sdlk_up ) then
+					if key_map.pressed( key_map.sdlk_i ) then
 						dy_ := dy_ + 1
 					end
 					
-					if key_map.pressed( key_map.sdlk_down ) then
+					if key_map.pressed( key_map.sdlk_k ) then
 						dy_ := dy_ - 1
 					end
 					
-					if key_map.pressed( key_map.sdlk_left ) then
+					if key_map.pressed( key_map.sdlk_left ) or
+						key_map.pressed( key_map.sdlk_l ) then
 						dx_ := dx_ - 1
 					end
 					
-					if key_map.pressed( key_map.sdlk_right ) then
+					if key_map.pressed( key_map.sdlk_right ) or
+						key_map.pressed( key_map.sdlk_j ) then
 						dx_ := dx_ + 1
+					end
+					
+					-- slide
+					if key_map.pressed( key_map.sdlk_up ) then
+						ds_ := ds_ + 1
+					end
+						
+					if key_map.pressed( key_map.sdlk_down ) then
+						ds_ := ds_ - 1
 					end
 					
 					-- zoom
@@ -195,7 +213,7 @@ feature{NONE} -- event handling
 					end
 					
 					if dx_ /= 0 or dy_ /= 0 or dz_ /= 0 then
-						dt_ := time.delta_time_millis / unit_move_duration
+						dt_ := time_.delta_time_millis / unit_move_duration
 						
 						camera.move( 100 * dx_ * dt_, 100 * dy_ * dt_ )
 						camera.zoom( 100 * dz_ * dt_ )
@@ -203,8 +221,16 @@ feature{NONE} -- event handling
 						change_ := true
 					end
 					
+					if ds_ /= 0 then
+						dt_ := time_.delta_time_millis / unit_move_duration
+						
+						camera.slide( 100 * ds_ * dt_ )
+						
+						change_ := true
+					end
+					
 					if da_ /= 0 or db_ /= 0 then
-						dt_ := time.delta_time_millis / rotation_duration * 360
+						dt_ := time_.delta_time_millis / rotation_duration * 360
 						
 						alpha_ := camera.alpha
 						beta_ := camera.beta
@@ -226,8 +252,6 @@ feature{NONE} -- event handling
 					end
 				end
 			end
-			
-			time.restart
 		end
 
 	process_mouse_moved( event_: ESDL_MOUSEMOTION_EVENT; x_: DOUBLE; y_: DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
@@ -235,7 +259,7 @@ feature{NONE} -- event handling
 			dx_, dy_ : DOUBLE
 			beta_, alpha_ : DOUBLE
 		do
-			key_map := map_
+			original_key_map := map_
 			
 			dx_ := x_ - last_x
 			dy_ := y_ - last_y
@@ -294,9 +318,12 @@ feature{NONE} -- event handling
 
 	process_mouse_button_down( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
 		do
-			key_map := map_
+			original_key_map := map_
 			
-			if key_map.ctrl = ctrl and key_map.shift = shift and key_map.alt = alt then
+			if original_key_map.ctrl = ctrl and 
+				original_key_map.shift = shift and 
+				original_key_map.alt = alt then
+					
 				last_x := x_
 				last_y := y_
 				
@@ -312,7 +339,7 @@ feature{NONE} -- event handling
 		
 	process_mouse_button_up( event_: ESDL_MOUSEBUTTON_EVENT; x_: DOUBLE; y_: DOUBLE; map_ : Q_KEY_MAP ) : BOOLEAN is
 		do
-			key_map := map_
+			original_key_map := map_
 			
 			if second_mouse_down then
 				second_mouse_down := false
@@ -323,12 +350,13 @@ feature{NONE} -- event handling
 	
 	process_key_down( event_: ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP ) : BOOLEAN is
 		do
-			key_map := map_
+			original_key_map := map_
+			key_map.tell_pressed( event_.key )
 		end
 	
 	process_key_up( event_: ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP ) : BOOLEAN is
 		do
-			key_map := map_
+			original_key_map := map_
 		end
 		
 feature -- table and camera
