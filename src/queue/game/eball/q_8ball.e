@@ -35,8 +35,18 @@ feature -- Interface
 		end
 		
 	valid_position( v_ : Q_VECTOR_2D ) : BOOLEAN is
+		local 
+			ball_already_there_ : BOOLEAN
+			i_ : INTEGER
 		do
-			
+			from
+				i_ := table.balls.lower
+			until
+				i_ > table.balls.upper
+			loop
+				
+				i_ := i_+1
+			end
 		end
 		
 	
