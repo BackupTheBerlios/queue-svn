@@ -48,18 +48,20 @@ feature -- interface
 			table /= void
 		local
 			newticks, stepsize: INTEGER
+			stepd: DOUBLE
 			arr: ARRAY[Q_OBJECT]
 		do
 			newticks := timer_funcs.sdl_get_ticks_external
 			stepsize := newticks - oldticks
+			stepd := stepsize / 1000
 			oldticks := newticks
 			
 			-- update objects
 			arr := table.balls
-			arr.do_all (agent update_position(?, stepsize))
+			arr.do_all (agent update_position(?, stepd))
 
 			arr := table.banks
-			arr.do_all (agent update_position(?, stepsize))
+			arr.do_all (agent update_position(?, stepd))
 
 			-- collision detection
 			collision_detector.collision_test
@@ -76,8 +78,8 @@ feature -- interface
 			result := collision_handler.position_list
 		end
 		
-	cue_vector_for_collision(ball_: Q_BALL; velocity_after_collision : Q_VECTOR_2D):Q_VECTOR_2D is
-			-- compute the velocity of the cue ball so that the ball ball_ has a given velocity vector
+	cue_vector_for_collision(ball_: Q_BALL; velocity_after_collision: Q_VECTOR_2D): Q_VECTOR_2D is
+			-- Compute the velocity of the cue ball so that ball_ has a given velocity vector
 			-- after a collision cue / ball_
 			-- return void if there is no such collision
 		do

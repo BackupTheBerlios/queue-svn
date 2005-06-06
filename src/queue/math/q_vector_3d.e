@@ -124,10 +124,16 @@ feature -- modification
 			set_z( z * scalar_ )
 		end
 
-	scale(scalar_ : DOUBLE ) : Q_VECTOR_3D is
+	scale, infix "*" (scalar_ : DOUBLE ) : Q_VECTOR_3D is
 			-- creates a new scaled vector-instance
 		do
 			create result.make ( x * scalar_, y * scalar_, z * scalar_ )
+		end
+		
+	infix "/" (s: DOUBLE): Q_VECTOR_3D is
+			-- Create new vector, scaled by 1/s
+		do
+			Result := Current.scale (1/s)
 		end
 		
 	length : DOUBLE is

@@ -45,6 +45,7 @@ feature -- interface
 			create table.make (balls, banks, void)
 
 			ball.set_velocity (create {Q_VECTOR_2D}.make (0.1, 0.025))
+			ball.set_angular_velocity (create {Q_VECTOR_3D}.make (0, 1, 0))
 			
 			simulation.position_list.wipe_out
 			simulation.position_list.put_first (create {Q_VECTOR_2D}.make_from_other (ball.center))
@@ -55,8 +56,6 @@ feature -- interface
 	draw (ogl: Q_GL_DRAWABLE) is
 			-- Draw visualisation.
 		local
-			glf: GL_FUNCTIONS
-
 		do
 			simulation.step (table)
 			

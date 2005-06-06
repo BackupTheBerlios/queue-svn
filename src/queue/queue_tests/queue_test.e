@@ -20,6 +20,7 @@ feature {NONE} -- Initialization
 			-- Create the main application.
 		local
 			scene_ : Q_TEST_CASE_SCENE
+			gl: Q_GAME_LOGIC
 		do
 			video_subsystem.set_video_surface_width (width)
 			video_subsystem.set_video_surface_height (height)
