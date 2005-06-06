@@ -19,6 +19,7 @@
 		<cluster name="events"/>
 		<cluster name="game">
 			<cluster name="states"/>
+			<cluster name="eball"/>
 		</cluster>
 		<cluster name="math"/>
 		<cluster name="opengl">
