@@ -7,18 +7,20 @@ class
 
 inherit
 	Q_OBJECT
+	redefine
+		bounding_object
+	end
 
 create
 	make,
 	make_empty
-	
+
 feature {NONE} -- create
 
 	make_empty is
 			-- Create new empty line.
 		do
-			create bounding_line.make_empty
-			bounding_object := bounding_line
+			bounding_object := create {Q_BOUNDING_LINE}.make_empty
 		end
 		
 	make (edge1_, edge2_: Q_VECTOR_2D) is
@@ -27,9 +29,7 @@ feature {NONE} -- create
 			edge1_ /= void
 			edge2_ /= void
 		do
-			create bounding_line.make (edge1_, edge2_)
-			bounding_object := bounding_line
-			
+			bounding_object := create {Q_BOUNDING_LINE}.make (edge1_, edge2_)
 		end
 
 
@@ -50,7 +50,7 @@ feature -- interface
 		require
 			e1 /= void
 		do
-			bounding_line.set_edge1 (e1)
+			bounding_object.set_edge1 (e1)
 		end
 		
 	set_edge2 (e2: Q_VECTOR_2D) is
@@ -58,27 +58,27 @@ feature -- interface
 		require
 			e2 /= void
 		do
-			bounding_line.set_edge2 (e2)
+			bounding_object.set_edge2 (e2)
 		end	
 
 	edge1: Q_VECTOR_2D is
 			-- Edge1
 		do
-			result := bounding_line.edge1
+			result := bounding_object.edge1
 		end
 		
 	edge2: Q_VECTOR_2D is
 			-- Edge2
 		do
-			result := bounding_line.edge2
+			result := bounding_object.edge2
 		end
-		
+	
+	bounding_object: Q_BOUNDING_LINE
+	
 	typeid: INTEGER is 2
 			-- Type id for collision response
 			
 			
 feature {Q_PHYS_COLLISION_RESPONSE_HANDLER} -- implementation
-		
-	bounding_line: Q_BOUNDING_LINE
 
 end -- class Q_BANK

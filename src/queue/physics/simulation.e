@@ -14,7 +14,7 @@ feature -- create
 			-- Create object.
 		do
 			create collision_detector.make
-			create collision_handler.make
+			create collision_handler.make (collision_detector)
 			
 			collision_detector.set_response_handler (collision_handler)
 		end
@@ -39,7 +39,7 @@ feature -- interface
 			-- add banks
 			arr := table.banks
 			arr.do_all (agent addto_detector)
-			
+
 		end
 		
 	step (table: Q_TABLE) is

@@ -7,6 +7,9 @@ class
 
 inherit
 	Q_OBJECT
+	redefine
+		bounding_object
+	end
 	
 create
 	make,
@@ -16,8 +19,7 @@ feature {NONE} -- create
 
 	make_empty is
 		do
-			create bounding_circle.make_empty
-			bounding_object := bounding_circle
+			bounding_object := create {Q_BOUNDING_CIRCLE}.make_empty
 		end
 		
 	
@@ -27,9 +29,9 @@ feature {NONE} -- create
 			center_ /= void
 			radius_ >= 0
 		do
-			create bounding_circle.make (center_, radius_)
-			bounding_object := bounding_circle
+			create bounding_object.make (center_, radius_)
 			
+			-- e.g. to calculate radvec
 			set_radius (radius_)
 		end
 
@@ -87,11 +89,15 @@ feature -- interface
 			-- f = a*m
 			-- > Calculate velocity dv = a*t --> v[new] = a*t + v[old]
 			a := f / mass
+			
 			velocity := velocity + (a * step)
 			
 			-- v = s/t --> s = v * t
-			c := bounding_circle.center + velocity * step
-			bounding_circle.set_center (c)
+			c := center + velocity * step
+			io.put_string (c.out)
+			io.put_new_line
+			
+			set_center (c)
 			
 			-- New angular velocity
 			-- f = a*m --> M = Om*Th
@@ -114,7 +120,7 @@ feature -- interface
 		require
 			c /= void
 		do
-			bounding_circle.set_center(c)
+			bounding_object.set_center(c)
 		end
 		
 	set_radius (r: DOUBLE) is
@@ -125,7 +131,7 @@ feature -- interface
 			radvec := create {Q_VECTOR_3D}.make (0, -1 * radius, 0)
 			theta  := 2/5 * mass * r*r
 		
-			bounding_circle.set_radius(r)
+			bounding_object.set_radius(r)
 		end
 		
 	set_velocity (v: Q_VECTOR_2D) is
@@ -147,16 +153,17 @@ feature -- interface
 	center: Q_VECTOR_2D is
 			-- Center of ball
 		do
-			result := bounding_circle.center
+			result := bounding_object.center
 		end
 		
 	radius: DOUBLE is
 			-- Radius of ball
 		do
-			result := bounding_circle.radius
+			result := bounding_object.radius
 		end
 		
-	
+	bounding_object: Q_BOUNDING_CIRCLE
+		
 	velocity: Q_VECTOR_2D
 			-- Velocity of ball
 			
@@ -174,8 +181,6 @@ feature {NONE} -- implementation
 		once
 			Result := create {Q_PHYSICS}
 		end
-		
-	bounding_circle: Q_BOUNDING_CIRCLE
 	
 	radvec: Q_VECTOR_3D
 			-- Radius vector
@@ -187,10 +192,10 @@ feature {NONE} -- implementation
 			-- But since the matrix is the identify matrix for a ball it can
 			-- be reduced to a real number	
 	
-	mu_sf: DOUBLE is 0.5
+	mu_sf: DOUBLE is 0.05
 			-- Sliding friction constant (Gleitreibung)
 			
-	mu_rf: DOUBLE is 0.1
+	mu_rf: DOUBLE is 0.01
 			-- Rolling friction constant (Rollreibung)
 	
 	sf_const: DOUBLE is
@@ -219,153 +224,3 @@ feature {NONE} -- implementation
 		
 	
 end -- class Q_BALL
-
---=======
---indexing
---	description: "Physical ball representation"
---	author: "Andreas Kaegi"
---	date: "$Date$"
---	revision: "$Revision$"
---
---class
---	Q_BALL
---
---inherit
---	Q_OBJECT
---	
---create
---	make,
---	make_empty
---	
---feature {NONE} -- create
---
---	make_empty is
---		do
---			create bounding_circle.make_empty
---			bounding_object := bounding_circle
---		end
---		
---	
---	make (center_: Q_VECTOR_2D; radius_: DOUBLE) is
---			-- Create new ball.
---		require
---			center_ /= void
---			radius_ >= 0
---		do
---			create bounding_circle.make (center_, radius_)
---			bounding_object := bounding_circle
---		end
---
---
---feature -- interface
---
---	color : INTEGER -- the color of the ball
---	number: INTEGER -- the number of the ball, 0 is the white ball
---	owner : LINKED_LIST[Q_PLAYER] -- the owners of the ball, null if no owner yet specified, usually the list has only one owner
---	
---	ball_model : Q_BALL_MODEL -- the 3d model of this ball
---	
---	set_color(color_:INTEGER) is
---			-- Set the color of the ball
---		require
---		do
---			color := color_
---		end
---		
---	set_number (number_: INTEGER) is
---			-- Set the number of the ball (if used)
---		require
---			number_>= 0
---		do
---			number := number_
---		end
---		
---	add_owner(owner_: Q_PLAYER) is
---			-- Set the owner of the ball (null means that the ball belongs to nobody yet)
---		do
---			owner.force (owner_)
---		end
---
---	set_ball_model (ball_model_:Q_BALL_MODEL) is
---			-- set the ball model of this ball
---		do
---			ball_model := ball_model_
---		end
---		
---	update_position (step: DOUBLE) is
---			-- Update object position for one time step (given in ms).
---		local
---			c: Q_VECTOR_2D
---		do
---			-- v = s/t --> s = v * t
---			c := bounding_circle.center + velocity * step
---			bounding_circle.set_center (c)
---		end
---		
---	on_collide (other: like Current) is
---			-- Collisionn with other detected!
---		do
---			
---		end
---	
---	set_center (c: Q_VECTOR_2D) is
---			-- Set center of ball.
---		require
---			c /= void
---		do
---			bounding_circle.set_center(c)
---		end
---		
---	set_radius (r: DOUBLE) is
---			-- Set radius of ball.
---		require
---			r >= 0
---		do
---			bounding_circle.set_radius(r)
---		end
---		
---	set_velocity (v: Q_VECTOR_2D) is
---			-- Set velocity of ball.
---		require
---			v /= void
---		do
---			velocity := v
---		end
---		
---	set_angular_velocity (av: Q_VECTOR_2D) is
---			-- Set angular velocity of ball.
---		require
---			av /= void
---		do
---			angular_velocity := av
---		end
---		
---	center: Q_VECTOR_2D is
---			-- Center of ball
---		do
---			result := bounding_circle.center
---		end
---		
---	radius: DOUBLE is
---			-- Radius of ball
---		do
---			result := bounding_circle.radius
---		end
---		
---	
---	velocity: Q_VECTOR_2D
---			-- Velocity of ball
---			
---	angular_velocity: Q_VECTOR_2D
---			-- Angular velocity of ball
---	
---	typeid: INTEGER is 1
---			-- Type id for collision response
---			
---	
---feature {NONE}-- implementation
---		
---	bounding_circle: Q_BOUNDING_CIRCLE
---	
---end -- class Q_BALL
--->>>>>>> .r140

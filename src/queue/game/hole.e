@@ -1,23 +1,27 @@
 indexing
 	description: "Objects that represent a hole with balls"
 	author: "Severin Hacker"
-	date: "$Date$"
-	revision: "$Revision$"
 
 class
 	Q_HOLE
 
+inherit
+	Q_OBJECT
+	redefine
+		bounding_object
+	end
+	
 create
 	make, make_from_points
 	
 feature 
 	
-	make(position_: Q_VECTOR_2D) is
+	make (position_: Q_VECTOR_2D; radius_: DOUBLE) is
 			-- creation procedure
 		do
-			position := position_
+			bounding_object := create {Q_BOUNDING_CIRCLE}.make (position_, radius_)
 			
-			create caught_balls.make
+			create caught_balls.make (1, 5)
 		end
 		
 	make_from_points (positions_: ARRAY[Q_VECTOR_2D]) is
@@ -26,34 +30,71 @@ feature
 			positions_ /= void
 		local
 			index_ : INTEGER
+			p: Q_VECTOR_2D
 		do
-			create caught_balls.make
+			bounding_object := create {Q_BOUNDING_CIRCLE}.make_empty
+			create caught_balls.make (1, 5)
 			
-			create position.default_create
+			create p.default_create
 			from
 				index_ := positions_.lower
 			until
 				index_ > positions_.upper
 			loop
-				position.add (positions_.item (index_))
+				p.add (positions_.item (index_))
 				
 				index_ := index_ + 1
 			end
 			
-			position.scale (1.0 / index_)
+			p.scale (1.0 / index_)
 
-			radius := (position - positions_.item (0)).length
+			set_position (p)
+			set_radius ((p - positions_.item (0)).length)
+
 		end
 		
+	update_position (step: DOUBLE) is
+			-- Do not update position since bank does not move.
+		do
+		end
+	
+	on_collide (other: like Current) is
+			-- Collisionn with other detected!
+		do
+		end
+	
+	position: Q_VECTOR_2D is
+			-- Position of the hole
+		do
+			Result := bounding_object.center
+		end
 		
-	position : Q_VECTOR_2D
-		-- the position of the hole
+	radius: DOUBLE is
+			-- the size of the hole
+		do
+			Result := bounding_object.radius
+		end
 		
-	caught_balls: LINKED_LIST[Q_BALL]
-		-- the balls that fell in this hole
+	caught_balls: ARRAY[Q_BALL]
+			-- the balls that fell in this hole
 
-	radius : DOUBLE
-		-- the size of the hole
+	bounding_object: Q_BOUNDING_CIRCLE
+	
+	typeid: INTEGER is 3
+			-- Type id for collision response
+
+feature -- implementation
+
+	set_radius(r: DOUBLE) is
+		do
+			bounding_object.set_radius(r)
+		end
+		
+	set_position(p: Q_VECTOR_2D) is
+		do
+			bounding_object.set_center(p)
+		end
+
 invariant
 	position_set : position /= Void
 	

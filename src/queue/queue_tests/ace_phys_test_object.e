@@ -44,7 +44,7 @@ feature -- interface
 			
 			create table.make (balls, banks, void)
 
-			ball.set_velocity (create {Q_VECTOR_2D}.make (0.1, 0.025))
+			ball.set_velocity (create {Q_VECTOR_2D}.make (500, 125))
 			ball.set_angular_velocity (create {Q_VECTOR_3D}.make (0, 1, 0))
 			
 			simulation.position_list.wipe_out
