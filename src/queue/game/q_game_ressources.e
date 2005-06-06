@@ -13,7 +13,7 @@ feature{NONE} -- creation
 		do
 			create time
 			create state_list.make( 20 )
-			create gl_manager.make_timed( time )
+			create gl_manager.make_timed( logic_.screen.width, logic_.screen.height, time )
 			
 			logic := logic_
 		end

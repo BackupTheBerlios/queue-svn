@@ -161,11 +161,11 @@ feature{NONE} -- event handling
 					end
 					
 					if key_map.pressed( key_map.sdlk_left ) then
-						dx_ := dx_ + 1
+						dx_ := dx_ - 1
 					end
 					
 					if key_map.pressed( key_map.sdlk_right ) then
-						dx_ := dx_ - 1
+						dx_ := dx_ + 1
 					end
 					
 					-- zoom
@@ -187,11 +187,11 @@ feature{NONE} -- event handling
 					end
 					
 					if key_map.pressed( key_map.sdlk_a ) then
-						da_ := da_ - 1
+						da_ := da_ + 1
 					end
 					
 					if key_map.pressed( key_map.sdlk_d ) then
-						da_ := da_ + 1
+						da_ := da_ - 1
 					end
 					
 					if dx_ /= 0 or dy_ /= 0 or dz_ /= 0 then

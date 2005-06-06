@@ -68,7 +68,7 @@ feature
 
 	direction : Q_VECTOR_3D
 
-	process_mouse_button_down (event_: ESDL_MOUSEBUTTON_EVENT; x_, y_: DOUBLE): BOOLEAN is
+	process_mouse_button_down (event_: ESDL_MOUSEBUTTON_EVENT; x_, y_: DOUBLE; map_ : Q_KEY_MAP ): BOOLEAN is
 		local
 			vector_ : Q_VECTOR_3D
 			index_ : INTEGER
@@ -90,7 +90,7 @@ feature
 			end
 		end
 
-	process_key_down( event_: ESDL_KEYBOARD_EVENT ) : BOOLEAN is
+	process_key_down( event_: ESDL_KEYBOARD_EVENT; map_ : Q_KEY_MAP ) : BOOLEAN is
 		do
 			if event_.key = event_.sdlk_space then
 				armed := not armed

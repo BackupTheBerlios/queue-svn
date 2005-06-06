@@ -9,20 +9,20 @@ creation
 	make, make_timed
 	
 feature{NONE} -- creation
-	make is
+	make( width_, height_ : INTEGER ) is
 			-- Creates the manager
 		do
 			create root.init_lighting( true )
-			make_intern
+			make_intern( width_, height_ )
 		end
 		
-	make_timed( time_ : Q_TIME ) is
+	make_timed( width_, height_ : INTEGER; time_ : Q_TIME ) is
 		do
 			create root.init_timed( time_ )
-			make_intern
+			make_intern( width_, height_ )
 		end
 		
-	make_intern is
+	make_intern( width_, height_ : INTEGER ) is
 		do
 			create group.make
 			
@@ -33,6 +33,18 @@ feature{NONE} -- creation
 			navigator.set_bounds( 0, 0, 1, 1 )
 			root.hud.add( navigator )
 			root.set_inside( group )
+			
+			if width_ > height_ then
+				root.set_top( height_ / width_ )
+				root.set_bottom( -height_ / width_ )
+				root.set_left( 1 )
+				root.set_right( -1 )
+			else
+				root.set_top( 1 )
+				root.set_bottom( -1 )
+				root.set_left( width_ / height_ )
+				root.set_right( -width_ / height_ )
+			end
 		end
 		
 		

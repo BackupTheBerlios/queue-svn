@@ -40,6 +40,7 @@ feature -- deferreds
 			index_ := gl_index( open_gl )
 			
 			open_gl.gl.gl_enable( index_ )
+			open_gl.live_manager.alive( current )
 
 			pointer_ := ambient.to_c
 			open_gl.gl.gl_lightfv( index_, open_gl.gl_constants.esdl_gl_ambient, $pointer_ )

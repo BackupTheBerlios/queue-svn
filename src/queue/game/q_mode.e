@@ -35,7 +35,7 @@ feature -- Interface
 		deferred
 		end
 		
-		position_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
+	position_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
 		do
 			Result := table_model.position_table_to_world (table_)
 		end

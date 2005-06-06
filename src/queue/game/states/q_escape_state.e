@@ -175,7 +175,7 @@ feature{NONE} -- menu creation
 			create back_.make
 			create label_.make
 			
-			label_.set_background( create {Q_GL_COLOR}.make_rgba( 0, 0, 1, 0.5 ))
+			label_.set_background( create {Q_GL_COLOR}.make_rgba( 0.5, 0.5, 1, 0.5 ))
 			label_.set_blend_background( true )
 			back_.translate( 0, 0, -0.2 )
 			
@@ -221,7 +221,7 @@ feature{NONE} -- menu creation
 			option_.set_bounds( 0.1, 0.25, 0.8, 0.1 )
 			help_.set_bounds( 0.1, 0.4, 0.8, 0.1 )
 			exit_.set_bounds( 0.1, 0.55, 0.8, 0.1 )
-			return_button.set_bounds( 0.1, 0.7, 0.8, 0.1 )
+			return_button.set_bounds( 0.5, 0.8, 0.4, 0.1 )
 		end
 		
 	create_quit_dialog is
@@ -237,6 +237,7 @@ feature{NONE} -- menu creation
 			create label_.make
 			label_.set_text( "Press Yes to quit now" )
 			label_.set_bounds( 0.1, 0.4, 0.8, 0.1 )
+			label_.set_insets( create {Q_HUD_INSETS}.make( 0.01, 0.05, 0.01, 0.01 ))
 			container_.add( label_ )
 			
 			create button_.make
@@ -276,6 +277,8 @@ feature{NONE} -- menu creation
 			
 			create label_1_.make
 			create label_2_.make
+			label_1_.set_insets( create {Q_HUD_INSETS}.make( 0.01, 0.05, 0.01, 0.01 ))
+			label_2_.set_insets( create {Q_HUD_INSETS}.make( 0.01, 0.05, 0.01, 0.01 ))
 			
 			group_.add( human_player_zero )
 			group_.add( human_player_one )
@@ -354,6 +357,7 @@ feature{NONE} -- menu creation
 			create label_.make
 			label_.set_text( "Press Yes to start a new game" )
 			label_.set_bounds( 0.1, 0.4, 0.8, 0.1 )
+			label_.set_insets( create {Q_HUD_INSETS}.make( 0.01, 0.05, 0.01, 0.01 ))
 			container_.add( label_ )
 			
 			create button_.make
