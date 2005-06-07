@@ -328,8 +328,11 @@ feature {NONE} -- Implementation
 					scanner.read_token
 					index_ := scanner.last_string.to_integer
 					
+					-- the U kooridnates are mirrored in the ASE-format with respect to OpenGL.
 					scanner.read_token
-					vector_.force (scanner.last_string.to_double, 0)
+					
+					-- the V kooridnates are correct in respect to OpenGL.
+					vector_.force (1.0 - scanner.last_string.to_double, 0)
 					scanner.read_token
 					vector_.force (scanner.last_string.to_double, 1)
 					

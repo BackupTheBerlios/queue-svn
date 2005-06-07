@@ -20,9 +20,11 @@ feature -- Interface
 	draw( open_gl : Q_GL_DRAWABLE ) is
 		-- paint the table
 	do
+		rotation.transform (open_gl)
 		transformation.transform (open_gl)
 		model.draw (open_gl)
 		transformation.untransform (open_gl)
+		rotation.untransform (open_gl)
 	end
 	
 	set_position (new_position: Q_VECTOR_3D) is
@@ -31,6 +33,14 @@ feature -- Interface
 			new_position /= void
 		do
 			transformation.set_translation (new_position + height_translation)
+		end
+	
+	add_rotation (axis_: Q_VECTOR_3D; angle_: DOUBLE) is
+			-- rotates the ball model
+		require
+			axis_ /= void
+		do
+			rotation.rotate (axis_,  angle_)
 		end
 		
 	
@@ -46,6 +56,8 @@ feature {NONE} -- Properties
 	transformation: Q_GL_TRANSLATION
 	
 	height_translation: Q_VECTOR_3D
+	
+	rotation: Q_GL_MULTI_ROTATION
 feature {NONE} -- Creation
 	make_from_file (file_name_: STRING) is
 			-- Create a new ball model
@@ -64,6 +76,7 @@ feature {NONE} -- Creation
 			
 			create height_translation.make (0, radius, 0)
 			create transformation.make_from_vector (height_translation)
+			create rotation.make
 		end
 		
 	make_from_loader_and_texture (loader_: Q_GL_3D_ASE_LOADER; texture_: STRING) is
@@ -79,7 +92,8 @@ feature {NONE} -- Creation
 			
 			create height_translation.make (0, radius, 0)
 			create transformation.make_from_vector (height_translation)
-		end
+			create rotation.make
+		end		
 		
 	calc_middle_point is
 			-- calculates the middle point

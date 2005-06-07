@@ -15,7 +15,7 @@ create
 	make	
 
 feature -- Interface
-	light : Q_GL_LIGHT	
+	light_one, light_two : Q_GL_LIGHT	
 	player_A : Q_PLAYER -- the first player
 	player_B : Q_PLAYER -- the second player
 	
@@ -128,6 +128,8 @@ feature -- Interface
 			balls: ARRAY[Q_BALL]
 			ball_model: Q_BALL_MODEL
 			index_: INTEGER
+			
+			light_position_ : Q_VECTOR_3D
 		do
 			ressources_.gl_manager.add_object (table_model)
 			balls := table.balls
@@ -142,17 +144,35 @@ feature -- Interface
 				index_ := index_ + 1
 			end
 			
-			if light = void then
-				create light.make( 0 )
+			if light_one = void then
+				create light_one.make( 0 )
 				
-				light.set_diffuse( 1, 1, 1, 0 )
-				light.set_position( 0, 200, 200 )
-				light.set_constant_attenuation( 0 )
-				light.set_attenuation( 1, 0, 0 )
-		
+				light_position_ := position_table_to_world (create {Q_VECTOR_2D}.make (width / 4, height / 2))
+				light_position_.add_xyz (0, 250, 0)
+				
+				light_one.set_diffuse( 1, 1, 1, 0 )
+				light_one.set_position( light_position_.x, light_position_.y, light_position_.z )
+				light_one.set_constant_attenuation( 0 )
+				light_one.set_attenuation( 1, 0, 0 )
+				
+				ressources_.gl_manager.add_object( light_one )
 			end
 			
-			ressources_.gl_manager.add_object( light )
+			if light_two = void then
+				create light_two.make( 1 )
+				
+				light_position_ := position_table_to_world (create {Q_VECTOR_2D}.make (3 * width / 4, height / 2))
+				light_position_.add_xyz (0, 250, 0)
+				
+				light_two.set_diffuse( 1, 1, 1, 0 )
+				light_two.set_position( light_position_.x, light_position_.y, light_position_.z )
+				light_two.set_constant_attenuation( 0 )
+				light_two.set_attenuation( 1, 0, 0 )
+		
+				ressources_.gl_manager.add_object( light_two )
+			end
+			
+			
 		end
 		
 	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
@@ -174,7 +194,13 @@ feature -- Interface
 				index_ := index_ + 1
 			end
 			
-			ressources_.gl_manager.remove_object( light )	
+			if light_one /= void then
+				ressources_.gl_manager.remove_object( light_one )
+			end
+			
+			if light_two /= void then
+				ressources_.gl_manager.remove_object( light_two )
+			end	
 		end
 		
 
@@ -308,10 +334,16 @@ feature {NONE} -- Implementation
 			loader_: Q_GL_3D_ASE_LOADER
 			
 			index_: INTEGER
+			
+			model_: Q_BALL_MODEL
+			rand_: RANDOM
+			axis_: Q_VECTOR_3D
 		do
 			create ball_models.make (0, 15)
 			create loader_.make
+			create rand_.make
 			
+			rand_.start
 			loader_.load_file ("model/pool_ball.ase")
 			
 			from
@@ -319,7 +351,22 @@ feature {NONE} -- Implementation
 			until
 				index_ > ball_models.upper
 			loop
-				ball_models.put (create {Q_BALL_MODEL}.make_from_loader_and_texture (loader_, ball_number_to_texture_name (index_)), index_)
+				create model_.make_from_loader_and_texture (loader_, ball_number_to_texture_name (index_))
+				create axis_.default_create
+				
+				axis_.set_x (rand_.double_item)
+				rand_.forth
+				axis_.set_y (rand_.double_item)
+				rand_.forth
+				axis_.set_z (rand_.double_item)
+				rand_.forth
+				
+				axis_.normaliced
+				
+				--model_.add_rotation (axis_, rand_.double_item)
+				rand_.forth
+				
+				ball_models.put (model_, index_)
 				
 				index_ := index_ + 1
 			end
