@@ -53,12 +53,29 @@ feature -- interface
 			end
 		end
 		
+	install (ressources_:Q_GAME_RESSOURCES) is
+		do
+			--
+		end
+		
+	uninstall (ressources_ :Q_GAME_RESSOURCES) is
+		do
+			--
+		end
+		
+	identifier : STRING is
+		do
+			Result := "reset state"
+		end
+		
+		
+		
 feature -- event handling
 
 	motion( event_ : ESDL_MOUSEMOTION_EVENT; position_ : Q_VECTOR_2D; ressources_ : Q_GAME_RESSOURCES ) is
 		do
 			ball_position := position_of_ball( position_.x, position_.y, ressources_ )
-			if not valid_position( ball_position ) then
+			if not valid_position( ball_position, ressources_ ) then
 				ball_position := void
 			end
 		end
@@ -70,9 +87,10 @@ feature -- event handling
 			end
 		end
 		
-	valid_position( ball_position_ : Q_VECTOR_2D ) : BOOLEAN is
+	valid_position( ball_position_ : Q_VECTOR_2D; ressources_: Q_GAME_RESSOURCES ) : BOOLEAN is
 			-- true if the given ball-position is valid, otherwise false
-		deferred
+		do
+			Result := ressources_.mode.valid_position(ball_position_)
 		end
 		
 	prepare_next_state( ball_position_ : Q_VECTOR_2D; ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
@@ -82,7 +100,7 @@ feature -- event handling
 			-- ball_position_ : Where the user wants to put the ball
 			-- ressources_ : Additional informations
 		require
-			valid_position( ball_position_ )
+			valid_position( ball_position_, ressources_ )
 		deferred
 		end
 	
@@ -125,5 +143,7 @@ feature -- ball
 			ball := ball_
 		end
 		
+feature{NONE} -- behaviour
+	behaviour : Q_FREE_CAMERA_BEHAVIOUR
 
 end -- class Q_RESET_STATE
