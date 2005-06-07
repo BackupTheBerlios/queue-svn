@@ -49,6 +49,23 @@ feature -- Transformation
 			count := 0
 		end
 		
+	rotate_around( axis_ : Q_VECTOR_3D; angle_ : DOUBLE; point_ : Q_VECTOR_3D ) is
+			-- Rotates this rotation around an axis through a given point
+		local
+			matrix_ : Q_MATRIX_4X4
+		do
+			create matrix_.identity
+			matrix_.rotate_at( axis_.x, axis_.y, axis_.z, angle_, point_.x, point_.y, point_.z )
+			matrix := matrix.mul( matrix_ )
+			
+			count := count+1
+			if count >= orthonormalize then
+				count := 0
+				matrix.orthonormalize_3x3
+			end			
+		end
+		
+		
 	rotate( axis_ : Q_VECTOR_3D; angle_ : DOUBLE ) is
 			-- Rotates this rotation clockwise. The angle is measured in radians
 		local
