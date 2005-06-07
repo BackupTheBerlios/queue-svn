@@ -461,7 +461,7 @@ feature -- position
 					end
 				else
 					beta := -math.arc_sine( -delta_.y )
-					alpha := math.arc_sine( ( delta_.x / math.cosine( -beta )).min( 1 ).max( 0 ))
+					alpha := math.arc_sine( ( delta_.x / math.cosine( -beta )).min( 1 ).max( -1 ))
 					
 					beta := beta / math.pi * 180
 					alpha := alpha / math.pi * 180

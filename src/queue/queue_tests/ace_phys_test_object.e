@@ -49,8 +49,9 @@ feature -- interface
 			
 			simulation.position_list.wipe_out
 			simulation.position_list.put_first (create {Q_VECTOR_2D}.make_from_other (ball.center))
-			
-			simulation.new (table)
+		
+-- inserted void by Beni, I wan't to compile the programm ;-)=
+			simulation.new (table, void)
 		end
 
 	draw (ogl: Q_GL_DRAWABLE) is
