@@ -15,6 +15,7 @@ create
 	make	
 
 feature -- Interface
+	light : Q_GL_LIGHT	
 	light_one, light_two : Q_GL_LIGHT	
 	player_A : Q_PLAYER -- the first player
 	player_B : Q_PLAYER -- the second player
@@ -39,14 +40,18 @@ feature -- Interface
 			ball_already_there_ : BOOLEAN
 			i_ : INTEGER
 		do
+			Result := true
 			from
 				i_ := table.balls.lower
 			until
 				i_ > table.balls.upper
 			loop
-				
+				if (table.balls.item (i_).center - v_).length <= ball_radius then
+					Result := false
+				end
 				i_ := i_+1
 			end
+			Result := Result and v_.x>=0 and v_.x<=width and v_.y >= 0 and v_.y <= height
 		end
 		
 	
@@ -128,7 +133,7 @@ feature -- Interface
 			balls: ARRAY[Q_BALL]
 			ball_model: Q_BALL_MODEL
 			index_: INTEGER
-			
+			pos_ : Q_VECTOR_3D
 			light_position_ : Q_VECTOR_3D
 		do
 			ressources_.gl_manager.add_object (table_model)
@@ -172,6 +177,12 @@ feature -- Interface
 				ressources_.gl_manager.add_object( light_two )
 			end
 			
+			
+			-- set camera
+			pos_ := ressources_.mode.position_table_to_world (create {Q_VECTOR_2D}.make (0,0))
+			ressources_.gl_manager.camera.set_position (pos_.x,pos_.y+100,pos_.z)
+			ressources_.gl_manager.camera.set_beta(-45)
+			ressources_.gl_manager.camera.set_alpha(130)
 			
 		end
 		
