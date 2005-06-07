@@ -7,9 +7,6 @@ deferred class
 
 inherit
 	Q_ESCAPABLE_STATE
-	redefine
-		step
-	end
 
 feature{NONE} -- creation
 	make is
@@ -31,4 +28,26 @@ feature
 			ressources_.gl_manager.set_camera_behaviour( void )
 		end
 	
+	step( ressources_ : Q_GAME_RESSOURCES ) is
+		do
+			if next_state = void then
+				if not simulation_step( ressources_ ) then
+					set_next_state( prepare_next_state( ressources_ ))
+				end
+			end
+		end
+		
+	
+	simulation_step( ressources_ : Q_GAME_RESSOURCES ) : BOOLEAN is
+			-- Makes one step of the physics. If the physics has done its job, false is
+			-- returns. If the physics is still working, true is returned.
+		deferred
+		end
+		
+	prepare_next_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
+			-- Is invoked, after the physics has done its job (no ball is moving)
+			-- If you don't want to change into a new state, return void.
+		deferred
+		end
+		
 end -- class Q_SIMULATION_STATE
