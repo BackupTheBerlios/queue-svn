@@ -35,7 +35,7 @@ feature
 			-- set next state as bird state
 			result := ressources_.request_state( "8ball bird" )
 			if result = void then
-				-- this should never happen, Beni, right?
+				ressources_.put_state( create {Q_8BALL_BIRD_STATE}.make_mode(ressources_.mode))
 			end
 		end
 

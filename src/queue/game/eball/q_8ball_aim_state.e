@@ -37,7 +37,7 @@ feature
 				ressources_.put_state( spin_ )
 			end
 			spin_.set_ball( ball )
-			spin_.set_shot_direction( direction_ )
+			spin_.set_shot( create {Q_SHOT}.make (direction_) )
 			result := spin_
 		end
 		

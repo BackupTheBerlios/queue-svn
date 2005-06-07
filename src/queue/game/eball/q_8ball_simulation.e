@@ -18,5 +18,14 @@ feature
 		end
 		
 		
-
+	set_shot(shot_ : Q_SHOT) is
+		require
+			shot_ /= Void
+		do
+			shot := shot_
+		end
+		
+feature{NONE}
+	shot : Q_SHOT
+	
 end -- class Q_8BALL_SIMULATION
