@@ -31,13 +31,15 @@ feature
 			-- set length of shot
 			shot.direction.scale_to (pressure_)
 			
+			-- startup the simulation
+			ressources_.simulation.new (ressources_.mode.table, shot)
+			
 			-- next state is simulation
 			simulation_state_ ?= ressources_.request_state( "8ball simulation" )
 			if simulation_state_ = Void then
 				create simulation_state_.make
 				ressources_.put_state( simulation_state_ )
 			end
-			simulation_state_.set_shot( shot)
 			result := simulation_state_
 		end
 		

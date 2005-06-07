@@ -22,7 +22,7 @@ feature -- create
 		
 feature -- interface
 		
-	new (table: Q_TABLE) is
+	new (table: Q_TABLE ; shot: Q_SHOT) is
 			-- Start a new simulation.
 		require
 			table /= void
@@ -82,6 +82,12 @@ feature -- interface
 			-- Compute the velocity of the cue ball so that ball_ has a given velocity vector
 			-- after a collision cue / ball_
 			-- return void if there is no such collision
+		do
+			-- implemented by physics engine
+		end
+		
+	collision_list : LIST[Q_COLLISION_EVENT] is
+			-- the list of all collisions since last start of the simulation, is called from Q_SHOT_STATE
 		do
 			-- implemented by physics engine
 		end

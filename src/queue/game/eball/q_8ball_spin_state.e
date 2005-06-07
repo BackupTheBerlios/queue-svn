@@ -14,7 +14,6 @@ creation
 feature{NONE} -- creation
 	make_mode( mode_ : Q_8BALL ) is
 		do
-			make
 			mode := mode_
 		end
 	
@@ -55,7 +54,6 @@ feature -- mode
 			shot_ /= Void
 		do
 			shot := shot_
-			set_shot_direction( shot_.direction )
 		end
 		
 		

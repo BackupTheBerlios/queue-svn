@@ -20,21 +20,23 @@ feature
 			Result := "8ball simulation"
 		end
 		
-		
-	set_shot(shot_ : Q_SHOT) is
-		require
-			shot_ /= Void
-		do
-			shot := shot_
-		end
-		
 	simulation_step (ressources_: Q_GAME_RESSOURCES): BOOLEAN is
+			-- Makes one step of the physics. If the physics has done its job, false is
+			-- returns. If the physics is still working, true is returned.
 		do
+			if not ressources_.simulation.has_finished then
+				ressources_.simulation.step (ressources_.mode.table)
+				Result := true
+			else
+				Result := false
+			end
 		end
 		
 	prepare_next_state (ressources_: Q_GAME_RESSOURCES): Q_GAME_STATE is
+		-- what do to after physics has finished
 		do
-			
+			-- ask the mode what to do according to result set
+			Result := ressources_.mode.next_state (ressources_)
 		end
 		
 feature{NONE}

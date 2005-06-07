@@ -29,7 +29,8 @@ feature -- Interface
 		deferred
 		end
 		
-		
+	active_player : Q_PLAYER
+
 	ai_player: Q_AI_PLAYER is
 			-- create a new AI-Player for this game mode
 		deferred
@@ -61,7 +62,7 @@ feature -- Interface
 			Result := table_model.direction_world_to_table (world_)
 		end
 
-	next_state : Q_GAME_STATE is
+	next_state(ressources_: Q_GAME_RESSOURCES) : Q_GAME_STATE is
 			-- next state according to the ruleset
 		deferred
 		end

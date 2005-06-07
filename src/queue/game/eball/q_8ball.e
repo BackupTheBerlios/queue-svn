@@ -82,10 +82,39 @@ feature -- Interface
 			result := create {Q_8BALL_HUMAN_PLAYER}.make_mode( current )
 		end
 	
-	next_state : Q_GAME_STATE is
+	next_state (ressources_: Q_GAME_RESSOURCES) : Q_GAME_STATE is
 			-- next state according to the ruleset
 		do
+			if first_shot and then not is_correct_opening (ressources_.simulation.collision_list) then
+				-- (rule 4.6 second part)
+--				-- the current player made an error, the other player can
+--				a) die Position so übernehmen und weiterspielen oder
+--				b) die Kugeln neu aufbauen lassen und selbst einen neuen Eröffnungsstoß durchführen oder den Gegner neu anstoßen lassen.
+			elseif not first_shot and then not is_correct_shot (ressources_.simulation.collision_list, active_player)  then
+				
+			else
+				
+				-- set next state as bird state
+				result := ressources_.request_state( "8ball bird" )
+				if result = void then
+					result := create {Q_8BALL_BIRD_STATE}.make_mode (Current)
+					ressources_.put_state( result )
+				end
+			end
+			
+			first_shot := false
 		end
+		
+	switch_players is
+			-- the active player becomes non-active, the other one active
+		do
+			if active_player = player_a then
+				active_player := player_b
+			else
+				active_player := player_a
+			end
+		end
+		
 		
 	ball_to_ball_model(ball_ :Q_BALL):Q_BALL_MODEL is
 			-- see base class
@@ -182,6 +211,9 @@ feature -- Interface
 			ressources_.gl_manager.camera.set_beta(-45)
 			ressources_.gl_manager.camera.set_alpha(130)
 			
+			-- set first shot
+			first_shot := true
+			
 		end
 		
 	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
@@ -214,6 +246,8 @@ feature -- Interface
 		
 
 feature {NONE} -- Implementation
+
+	first_shot : BOOLEAN
 
 	new_table is
 			-- creates the opening table for this game mode, all balls are in a triangle, the white is set at the head of the table
@@ -450,7 +484,7 @@ feature {NONE} -- Implementation
 			
 		do
 			-- (a) a ball has fallen into a hole
-			ball_fallen_ := is_any_ball_in_hole(collisions_)
+			ball_fallen_ := not fallen_balls (collisions_).is_empty
 			
 			-- (b) or at least four balls have touched a bank
 			create touched_balls_.make
@@ -483,9 +517,16 @@ feature {NONE} -- Implementation
 			own_colored_first_ :BOOLEAN
 			colored_ball_fallen_ : BOOLEAN
 			any_bank_touched_ : BOOLEAN
+			bank_shot_ : BOOLEAN
+			ball_: Q_BALL
 		do
-			own_colored_first_ := first_ball_collision (collisions_).owner.has (player_)
-			colored_ball_fallen_ := is_any_ball_in_hole (collisions_) and not is_ball_in_hole (white_number,collisions_)	
+			own_colored_first_ := false
+			-- 4.12.1
+			if collisions_.first.defendent.typeid = ball_type_id then
+				ball_ ?= collisions_.first.defendent
+				own_colored_first_ := ball_.owner.has(player_)
+			end
+			colored_ball_fallen_ := not fallen_balls (collisions_).is_empty and not fallen_balls (collisions_).has (white_number)
 			from
 				collisions_.start
 			until
@@ -494,34 +535,24 @@ feature {NONE} -- Implementation
 				any_bank_touched_ := any_bank_touched_ or collisions_.item.defendent.typeid = bank_type_id
 				collisions_.forth
 			end
-			
-			Result := own_colored_first_ and then (colored_ball_fallen_ or else any_bank_touched_)
-		end
-
-	is_any_ball_in_hole(collisions_: LIST[Q_COLLISION_EVENT]): BOOLEAN is
-			-- has any ball fallen into a hole?
-		require
-			collisions_ /= Void
-		do
-			Result := false
-			from 
-				collisions_.start
-			until
-				collisions_.after
-			loop
-				Result := Result or collisions_.item.defendent.typeid = hole_type_id
-				collisions_.forth
+			-- 4.12.2
+			-- white -> bank -> own_color -> (bank or color fallen)
+			if collisions_.first.defendent.typeid = bank_type_id then
+				
 			end
+			Result := is_open implies (own_colored_first_ and then (colored_ball_fallen_ or else any_bank_touched_) or else bank_shot_)
 		end
-		
-	is_ball_in_hole(ball_number_:INTEGER ; collisions_:LIST[Q_COLLISION_EVENT]): BOOLEAN is
-			-- has the ball with ball_number fallen into a hole?
+	
+	is_open : BOOLEAN -- is the table "open", i.e. no colors yet specified
+	
+	fallen_balls (collisions_ : LIST[Q_COLLISION_EVENT]) : LINKED_LIST[INTEGER] is
+			-- all balls that have fallen into holes since last shot
 		require
-			collisions_ /= Void
+			collisions_ /= VOID
 		local
 			ball_ : Q_BALL
 		do
-			Result := false
+			create Result.make
 			from 
 				collisions_.start
 			until
@@ -529,18 +560,11 @@ feature {NONE} -- Implementation
 			loop
 				if collisions_.item.defendent.typeid = hole_type_id then
 					ball_ ?= collisions_.item.aggressor
-					Result := Result or ball_.number = ball_number_
+					REsult.force (ball_.number)
 				end
 				collisions_.forth
 			end
-		end		
-		
-	first_ball_collision(collisions_:LIST[Q_COLLISION_EVENT]): Q_BALL is
-			-- returns the ball that the did the first collision with the white ball
-		require
-			collisions_ /= Void
-		do
-			Result ?= collisions_.first.defendent	
+			
 		end
 		
 	ball_radius : DOUBLE is
@@ -565,8 +589,6 @@ feature {NONE} -- Implementation
 		do
 			result := table_model.height
 		end
-		
-invariant
-	invariant_clause: True -- Your invariant here
+
 
 end -- class Q_8BALL
