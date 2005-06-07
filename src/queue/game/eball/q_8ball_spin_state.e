@@ -14,7 +14,7 @@ creation
 feature{NONE} -- creation
 	make_mode( mode_ : Q_8BALL ) is
 		do
-			--make
+			make
 			mode := mode_
 		end
 	
@@ -26,7 +26,7 @@ feature -- interface
 			-- set hit_point
 			shot_state_ ?= ressources_.request_state( "8ball shot" )
 			if shot_state_ = void then
-				create shot_state_
+				create shot_state_.make
 				ressources_.put_state( shot_state_ )
 			end
 			shot.set_hitpoint (hit_point_)
@@ -55,6 +55,7 @@ feature -- mode
 			shot_ /= Void
 		do
 			shot := shot_
+			set_shot_direction( shot_.direction )
 		end
 		
 		

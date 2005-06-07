@@ -14,6 +14,9 @@ inherit
 	
 	Q_CONSTANTS
 	
+creation
+	make
+	
 feature
 
 	identifier : STRING is

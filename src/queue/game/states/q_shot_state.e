@@ -52,12 +52,12 @@ feature -- interface
 	install( ressources_: Q_GAME_RESSOURCES ) is
 		do
 			slider.set_value( slider.minimum )
-			ressources_.gl_manager.add_hud( container )
+			ressources_.gl_manager.add_hud( slider )
 		end
 		
 	uninstall( ressources_: Q_GAME_RESSOURCES ) is
 		do
-			ressources_.gl_manager.remove_hud( container )
+			ressources_.gl_manager.remove_hud( slider )
 		end
 		
 	step( ressources_: Q_GAME_RESSOURCES ) is
@@ -97,10 +97,6 @@ feature -- interface
 		
 		
 feature{Q_SHOT_STATE}
-	
-
-	container : Q_HUD_CONTAINER		
-	
 	slider : Q_HUD_SLIDER
 	
 feature{NONE}

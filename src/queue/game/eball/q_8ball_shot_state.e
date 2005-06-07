@@ -10,6 +10,9 @@ class
 inherit
 	Q_SHOT_STATE
 	
+creation
+	make
+	
 feature
 	
 	identifier : STRING is
@@ -31,7 +34,7 @@ feature
 			-- next state is simulation
 			simulation_state_ ?= ressources_.request_state( "8ball simulation" )
 			if simulation_state_ = Void then
-				create simulation_state_
+				create simulation_state_.make
 				ressources_.put_state( simulation_state_ )
 			end
 			simulation_state_.set_shot( shot)

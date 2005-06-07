@@ -10,6 +10,9 @@ class
 inherit
 	Q_SIMULATION_STATE
 	
+creation
+	make
+	
 feature
 	
 	identifier : STRING is
