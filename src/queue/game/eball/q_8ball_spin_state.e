@@ -19,7 +19,7 @@ feature{NONE} -- creation
 		end
 	
 feature -- interface
-	prepare_next (hit_point_: Q_VECTOR_3D; hit_plane_: Q_PLANE; ressources_: Q_GAME_RESSOURCES): Q_GAME_STATE is
+	prepare_next (hit_point_: Q_VECTOR_3D; ressources_: Q_GAME_RESSOURCES): Q_GAME_STATE is
 		local
 			shot_state_ :Q_8BALL_SHOT_STATE
 		do

@@ -25,6 +25,15 @@ feature
 			shot := shot_
 		end
 		
+	simulation_step (ressources_: Q_GAME_RESSOURCES): BOOLEAN is
+		do
+		end
+		
+	prepare_next_state (ressources_: Q_GAME_RESSOURCES): Q_GAME_STATE is
+		do
+			
+		end
+		
 feature{NONE}
 	shot : Q_SHOT
 	
