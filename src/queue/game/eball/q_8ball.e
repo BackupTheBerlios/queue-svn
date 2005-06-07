@@ -374,7 +374,7 @@ feature {NONE} -- Implementation
 				
 				axis_.normaliced
 				
-				--model_.add_rotation (axis_, rand_.double_item)
+				model_.add_rotation (axis_, rand_.double_item)
 				rand_.forth
 				
 				ball_models.put (model_, index_)

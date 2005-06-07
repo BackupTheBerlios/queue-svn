@@ -20,11 +20,12 @@ feature -- Interface
 	draw( open_gl : Q_GL_DRAWABLE ) is
 		-- paint the table
 	do
-		rotation.transform (open_gl)
 		transformation.transform (open_gl)
+		rotation.transform (open_gl)
 		model.draw (open_gl)
-		transformation.untransform (open_gl)
 		rotation.untransform (open_gl)
+		transformation.untransform (open_gl)
+		
 	end
 	
 	set_position (new_position: Q_VECTOR_3D) is
@@ -40,7 +41,7 @@ feature -- Interface
 		require
 			axis_ /= void
 		do
-			rotation.rotate (axis_,  angle_)
+			rotation.rotate_around (axis_,  angle_, middle_point)
 		end
 		
 	

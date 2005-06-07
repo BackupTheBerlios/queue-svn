@@ -39,6 +39,7 @@ feature
 
 			ball1_.set_position (table_model.position_table_to_world (create {Q_VECTOR_2D}.make (200, 80)))
 			ball2_.set_position (table_model.position_table_to_world (create {Q_VECTOR_2D}.make (100, 50)))
+			ball2_.add_rotation (create {Q_VECTOR_3D}.make (1,0,0), 2*3.14*0.25)
 			
 			create light_1.make( 0 )
 			create light_2.make( 1 )
