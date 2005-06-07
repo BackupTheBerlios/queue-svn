@@ -24,6 +24,11 @@ feature{NONE}--creation
 			set_foreground( create {Q_GL_COLOR}.make_magenta )
 			set_background( create {Q_GL_COLOR}.make_magenta )
 			
+			set_blend_background( true )
+			
+			background.set_alpha( 0.75 )
+			foreground.set_alpha( 0.75 )
+			
 			mouse_button_up_listener.extend( agent mouse_button_up( ?,?,?,?,? ))
 			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,?,? ))
 			mouse_moved_listener.extend( agent mouse_moved( ?,?,?,?,? ))

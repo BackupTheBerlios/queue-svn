@@ -90,7 +90,11 @@ feature -- Eventhandling
 			events_ /= void
 		do
 			from
-				create unused_events.make_empty( events_.surface )
+				if unused_events = void then
+					create unused_events.make_empty( events_.surface )
+				else
+					unused_events.clear
+				end
 			until
 				events_.is_empty
 			loop

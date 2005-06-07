@@ -313,6 +313,19 @@ feature{NONE} -- hidden
 		
 	
 feature -- pop	
+	clear is
+			-- removes all elements from the queue
+		do
+			from
+				
+			until
+				is_empty
+			loop
+				pop
+			end
+		end
+		
+
 	pop is
 		require
 			not_empty : not is_empty

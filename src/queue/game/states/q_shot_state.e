@@ -20,69 +20,42 @@ feature{Q_SHOT_STATE}
 
 			slider.set_min_max( 0, 1 )
 			slider.set_value( 0 )
+			
+			create behaviour.make
 		end
-
-feature{NONE} -- event-handling
-	handle_key( event_ : ESDL_KEYBOARD_EVENT; down_ : BOOLEAN; ressources_ : Q_GAME_RESSOURCES ) is
-		do
-			if down_ then
-				if event_.key = event_.sdlk_plus then
-					plus_pressed := true
-				elseif event_.key = event_.sdlk_minus then
-					minus_pressed := true
-				elseif event_.key = event_.sdlk_escape then
-					goto_escape_menu( ressources_ )
-				elseif next_state = void and event_.key = event_.sdlk_space then
-					next_state := prepare_next_state( slider.value, ressources_ )
-				end
-			else
-				if event_.key = event_.sdlk_plus then
-					plus_pressed := false
-				elseif event_.key = event_.sdlk_minus then
-					minus_pressed := false
-				end					
-			end
-		end
-		
-	plus_pressed, minus_pressed : BOOLEAN
-	
-	time_for_whole_change : INTEGER is 3000
 	
 feature -- interface
 	install( ressources_: Q_GAME_RESSOURCES ) is
 		do
-			slider.set_value( slider.minimum )
 			ressources_.gl_manager.add_hud( slider )
+			ressources_.gl_manager.set_camera_behaviour( behaviour )
 		end
 		
 	uninstall( ressources_: Q_GAME_RESSOURCES ) is
 		do
 			ressources_.gl_manager.remove_hud( slider )
+			ressources_.gl_manager.set_camera_behaviour( void )
 		end
 		
 	step( ressources_: Q_GAME_RESSOURCES ) is
 		local
-			event_queue_ : Q_EVENT_QUEUE
-		do
-			-- event-handling
-			from
-				event_queue_ := ressources_.event_queue
-			until
-				event_queue_.is_empty
-			loop
-				if event_queue_.is_key_down_event then
-					handle_key( event_queue_.pop_keyboard_event, true, ressources_ )
-				elseif event_queue_.is_key_up_event then
-					handle_key( event_queue_.pop_keyboard_event, false, ressources_ )
-				else
-					event_queue_.pop
-				end
-			end
+			key_map_ : Q_KEY_MAP
 			
+			plus_, minus_ : BOOLEAN
+		do			
 			-- increase / decrease value
-			if plus_pressed and not minus_pressed then
+			key_map_ := ressources_.event_queue.key_map
+			
+			plus_ := key_map_.pressed( key_map_.sdlk_plus ) or
+				key_map_.pressed( key_map_.sdlk_pageup ) or
+				key_map_.shift
+			
+			minus_ := key_map_.pressed( key_map_.sdlk_minus ) or
+				key_map_.pressed( key_map_.sdlk_pagedown )			
+			
+			if plus_ and not minus_ then
 				slider.set_value( slider.maximum.min( slider.value + (slider.maximum - slider.minimum) / time_for_whole_change * ressources_.time.delta_time_millis ) )
-			elseif minus_pressed and not plus_pressed then
+			elseif minus_ and not plus_ then
 				slider.set_value( slider.minimum.max( slider.value - (slider.maximum - slider.minimum) / time_for_whole_change * ressources_.time.delta_time_millis ) )
 			end
 		end
@@ -99,6 +72,9 @@ feature -- interface
 feature{Q_SHOT_STATE}
 	slider : Q_HUD_SLIDER
 	
-feature{NONE}
-
+feature{NONE} -- values
+	behaviour : Q_FREE_CAMERA_BEHAVIOUR
+	
+	time_for_whole_change : INTEGER is 3000
+	
 end -- class Q_SHOOT_STATE

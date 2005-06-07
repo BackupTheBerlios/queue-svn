@@ -159,8 +159,6 @@ feature -- Interface
 				light_one.set_position( light_position_.x, light_position_.y, light_position_.z )
 				light_one.set_constant_attenuation( 0 )
 				light_one.set_attenuation( 1, 0, 0 )
-				
-				ressources_.gl_manager.add_object( light_one )
 			end
 			
 			if light_two = void then
@@ -173,10 +171,10 @@ feature -- Interface
 				light_two.set_position( light_position_.x, light_position_.y, light_position_.z )
 				light_two.set_constant_attenuation( 0 )
 				light_two.set_attenuation( 1, 0, 0 )
-		
-				ressources_.gl_manager.add_object( light_two )
 			end
 			
+			ressources_.gl_manager.add_object( light_one )
+			ressources_.gl_manager.add_object( light_two )
 			
 			-- set camera
 			pos_ := ressources_.mode.position_table_to_world (create {Q_VECTOR_2D}.make (0,0))

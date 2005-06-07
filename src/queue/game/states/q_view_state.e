@@ -18,6 +18,9 @@ feature{NONE}
 	make is
 		do
 			create behaviour.make
+			
+			behaviour.set_rotate_vertical_min( -80 )
+			behaviour.set_rotate_vertical_max( 30 )
 		end
 		
 feature{NONE} -- values

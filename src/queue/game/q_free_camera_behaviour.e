@@ -276,7 +276,7 @@ feature{NONE} -- event handling
 				alpha_ := camera.alpha
 				beta_ := camera.beta
 				
-				alpha_ := alpha_ - rotate_factor * dx_
+				alpha_ := alpha_ + rotate_factor * dx_
 				beta_ := beta_ + rotate_factor * dy_
 				
 				alpha_ := valid_alpha( alpha_ )
