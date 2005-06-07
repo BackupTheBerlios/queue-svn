@@ -1,8 +1,6 @@
 indexing
 	description: "Objects that represent a physical shot with direction and strength"
 	author: "Severin Hacker"
-	date: "$Date$"
-	revision: "$Revision$"
 
 class
 	Q_SHOT
@@ -25,22 +23,15 @@ feature -- Interface
 			
 		end
 		
-	hit_point : Q_VECTOR_3D
-	hit_plane : Q_PLANE
-	
-	set_hit( point_ : Q_VECTOR_3D; plane_ : Q_PLANE ) is
+	set_hitpoint (h: Q_VECTOR_3D) is
+			-- Set hitpoint to h.
+		require
+			h /= Void
 		do
-			hit_point := point_
-			hit_plane := plane_
+			hitpoint := h
 		end
-		
-		
-	direction: Q_VECTOR_2D -- the direction of the shot in (x,y) coordinates
 	
-	-- hackers: commented out because strength = |direction| = length of direction vector
-	--strength : REAL -- the strength of the shot
-	
-	set_direction(direction_:Q_VECTOR_2D) is
+	set_direction (direction_: Q_VECTOR_2D) is
 			-- sets the new direction of the shot
 		require
 			direction_exist : direction /= Void
@@ -49,6 +40,20 @@ feature -- Interface
 		ensure
 			direction = direction_
 		end
+		
+	-- hit_plane : Q_PLANE
+	
+--	set_hit( point_ : Q_VECTOR_3D; plane_ : Q_PLANE ) is
+--		do
+--			hit_point := point_
+--			hit_plane := plane_
+--		end
+--		
+	
+	-- hackers: commented out because strength = |direction| = length of direction vector
+	--strength : REAL -- the strength of the shot
+	
+	
 	
 	-- hackers: commented out because strength = |direction| = length of direction vector
 --	set_strength(strength_:REAL) is
@@ -62,10 +67,12 @@ feature -- Interface
 --			strength = strength_
 --		end
 		
-
-feature {NONE} -- Implementation
-
-invariant
-	invariant_clause: True -- Your invariant here
+	direction: Q_VECTOR_2D
+			-- Direction of the shot in (x,y) coordinates
+	
+	hitpoint : Q_VECTOR_3D
+			-- Hit point of the queue on the ball surface
+			
+feature {NONE} -- implementation
 
 end -- class SHOT

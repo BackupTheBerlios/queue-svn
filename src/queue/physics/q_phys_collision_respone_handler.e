@@ -14,11 +14,16 @@ feature {NONE} -- create
 			-- Create response handler. 
 			-- Initialize function list for the various object types.
 		do
-			create fun_list.make(2, 2)
+			create fun_list.make(3, 3)
 			
 			fun_list.put (agent on_collide_ball_ball, 1, 1)
+
 			fun_list.put (agent on_collide_ball_bank, 1, 2)
+			fun_list.put (agent on_collide_ball_bank, 2, 1)
+			
 			fun_list.put (agent on_collide_ball_hole, 1, 3)
+			fun_list.put (agent on_collide_ball_hole, 3, 1)
+			
 			fun_list.put (agent on_collide_dummy, 2, 2)
 			
 			collision_detector := detector
