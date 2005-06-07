@@ -14,6 +14,7 @@ creation
 feature{NONE} -- creation
 	make_mode( mode_ : Q_8BALL ) is
 		do
+			make
 			mode := mode_
 		end
 	

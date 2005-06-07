@@ -47,8 +47,7 @@ feature -- interface
 			key_map_ := ressources_.event_queue.key_map
 			
 			plus_ := key_map_.pressed( key_map_.sdlk_plus ) or
-				key_map_.pressed( key_map_.sdlk_pageup ) or
-				key_map_.shift
+				key_map_.pressed( key_map_.sdlk_pageup )
 			
 			minus_ := key_map_.pressed( key_map_.sdlk_minus ) or
 				key_map_.pressed( key_map_.sdlk_pagedown )			

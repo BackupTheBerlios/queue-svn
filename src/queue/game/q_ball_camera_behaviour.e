@@ -446,14 +446,14 @@ feature -- position
 			
 			distance := delta_.length
 			
-			if delta_.x = 0 and delta_.y = 0 and delta_.z = 0 then
-				alpha := 0
-				beta := 0
+			if delta_.x.abs <= 0.001 and delta_.y.abs <= 0.001 and delta_.z.abs <= 0.001 then
+				alpha := camera_.alpha
+				beta := camera_.beta
 			else
 				delta_.scaled( 1 / distance ) -- normalice
 			
-				if delta_.x = 0 and delta_.z = 0 then
-					alpha := 0
+				if delta_.x.abs <= 0.001 and delta_.z.abs <= 0.001 then
+					alpha := camera_.alpha
 					if delta_.y > 0 then
 						beta := 90
 					else
@@ -461,7 +461,7 @@ feature -- position
 					end
 				else
 					beta := -math.arc_sine( -delta_.y )
-					alpha := math.arc_sine( delta_.x / (math.cosine( -beta )) )
+					alpha := math.arc_sine( ( delta_.x / math.cosine( -beta )).min( 1 ).max( 0 ))
 					
 					beta := beta / math.pi * 180
 					alpha := alpha / math.pi * 180

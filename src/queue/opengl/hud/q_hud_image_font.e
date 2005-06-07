@@ -118,6 +118,8 @@ feature{NONE} -- creation
 					factor := factor.max( height_ )
 				end
 			end
+			
+			orakel_.close
 		end
 		
 feature{NONE} -- Implementation

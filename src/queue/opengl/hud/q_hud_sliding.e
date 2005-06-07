@@ -109,6 +109,12 @@ feature
 			destination := location_
 		end
 		
+	current_location : DOUBLE is
+		do
+			result := position
+		end
+		
+		
 	location : DOUBLE is
 			-- The currently top-side of the component
 		do

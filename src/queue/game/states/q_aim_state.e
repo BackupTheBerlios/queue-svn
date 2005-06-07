@@ -70,7 +70,7 @@ feature
 			key_event_ : ESDL_KEYBOARD_EVENT
 		do
 			-- camera
-			camera_ := ressource_.gl_manager.camera.view_direction
+			camera_ := ressource_.gl_manager.camera.view_direction_xz_parallel
 			direction := ressource_.mode.direction_world_to_table( camera_ )
 			
 			-- event-handling
