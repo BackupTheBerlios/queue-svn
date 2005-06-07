@@ -44,8 +44,10 @@ feature
 			behaviour.set_ball( ball )
 			behaviour.set_zoom_max( ball.radius * 50 )
 			behaviour.set_zoom_min( ball.radius * 2 )
-			behaviour.set_rotate_vertical_min( -50 )
+			behaviour.set_rotate_vertical_min( -90 )
 			behaviour.set_rotate_vertical_max( -2.5 )					
+				
+			behaviour.calculate_from( ressource_.gl_manager.camera )
 				
 			ressource_.gl_manager.add_object( line )
 			ressource_.gl_manager.set_camera_behaviour( behaviour )

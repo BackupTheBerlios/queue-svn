@@ -37,6 +37,10 @@ feature{NONE}
 			
 			set_unit_move_duration( 1500 )
 			set_rotation_duration( 20000 )
+			
+			set_influence_alpha( true )
+			set_influence_beta( true )
+			set_influence_distance( true )
 		end
 		
 
@@ -81,8 +85,9 @@ feature -- velocity
 			rotation_duration := duration_
 		end
 
-feature -- keys
+feature -- keys & mouse
 	ctrl, shift, alt : BOOLEAN
+	mouse_ctrl, mouse_shift, mouse_alt : BOOLEAN
 	
 	set_ctrl( ctrl_ : BOOLEAN ) is
 			-- If true, the user must press the ctrl-key to
@@ -107,7 +112,55 @@ feature -- keys
 		do
 			shift := shift_
 		end
+		
+		
+	set_mouse_ctrl( mouse_ctrl_ : BOOLEAN ) is
+			-- If true, the user must press the ctrl-key to
+			-- control the camera by mouse. If false, the camera
+			-- will only react, if the mouse is not pressed.
+		do
+			mouse_ctrl := mouse_ctrl_
+		end
+
+	set_mouse_alt( mouse_alt_ : BOOLEAN ) is
+			-- If true, the user must press the alt-key to
+			-- control the camera by mouse. If false, the camera
+			-- will only react, if the mouse is not pressed.
+		do
+			mouse_alt := mouse_alt_
+		end
+		
+	set_mouse_shift( mouse_shift_ : BOOLEAN ) is
+			-- If true, the user must press the shift-key to
+			-- control the camera by mouse. If false, the camera
+			-- will only react, if the mouse is not pressed.
+		do
+			mouse_shift := mouse_shift_
+		end
+
 	
+feature -- influence
+	influence_alpha, influence_beta, influence_distance : BOOLEAN
+	
+	set_influence_distance( influence_ : BOOLEAN ) is
+			-- Sets, if the behaviour can change the distance to the ball
+		do
+			influence_distance := influence_
+		end
+		
+	set_influence_alpha( influence_ : BOOLEAN ) is
+			-- Sets, if the behaviour can change the alpha-angle
+		do
+			influence_alpha := influence_
+		end
+
+	set_influence_beta( influence_ : BOOLEAN ) is
+			-- Sets, if the behaviour can change the beta-angle
+		do
+			influence_beta := influence_
+		end
+
+		
 feature -- update
 	update( time_ : Q_TIME ) is
 		local
@@ -126,50 +179,54 @@ feature -- update
 					db_ := 0
 					dz_ := 0
 					
-					-- zoom
-					if key_map.pressed( key_map.sdlk_q ) then
-						dz_ := dz_ + 1
-					end
-					
-					if key_map.pressed( key_map.sdlk_e ) then
-						dz_ := dz_ - 1
+					if influence_distance then
+						-- zoom
+						if key_map.pressed( key_map.sdlk_q ) then
+							dz_ := dz_ + 1
+						end
+						
+						if key_map.pressed( key_map.sdlk_e ) then
+							dz_ := dz_ - 1
+						end
 					end
 					
 					-- angle, fast
-					if key_map.pressed( key_map.sdlk_w ) then
-						db_ := db_ + 5
+					if influence_alpha or influence_beta then
+						if key_map.pressed( key_map.sdlk_w ) then
+							db_ := db_ - 5
+						end
+						
+						if key_map.pressed( key_map.sdlk_s ) then
+							db_ := db_ + 5
+						end
+						
+						if key_map.pressed( key_map.sdlk_a ) then
+							da_ := da_ + 5
+						end
+						
+						if key_map.pressed( key_map.sdlk_d ) then
+							da_ := da_ - 5
+						end
+						
+						-- angle, slow
+						if key_map.pressed( key_map.sdlk_up ) then
+							db_ := db_ - 1
+						end
+						
+						if key_map.pressed( key_map.sdlk_down ) then
+							db_ := db_ + 1
+						end
+						
+						if key_map.pressed( key_map.sdlk_left ) then
+							da_ := da_ + 1
+						end
+						
+						if key_map.pressed( key_map.sdlk_right ) then
+							da_ := da_ - 1
+						end
 					end
 					
-					if key_map.pressed( key_map.sdlk_s ) then
-						db_ := db_ - 5
-					end
-					
-					if key_map.pressed( key_map.sdlk_a ) then
-						da_ := da_ + 5
-					end
-					
-					if key_map.pressed( key_map.sdlk_d ) then
-						da_ := da_ - 5
-					end
-					
-					-- angle, slow
-					if key_map.pressed( key_map.sdlk_up ) then
-						db_ := db_ + 1
-					end
-					
-					if key_map.pressed( key_map.sdlk_down ) then
-						db_ := db_ - 1
-					end
-					
-					if key_map.pressed( key_map.sdlk_left ) then
-						da_ := da_ + 1
-					end
-					
-					if key_map.pressed( key_map.sdlk_right ) then
-						da_ := da_ - 1
-					end
-					
-					if dz_ /= 0 then
+					if dz_ /= 0 and influence_distance then
 						dt_ := time_.delta_time_millis / unit_move_duration
 						
 						distance := distance - dz_ * dt_ * 100
@@ -179,13 +236,16 @@ feature -- update
 					if da_ /= 0 or db_ /= 0 then
 						dt_ := time_.delta_time_millis / rotation_duration
 						
-						alpha := alpha + da_ * dt_ * 360
-						beta := beta + db_ * dt_ * 360
+						if influence_alpha then
+							alpha := alpha + da_ * dt_ * 360
+							if alpha < 0 then alpha := alpha + 360 end
+							if alpha > 360 then alpha := alpha - 360 end							
+						end
 						
-						if alpha < 0 then alpha := alpha + 360 end
-						if alpha > 360 then alpha := alpha - 360 end
-						
-						beta := rotate_vertical_min.max( rotate_vertical_max.min( beta ))
+						if influence_beta then	
+							beta := beta + db_ * dt_ * 360					
+							beta := rotate_vertical_min.max( rotate_vertical_max.min( beta ))
+						end
 					end
 				end
 			end
@@ -220,16 +280,22 @@ feature -- event-handling
 
 	process_mouse_button_down (event_: ESDL_MOUSEBUTTON_EVENT; x_, y_: DOUBLE; map_ : Q_KEY_MAP): BOOLEAN is
 		do
-			if mouse_pressed then
-				secondary_mouse := true
-			else
-				mouse_pressed := true
-			end
+			result := false
 			
-			last_x := x_
-			last_y := y_
-			
-			result := true
+			if key_map /= void then
+				if key_map.ctrl = mouse_ctrl and key_map.shift = mouse_shift and key_map.alt = mouse_alt then
+					if mouse_pressed then
+						secondary_mouse := true
+					else
+						mouse_pressed := true
+					end
+					
+					last_x := x_
+					last_y := y_
+
+					result := true					
+				end
+			end			
 		end
 
 	process_mouse_button_up (event_: ESDL_MOUSEBUTTON_EVENT; x_, y_: DOUBLE; map_ : Q_KEY_MAP): BOOLEAN is
@@ -249,43 +315,51 @@ feature -- event-handling
 			d_alpha_, d_beta_ : DOUBLE
 			dx_, dy_ : DOUBLE
 		do	
+			if key_map /= void then
+				if key_map.ctrl = mouse_ctrl and key_map.shift = mouse_shift and key_map.alt = mouse_alt then
+					if secondary_mouse and influence_distance then
+						-- zoom
+						dy_ := y_ - last_y
+						last_x := x_
+						last_y := y_
+						
+						exp_ := math.log( distance )
+						exp_ := math.exp( exp_ - zoom_factor * dy_).max( zoom_min ).min( zoom_max )
+						set_distance( exp_ )
+					elseif mouse_pressed then
+						dx_ := -(x_ - last_x)
+						dy_ :=  (y_ - last_y)
+						
+						last_x := x_
+						last_y := y_
+						
+						if influence_alpha then
+							if dx_ > 0 then
+								d_alpha_ := dx_*dx_
+							else
+								d_alpha_ := -dx_*dx_
+							end
+							
+							d_alpha_ := d_alpha_ * rotate_factor
+							set_alpha( alpha + d_alpha_ )
+						end
+						
+						if influence_beta then
+							if dy_ < 0 then
+								d_beta_ := dy_ * dy_
+							else
+								d_beta_ := -dy_ * dy_
+							end
 			
-			if secondary_mouse then
-				-- zoom
-				dy_ := y_ - last_y
-				last_x := x_
-				last_y := y_
+							d_beta_ := d_beta_ * rotate_factor
+							set_beta( (beta + d_beta_).min( rotate_vertical_max ).max( rotate_vertical_min ) )
+						end
+					end
 				
-				exp_ := math.log( distance )
-				exp_ := math.exp( exp_ - zoom_factor * dy_).max( zoom_min ).min( zoom_max )
-				set_distance( exp_ )
-			elseif mouse_pressed then
-				dx_ := -(x_ - last_x)
-				dy_ :=  (y_ - last_y)
+					result := mouse_pressed
 				
-				last_x := x_
-				last_y := y_
-				
-				if dx_ > 0 then
-					d_alpha_ := dx_*dx_
-				else
-					d_alpha_ := -dx_*dx_
 				end
-				
-				if dy_ < 0 then
-					d_beta_ := dy_ * dy_
-				else
-					d_beta_ := -dy_ * dy_
-				end
-				
-				d_alpha_ := d_alpha_ * rotate_factor
-				d_beta_ := d_beta_ * rotate_factor
-				
-				set_alpha( alpha + d_alpha_ )
-				set_beta( (beta + d_beta_).min( rotate_vertical_max ).max( rotate_vertical_min ) )
 			end
-		
-			result := mouse_pressed
 		end
 
 feature -- boundaris
@@ -352,6 +426,54 @@ feature -- position
 			distance > 0
 		do
 			distance := distance_
+		end
+		
+	calculate_from( camera_ : Q_GL_CAMERA ) is
+			-- Searches alpha, beta and distance, so that the actuall
+			-- cameraposition is changed not too much
+		require
+			ball_set : ball /= void
+			ressources_set : ressources /= void
+		local
+			delta_ : Q_VECTOR_3D
+			center_ : Q_VECTOR_3D
+		do
+			center_ := ressources.mode.position_table_to_world( ball.center )
+			create delta_.make( 
+				center_.x - camera_.x,
+				center_.y - camera_.y + ball.radius,
+				center_.z - camera_.z )
+			
+			distance := delta_.length
+			
+			if delta_.x = 0 and delta_.y = 0 and delta_.z = 0 then
+				alpha := 0
+				beta := 0
+			else
+				delta_.scaled( 1 / distance ) -- normalice
+			
+				if delta_.x = 0 and delta_.z = 0 then
+					alpha := 0
+					if delta_.y > 0 then
+						beta := 90
+					else
+						beta := -90
+					end
+				else
+					beta := -math.arc_sine( -delta_.y )
+					alpha := math.arc_sine( delta_.x / (math.cosine( -beta )) )
+					
+					beta := beta / math.pi * 180
+					alpha := alpha / math.pi * 180
+		
+					if delta_.z > 0 then
+						alpha := -alpha + 180
+					end
+				end
+			end
+			
+			distance := zoom_min.max( zoom_max.min( distance ))
+			beta := rotate_vertical_min.max( rotate_vertical_max.min( beta ))
 		end
 		
 

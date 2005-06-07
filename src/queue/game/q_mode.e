@@ -58,7 +58,7 @@ feature -- Interface
 		
 	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
 		do
-			Result := table_model.position_world_to_table (world_)
+			Result := table_model.direction_world_to_table (world_)
 		end
 
 	next_state : Q_GAME_STATE is

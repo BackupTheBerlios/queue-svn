@@ -121,7 +121,7 @@ feature -- Geometric
 			not_parellel : not direction_parallel( line_.direction )
 		do
 			-- a(p.x + r*d.x) + b(p.y + r*d.y) + c(p.z + r*d.z) + d = 0
-			result := (d - a*line_.position.x - b*line_.position.y - c*line_.position.z) / 
+			result := (-d - a*line_.position.x - b*line_.position.y - c*line_.position.z) / 
 				(a*line_.direction.x + b*line_.direction.y + c*line_.direction.z)
 		end
 	
@@ -144,7 +144,12 @@ feature -- Geometric
 		do
 			result := (a*point_.x + b*point_.y + c*point_.z + d) / (math.sqrt( a*a + b*b + c*c ))
 		end
-		
+	
+	in_front( point_ : Q_VECTOR_3D ) : BOOLEAN is
+			-- true if the given point is in front of the plane
+		do
+			result := (a*point_.x + b*point_.y + c*point_.z + d) >= 0
+		end
 		
 feature {NONE} -- Math
 	math : DOUBLE_MATH is

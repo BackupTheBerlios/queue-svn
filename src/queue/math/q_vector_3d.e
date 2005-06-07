@@ -63,6 +63,17 @@ feature -- coordinates
 		end	
 
 feature -- modification
+	distance( vector_ : Q_VECTOR_3D ) : DOUBLE is
+		local
+			dx_, dy_, dz_ : DOUBLE
+		do
+			dx_ := x - vector_.x
+			dy_ := y - vector_.y
+			dz_ := z - vector_.z
+			result := math.sqrt( dx_*dx_ + dy_*dy_ + dz_*dz_ )
+		end
+		
+
 	sum, infix "+" (vector_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
 			-- calculates the sum of this and another vector, returns a new vector with the result
 		do

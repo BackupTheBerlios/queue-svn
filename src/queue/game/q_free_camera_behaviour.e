@@ -168,12 +168,12 @@ feature{NONE} -- event handling
 					end
 					
 					if key_map.pressed( key_map.sdlk_left ) or
-						key_map.pressed( key_map.sdlk_l ) then
+						key_map.pressed( key_map.sdlk_j ) then
 						dx_ := dx_ - 1
 					end
 					
 					if key_map.pressed( key_map.sdlk_right ) or
-						key_map.pressed( key_map.sdlk_j ) then
+						key_map.pressed( key_map.sdlk_l ) then
 						dx_ := dx_ + 1
 					end
 					

@@ -1,8 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	description: "Allows to set, in witch direction the ball is shot"
+	author: "Benjamin Sigg"
 
 class
 	Q_8BALL_AIM_STATE
@@ -30,9 +28,17 @@ feature
 		end
 		
 	prepare_next_state( direction_ : Q_VECTOR_2D; ressources_ : Q_GAME_RESSOURCES ): Q_GAME_STATE is
+		local
+			spin_ : Q_8BALL_SPIN_STATE
 		do
---				*****************
---				to be implemented
+			spin_ ?= ressources_.request_state( "8ball spin" )
+			if spin_ = void then
+				create spin_.make_mode( mode )
+				ressources_.put_state( spin_ )
+			end
+			spin_.set_ball( ball )
+			spin_.set_shot_direction( direction_ )
+			result := spin_
 		end
 		
 
