@@ -33,6 +33,12 @@ feature{NONE} -- creation
 		do
 			default_create
 		
+			-- set defaults
+			width := 640
+			height := 480
+			resolution := 24
+			fullscreen := false
+		
 			read_ini_file
 			
 			video_subsystem.set_video_surface_width (width)
@@ -67,35 +73,32 @@ feature{NONE} -- creation
 			setting: STRING
 		do
 			create ini_file.make_open_read ("data/queue.ini")
-			create ini_reader.make
 			
-			ini_reader.load_ini_file (ini_file)
-
-			-- set defaults
-			width := 640
-			height := 480
-			resolution := 24
-			fullscreen := false
+			if ini_file.exists then
+				create ini_reader.make
 			
-			-- take the settings
-			setting := ini_reader.value ("ESDL", "width")
-			if setting /= void and then not setting.is_empty then
-				width := setting.to_integer
-			end
-			
-			setting := ini_reader.value ("ESDL", "height")
-			if setting /= void and then not setting.is_empty then
-				height := setting.to_integer
-			end
-			
-			setting := ini_reader.value ("ESDL", "fullscreen")
-			if setting /= void and then not setting.is_empty then
-				fullscreen := setting.to_boolean
-			end
-			
-			setting := ini_reader.value ("ESDL", "resolution")
-			if setting /= void and then not setting.is_empty then
-				resolution := setting.to_integer
+				ini_reader.load_ini_file (ini_file)
+				
+				-- take the settings
+				setting := ini_reader.value ("ESDL", "width")
+				if setting /= void and then not setting.is_empty then
+					width := setting.to_integer
+				end
+				
+				setting := ini_reader.value ("ESDL", "height")
+				if setting /= void and then not setting.is_empty then
+					height := setting.to_integer
+				end
+				
+				setting := ini_reader.value ("ESDL", "fullscreen")
+				if setting /= void and then not setting.is_empty then
+					fullscreen := setting.to_boolean
+				end
+				
+				setting := ini_reader.value ("ESDL", "resolution")
+				if setting /= void and then not setting.is_empty then
+					resolution := setting.to_integer
+				end				
 			end
 		end
 		
