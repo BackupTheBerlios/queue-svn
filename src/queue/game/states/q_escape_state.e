@@ -401,20 +401,22 @@ feature{NONE} -- menu creation
 			button_ : Q_HUD_BUTTON
 			string_ : STRING
 			insets_ : Q_HUD_INSETS
+			height_ : DOUBLE
 		do
 			-- create plane for writing
-			create labels_.make( 1, 7 )
+			create labels_.make( 1, text_.value( "help", "labels" ).to_integer )
 			create container_.make
-			create insets_.make( 0.01, 0.05, 0.01, 0.01 )
+			create insets_.make( 0.001, 0.05, 0.001, 0.001 )
 			container_.set_bounds( 0, help_menu_move( menu_ ), 1, 1 )
 			container_.set_focus_handler( create{Q_FOCUS_DEFAULT_HANDLER} )
 			moves.item( help_menu_side( menu_ ) ).add( container_ )
 			
-			from index_ := 1 until index_ > 7 loop
+			height_ := 0.7 / labels_.count
+			from index_ := 1 until index_ > labels_.upper loop
 				create label_.make
 				labels_.force( label_, index_ )
 				container_.add( label_ )
-				label_.set_bounds( 0.1, index_ * 0.1, 0.8, 0.1 )
+				label_.set_bounds( 0.1, 0.1 + (index_-1)*height_, 0.8, height_ )
 				label_.set_insets( insets_ )
 				index_ := index_ + 1
 			end
@@ -439,7 +441,7 @@ feature{NONE} -- menu creation
 			container_.add( button_ )			
 			
 			-- set text
-			from index_ := 1 until index_ > 7 loop
+			from index_ := 1 until index_ > labels_.upper loop
 				string_ := text_.value( menu_.out, index_.out )
 				if string_ /= void then
 					labels_.item( index_ ).set_text( string_ )					
