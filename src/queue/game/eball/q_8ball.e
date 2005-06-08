@@ -93,20 +93,39 @@ feature -- Interface
 		local
 			reset_state_ : Q_8BALL_RESET_STATE
 			aim_state_ : Q_8BALL_AIM_STATE
+			choice_state_ :Q_CHOICE_STATE
 			colls_ : LIST[Q_COLLISION_EVENT]
+			ball_: Q_BALL
 		do
+			ressources := ressources_
 			colls_ := ressources_.simulation.collision_list
 			if is_game_lost(colls_) then
-
+				create choice_state_.make (active_player.name+" loses",2)
+				choice_state_.button (1).set_text ("Play again")
+				choice_state_.button (1).actions.force (agent handle_restart)
+				choice_state_.button (2).set_text ("Main menu")
+				choice_state_.button (2).actions.force (agent handle_main_menu)
+				Result := choice_state_
 			elseif is_game_won(colls_) then
-
+				create choice_state_.make (active_player.name+" wins",2)
+				choice_state_.button (1).set_text ("Play again")
+				choice_state_.button (1).actions.force (agent handle_restart)
+				choice_state_.button (2).set_text ("Main menu")
+				choice_state_.button (2).actions.force (agent handle_main_menu)
+				Result := choice_state_
 			elseif first_shot and then not is_correct_opening (colls_) then
 				-- rule 4.6 second part
 --				-- the current player made an error, the other player can
 --				a) die Position so übernehmen und weiterspielen oder
 --				b) die Kugeln neu aufbauen lassen und selbst einen neuen Eröffnungsstoß durchführen oder den Gegner neu anstoßen lassen.
-				switch_players
-				is_open := true
+				create choice_state_.make ("Incorrect opening",3)
+				choice_state_.button (1).set_text ("Continue playing with this board")
+				choice_state_.button (1).actions.force (agent handle_continue)
+				choice_state_.button (2).set_text ("Rebuild the table and start yourself")
+				choice_state_.button (2).actions.force (agent handle_restart)
+				choice_state_.button (3).set_text ("Rebuild the table and let opponent start")
+				choice_state_.button (3).actions.force (agent handle_restart_other)
+				Result := choice_state_
 			elseif first_shot and then is_correct_opening (colls_) and then fallen_balls(colls_).has(white_number) and not fallen_balls (colls_).has(8) then
 				-- rule 4.7
 				-- white has fallen in a correct opening shot
@@ -128,11 +147,25 @@ feature -- Interface
 --				(1) Wird die "8" mit dem Eröffnungsstoß versenkt, so kann der eröffnende Spieler verlangen, daß
 --				a) neu aufgebaut wird oder
 --				b) die "8" wieder eingesetzt wird und er selbst so weiterspielt.
+				create choice_state_.make ("Correct opening but has 8 fallen",2)
+				choice_state_.button (1).set_text ("Rebuild the table and start yourself")
+				choice_state_.button (1).actions.force (agent handle_restart)
+				choice_state_.button (2).set_text ("Reset 8 and continue playing")
+				choice_state_.button (2).actions.force (agent handle_set8_and_continue)
+				is_open := true
+				result := choice_state_
 			elseif first_shot and then is_correct_opening (colls_) and then fallen_balls (colls_).has(8) and fallen_balls (colls_).has (white_number) then
 --				-- rule 4.9 second part
 --				(2) Fallen dem Spieler beim Eröffnungsstoß die Weiße und die "8", so kann der Gegner
 --				a) neu aufbauen lassen oder
 --				b) die "8" wieder einsetzen lassen und aus dem Kopffeld weiterspielen.
+				create choice_state_.make ("Correct opening but 8 and white have fallen",2)
+				choice_state_.button (1).set_text ("Rebuild the table and start yourself")
+				choice_state_.button (1).actions.force (agent handle_restart)
+				choice_state_.button (2).set_text ("Set 8, reset white in headfield and continue playing")
+				choice_state_.button (2).actions.force (agent handle_set8_and_continue_in_headfield)
+				is_open := true
+				result := choice_state_
 			elseif not first_shot and then not is_correct_shot (colls_, active_player)  then
 				-- rule 4.15
 				-- the player made an incorrect shot during the game
@@ -143,8 +176,21 @@ feature -- Interface
 					ressources_.put_state( reset_state_ )
 				end
 				reset_state_.set_headfield (false)
+				switch_players
 				Result := reset_state_
 			else
+				
+				-- ok, everything seems fine
+				-- check if we can assign colors to players
+				if is_open then
+					close_table(fallen_balls (colls_).first)
+					is_open := false
+				end
+				
+				-- check if active player can play on black ball
+				if my_balls_fallen then
+					table.balls.item (8).add_owner (active_player)
+				end
 				-- set next state as bird state
 				result := ressources_.request_state( "8ball bird" )
 				if result = void then
@@ -296,6 +342,48 @@ feature -- Interface
 			end	
 		end
 		
+feature {NONE} -- event handlers
+	handle_continue(command_ :STRING; button_:Q_HUD_BUTTON) is
+			-- next state is bird state, switch players and continue
+		do
+			
+		end
+	
+	handle_restart(command_ :STRING; button_:Q_HUD_BUTTON) is
+			-- next state is a new game in bird state
+		do
+			
+		end
+		
+	handle_restart_other(command_ :STRING; button_:Q_HUD_BUTTON) is
+			-- next state is a new game in bird state, switch players
+		do
+			handle_restart(command_, button_)
+			switch_players
+		end
+		
+	handle_set8_and_continue(command_:STRING; button_:Q_HUD_BUTTON) is
+			-- next state is bird state, don't switch players
+		do
+			
+		end
+		
+	handle_set8_and_continue_in_headfield(command_:STRING; button_:Q_HUD_BUTTON) is
+			-- next state is reset state, don't switch players
+		do
+			
+		end
+		
+	handle_main_menu(command_:STRING; button_:Q_HUD_BUTTON) is
+			-- goto main menu, next state is escape state
+		do
+			
+		end
+		
+		
+feature {NONE} -- temporary ressources
+	ressources: Q_GAME_RESSOURCES
+		
 
 feature {NONE} -- Implementation
 
@@ -309,9 +397,19 @@ feature {NONE} -- Implementation
 			end
 		end
 		
-
+	other_player : Q_PLAYER is
+			-- the non-active player
+		do
+			if active_player = player_a then
+				result := player_b
+			else
+				result := player_a
+			end
+		end
+		
 	first_shot : BOOLEAN
 
+feature
 	new_table is
 			-- creates the opening table for this game mode, all balls are in a triangle, the white is set at the head of the table
 		local
@@ -555,12 +653,36 @@ feature {NONE} -- Implementation
 			
 		end
 		
-	close_table is
-			-- close the table, i.e. assign the owner to the balls
+	my_balls_fallen : BOOLEAN is
+			-- are all balls of the active player's color fallen?
+		do
+
+		end
+		
+		
+	close_table(ball_nr: INTEGER) is
+			-- close the table, i.e. assign the active player to all balls with same colors as ball_nr
 		require
 			is_open
+			ball_nr /= void
+			ball_nr >0 and ball_nr <=15 and ball_nr /= 8
+		local
+			i: INTEGER
 		do
-			
+			from
+				i := table.balls.lower
+			until
+				i > table.balls.upper
+			loop
+				if table.balls.item(i).number <8 and ball_nr < 8 then
+					-- same color
+					table.balls.item (i).add_owner (active_player)
+				else
+					-- different color
+					table.balls.item (i).add_owner (other_player)
+				end
+				i := i+1
+			end
 		end
 		
 		
