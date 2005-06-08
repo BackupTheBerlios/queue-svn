@@ -32,12 +32,14 @@ feature{NONE} -- creation
 			-- the creation procedure of the root class, creates the event_queue and others
 		do
 			default_create
+		
+			read_ini_file
 			
 			video_subsystem.set_video_surface_width (width)
 			video_subsystem.set_video_surface_height (height)
 			video_subsystem.set_video_bpp (resolution)
 			video_subsystem.set_opengl (true)
-		--	video_subsystem.set_fullscreen ( true )
+			video_subsystem.set_fullscreen ( fullscreen )
 			initialize_screen
 			set_application_name ("Queue OpenGL Proof of Concept")
 		
@@ -54,6 +56,47 @@ feature{NONE} -- creation
 			-- Set and launch the first scene.
 			set_scene( current )
 			launch
+		end
+	
+	read_ini_file is
+			-- read the games ini file
+		local
+			ini_file: PLAIN_TEXT_FILE
+			ini_reader: Q_INI_FILE_READER
+			
+			setting: STRING
+		do
+			create ini_file.make_open_read ("data/queue.ini")
+			create ini_reader.make
+			
+			ini_reader.load_ini_file (ini_file)
+
+			-- set defaults
+			width := 640
+			height := 480
+			resolution := 24
+			fullscreen := false
+			
+			-- take the settings
+			setting := ini_reader.value ("ESDL", "width")
+			if setting /= void and then not setting.is_empty then
+				width := setting.to_integer
+			end
+			
+			setting := ini_reader.value ("ESDL", "height")
+			if setting /= void and then not setting.is_empty then
+				height := setting.to_integer
+			end
+			
+			setting := ini_reader.value ("ESDL", "fullscreen")
+			if setting /= void and then not setting.is_empty then
+				fullscreen := setting.to_boolean
+			end
+			
+			setting := ini_reader.value ("ESDL", "resolution")
+			if setting /= void and then not setting.is_empty then
+				resolution := setting.to_integer
+			end
 		end
 		
 	
@@ -93,14 +136,16 @@ feature {NONE} -- THE game loop
 		-- the real event-queue
 
 feature {NONE} -- other
-	width: INTEGER is 640
+	width: INTEGER
 		-- The width of the surface
 		
-	height: INTEGER is 480
+	height: INTEGER
 		-- The height of the surface
 		
-	resolution: INTEGER is 24
+	resolution: INTEGER
 		-- The resolution of the surface
+		
+	fullscreen: BOOLEAN
 
 invariant
 	invariant_clause: True -- Your invariant here
