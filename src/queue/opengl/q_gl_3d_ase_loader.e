@@ -95,6 +95,7 @@ feature  -- Commands
 						material_.set_ambient (ase_material_.ambient)
 						material_.set_diffuse (ase_material_.diffuse)
 						material_.set_specular (ase_material_.specular)
+						material_.set_shininess (ase_material_.shine)
 						model_.set_material (material_)
 						
 						model_.set_diffuse_texture (create {Q_GL_TEXTURE}.make (ase_material_.diffuse_texutre))
