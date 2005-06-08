@@ -52,7 +52,8 @@ feature -- Does
 
 feature -- Access
 	last_string : STRING
-		-- last token
+		-- last token. This string is not immutable. Every call of "read_token" will 
+		-- overwrite the contents of the string!
 		
 feature {NONE} --- Imlementation
 	next_start (start_ix :  INTEGER) : INTEGER is

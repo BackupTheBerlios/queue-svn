@@ -29,7 +29,13 @@ feature -- creation
 			create key_down_listener.make
 			create key_up_listener.make
 		end
+	
+	color_defaults : Q_COLOR_DEFAULTS is
+		once
+			create result.make( "data/colors.ini" )
+		end
 		
+
 feature -- drawing
 	enqueue( queue_ : Q_HUD_QUEUE ) is
 			-- Inserts this component into the queue.

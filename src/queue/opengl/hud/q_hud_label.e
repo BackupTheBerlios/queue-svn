@@ -22,7 +22,8 @@ feature {NONE} -- creation
 			set_alignement_x( 0.0 )
 			set_alignement_y( 0.5 )
 			
-			background.set_alpha( 0.75 )
-			set_blend_background( true )
+			set_foreground( color_defaults.color_of( "label", "foreground" ))
+			set_background( color_defaults.color_of( "label", "background" ))
+			set_blend_background( color_defaults.blend( "label" ) )
 		end
 end -- class Q_HUD_LABEL

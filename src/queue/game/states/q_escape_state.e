@@ -93,11 +93,12 @@ feature{NONE} -- temporaly values
 feature{NONE} -- menus
 	container : Q_HUD_CONTAINER
 	menu : Q_HUD_4_CUBE_SIDES
-	move_1 : Q_HUD_SLIDING
-	move_4 : Q_HUD_SLIDING
+	moves : ARRAY[ Q_HUD_SLIDING ]
 	
 	main_menu, option_menu, game_menu, quit_dialog, game_dialog : Q_HUD_CONTAINER
 		-- the Menus
+		
+	help_menus: ARRAY[ Q_HUD_CONTAINER ]
 		
 	return_button : Q_HUD_BUTTON
 		-- only used, if the menu is called by a state from a game
@@ -116,13 +117,25 @@ feature{NONE} -- menus
 		
 feature{NONE} -- menu creation
 	create_menus( move_ : BOOLEAN ) is
+		local
+			index_ : INTEGER
+			sliding_ : Q_HUD_SLIDING
 		do
 			create menu.make
-			create move_1.make
-			create move_4.make
+			create moves.make( 1, 4 )
 			menu.set_bounds( 0, 0, 1, 1 )
-			move_1.set_bounds( 0, 0, 1, 1 )
-			move_4.set_bounds( 0, 0, 1, 1 )
+			
+			from
+				index_ := 1
+			until
+				index_ > 4
+			loop
+				create sliding_.make
+				sliding_.set_bounds( 0, 0, 1, 1 )
+				moves.force( sliding_, index_ )
+				menu.side( index_ ).add( sliding_ )
+				index_ := index_ + 1
+			end
 			
 			create_main_menu
 			create_option_menu
@@ -130,20 +143,24 @@ feature{NONE} -- menu creation
 			create_game_menu
 			create_new_game_dialog
 			
-			menu.side( 1 ).add( move_1 )
-			menu.side( 2 ).add( option_menu )
-			menu.side( 4 ).add( move_4 )
-			
-			move_1.add( main_menu )
-			move_1.add( quit_dialog )
-			move_4.add( game_menu )
-			move_4.add( game_dialog )
+			moves.item( 1 ).add( main_menu )
+			moves.item( 1 ).add( quit_dialog )
+			moves.item( 2 ).add( option_menu )
+			moves.item( 4 ).add( game_menu )
+			moves.item( 4 ).add( game_dialog )
 			
 			create_background( main_menu )
 			create_background( option_menu )
 			create_background( quit_dialog )
 			create_background( game_menu )
 			create_background( game_dialog )
+			
+			create help_menus.make( 1, 5 )
+			from index_ := 1 until index_ > 5 loop
+				help_menus.force( create_help_menu( index_ ), index_ )
+				create_background( help_menus.item( index_ ))
+				index_ := index_ + 1
+			end
 			
 			if move_ then
 				container := menu
@@ -170,18 +187,16 @@ feature{NONE} -- menu creation
 	create_background( container_ : Q_HUD_CONTAINER ) is
 		local
 			back_ : Q_HUD_CONTAINER_3D
-			label_ : Q_HUD_LABEL
+			panel_ : Q_HUD_PANEL
 		do
 			create back_.make
-			create label_.make
+			create panel_.make
 			
-			label_.set_background( create {Q_GL_COLOR}.make_rgba( 0.5, 0.5, 1, 0.5 ))
-			label_.set_blend_background( true )
 			back_.translate( 0, 0, -0.2 )
 			
 			back_.set_bounds( 0, 0, 1, 1 )
-			label_.set_bounds( 0.2, 0.2, 0.6, 0.6 )
-			back_.add( label_ )
+			panel_.set_bounds( 0.2, 0.2, 0.6, 0.6 )
+			back_.add( panel_ )
 			container_.add( back_ )
 		end
 		
@@ -375,6 +390,101 @@ feature{NONE} -- menu creation
 			game_dialog := container_
 		end
 		
+	create_help_menu( menu_ : INTEGER ) : Q_HUD_CONTAINER is
+		local
+			labels_ : ARRAY[ Q_HUD_LABEL ]
+			label_ : Q_HUD_LABEL
+			index_ : INTEGER
+			container_ : Q_HUD_CONTAINER
+			button_ : Q_HUD_BUTTON
+		do
+			-- create plane for writing
+			create labels_.make( 1, 7 )
+			create container_.make
+			container_.set_bounds( 0, help_menu_move( menu_ ), 1, 1 )
+			container_.set_focus_handler( create{Q_FOCUS_DEFAULT_HANDLER} )
+			moves.item( help_menu_side( menu_ ) ).add( container_ )
+			
+			from index_ := 1 until index_ > 7 loop
+				create label_.make
+				labels_.force( label_, index_ )
+				container_.add( label_ )
+				label_.set_bounds( 0.1, index_ * 0.1, 0.8, 0.1 )
+				index_ := index_ + 1
+			end
+			
+			-- add some buttons
+			create button_.make
+			button_.set_text( "back" )
+			button_.actions.extend( agent goto_help( ?,?,menu_-1 ) )
+			button_.set_bounds( 0.1, 0.81, 0.2, 0.09 )
+			container_.add( button_ )
+			
+			create button_.make
+			button_.set_text( "menu" )
+			button_.actions.extend( agent goto_main_menu( ?,? ) )
+			button_.set_bounds( 0.4, 0.81, 0.2, 0.09 )
+			container_.add( button_ )
+			
+			create button_.make
+			button_.set_text( "next" )
+			button_.actions.extend( agent goto_help( ?,?,menu_+1 ) )
+			button_.set_bounds( 0.7, 0.81, 0.2, 0.09 )
+			container_.add( button_ )			
+			
+			-- set text
+			inspect menu_
+			when 1 then
+			when 2 then
+			when 3 then
+			when 4 then
+			when 5 then
+			end
+			
+			result := container_
+		end
+	
+	help_menu_side( index__ : INTEGER ) : INTEGER is
+		local
+			index_ : INTEGER
+		do
+			if index__ > 5 then
+				index_ := index__ - 5
+			elseif index__ < 1 then
+				index_ := index__ + 5
+			else
+				index_ := index__
+			end
+			
+			inspect index_
+			when 1 then result := 1
+			when 2 then result := 2
+			when 3 then result := 3
+			when 4 then result := 3
+			when 5 then result := 4
+			end
+		end
+	
+	help_menu_move( index__ : INTEGER ) : INTEGER is
+		local
+			index_ : INTEGER
+		do
+			if index__ > 5 then
+				index_ := index__ - 5
+			elseif index__ < 1 then
+				index_ := index__ + 5
+			else
+				index_ := index__
+			end
+			
+			inspect index_
+			when 1 then result := -1
+			when 2 then result := -1
+			when 3 then result := 0
+			when 4 then result := -1
+			when 5 then result := -1
+			end			
+		end
 		
 	
 feature{NONE} -- event-handling
@@ -389,12 +499,12 @@ feature{NONE} -- event-handling
 
 	help( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
-			
+			goto_help( command_, button_, 1 )
 		end
 
 	exit( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
-			if menu.rotated_to /= 1 or move_1.location.rounded /= 1 then
+			if menu.rotated_to /= 1 or moves.item( 1 ).location.rounded /= 1 then
 				goto_quit_dialog( command_, button_ )
 			else
 				ressources.logic.quit
@@ -403,37 +513,33 @@ feature{NONE} -- event-handling
 
 	goto_option_menu( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
-			menu.rotate_to( 2 )
+			goto_side( 2, 0 )
 			option_menu.focus_handler.focus_default( option_menu )
 		end
 
 
 	goto_quit_dialog( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
-			menu.rotate_to( 1 )
-			move_1.move_to( 1 )
+			goto_side( 1, 1 )
 			quit_dialog.focus_handler.focus_default( quit_dialog )
 		end
 		
 	goto_game_menu( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
-			menu.rotate_to( 4 )
-			move_4.move_to( 0 )
+			goto_side( 4, 0 )
 			game_menu.focus_handler.focus_default( game_menu )
 		end
 		
 	goto_new_game_dialog( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
-			menu.rotate_to( 4 )
-			move_4.move_to( 1 )
+			goto_side( 4, 1 )
 			game_dialog.focus_handler.focus_default( game_dialog )
 		end
 		
 
 	goto_main_menu( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
-			menu.rotate_to( 1 )
-			move_1.move_to( 0 )
+			goto_side( 1, 0 )
 			main_menu.focus_handler.focus_default( main_menu )
 		end
 		
@@ -443,15 +549,40 @@ feature{NONE} -- event-handling
 			do_return := true
 		end
 		
+	goto_help( command_ : STRING; button_ : Q_HUD_BUTTON; index__: INTEGER ) is
+		local
+			focus_ : Q_HUD_CONTAINER
+			index_ : INTEGER
+		do
+			if index__ > 5 then
+				index_ := index__ - 5
+			elseif index__ < 1 then
+				index_ := index__ + 5
+			else
+				index_ := index__
+			end			
+			
+			goto_side( help_menu_side( index_ ), help_menu_move( index_ ) )
+			focus_ := help_menus.item( index_ )
+			focus_.focus_handler.focus_default( focus_ )
+		end
+		
+	
+	goto_side( side_, move_ : INTEGER ) is
+		do
+			menu.rotate_to( side_ )
+			moves.item( side_ ).move_to( move_ )
+		end
+		
 feature{NONE} -- new games
 	game_menu_armed : BOOLEAN is
 			-- Tests, if the game-menu is visible
 		do
-			result := menu.rotated_to = 4 and move_4.location.rounded = 0
+			result := menu.rotated_to = 4 and moves.item( 4 ).location.rounded = 0
 		end
 
 	start_8_ball( command_ : STRING; button_ : Q_HUD_BUTTON ) is
-			-- 
+			-- Starts an 8ball-game
 		local
 			eball: Q_8BALL
 		do
