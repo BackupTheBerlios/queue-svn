@@ -21,7 +21,7 @@ feature -- Interface
 		-- paint the table
 	do
 		model.draw (open_gl)
-		axis.draw (open_gl)
+		--axis.draw (open_gl)
 	end
 	
 	model: Q_GL_GROUP[Q_GL_MODEL]
@@ -46,7 +46,7 @@ feature -- Interface
 	
 	direction_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
 		do
-			create result.make (table_.x, 0, table_.y)
+			create result.make (table_.x, 0, -table_.y)
 		end
 		
 	position_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
@@ -56,14 +56,14 @@ feature -- Interface
 		
 	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
 		do
-			create result.make (world_.x, world_.z)
+			create result.make (world_.x, -world_.z)
 		end
 feature {NONE} -- internal properties
 	root: Q_VECTOR_2D
 	
 	zero_level: DOUBLE
 
-	axis: Q_GL_GROUP[Q_GL_LINE]
+	--axis: Q_GL_GROUP[Q_GL_LINE]
 feature {NONE} -- Implementation
 	make_from_file (file_name_: STRING) is
 			-- create the model from out of a file
@@ -83,23 +83,23 @@ feature {NONE} -- Implementation
 			make_table_size (holes)
 			banks := make_banks (loader.shape_objects)
 			
-			create axis.make
-			
-			axis.extend(create {Q_GL_LINE}.make_position_material (
-				create {Q_VECTOR_3D}.make(0,0,0),
-				create {Q_VECTOR_3D}.make(500, 0, 0),
-				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
-			))
-			axis.extend(create {Q_GL_LINE}.make_position_material (
-				create {Q_VECTOR_3D}.make(0,0,0),
-				create {Q_VECTOR_3D}.make(0, 500, 0),
-				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
-			))
-			axis.extend(create {Q_GL_LINE}.make_position_material (
-				create {Q_VECTOR_3D}.make(0,0,0),
-				create {Q_VECTOR_3D}.make(0, 0, 500),
-				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
-			))
+--			create axis.make
+--			
+--			axis.extend(create {Q_GL_LINE}.make_position_material (
+--				create {Q_VECTOR_3D}.make(0,0,0),
+--				create {Q_VECTOR_3D}.make(500, 0, 0),
+--				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
+--			))
+--			axis.extend(create {Q_GL_LINE}.make_position_material (
+--				create {Q_VECTOR_3D}.make(0,0,0),
+--				create {Q_VECTOR_3D}.make(0, 500, 0),
+--				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
+--			))
+--			axis.extend(create {Q_GL_LINE}.make_position_material (
+--				create {Q_VECTOR_3D}.make(0,0,0),
+--				create {Q_VECTOR_3D}.make(0, 0, 500),
+--				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
+--			))
 		end
 	
 	make_table_size (holes_ : ARRAY[Q_HOLE]) is 
