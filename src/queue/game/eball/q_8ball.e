@@ -208,7 +208,7 @@ feature -- Interface
 			pos_ := ressources_.mode.position_table_to_world (create {Q_VECTOR_2D}.make (0,0))
 			ressources_.gl_manager.camera.set_position (pos_.x,pos_.y+100,pos_.z)
 			ressources_.gl_manager.camera.set_beta(-45)
-			ressources_.gl_manager.camera.set_alpha(130)
+			ressources_.gl_manager.camera.set_alpha(50)
 			
 			-- set first shot
 			first_shot := true

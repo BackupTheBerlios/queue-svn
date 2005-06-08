@@ -21,7 +21,7 @@ feature -- Interface
 		-- paint the table
 	do
 		model.draw (open_gl)
-		--axis.draw (open_gl)
+		axis.draw (open_gl)
 	end
 	
 	model: Q_GL_GROUP[Q_GL_MODEL]
@@ -41,7 +41,7 @@ feature -- Interface
 		
 	position_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
 		do
-			create result.make (root.x + table_.x, zero_level, root.y + table_.y)
+			create result.make (root.x + table_.x, zero_level, root.y - table_.y)
 		end
 	
 	direction_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
@@ -51,7 +51,7 @@ feature -- Interface
 		
 	position_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
 		do
-			create result.make (world_.x - root.x, world_.z - root.y)
+			create result.make (world_.x - root.x, world_.z + root.y)
 		end
 		
 	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
@@ -63,7 +63,7 @@ feature {NONE} -- internal properties
 	
 	zero_level: DOUBLE
 
-	axis: Q_GL_LINE
+	axis: Q_GL_GROUP[Q_GL_LINE]
 feature {NONE} -- Implementation
 	make_from_file (file_name_: STRING) is
 			-- create the model from out of a file
@@ -83,12 +83,23 @@ feature {NONE} -- Implementation
 			make_table_size (holes)
 			banks := make_banks (loader.shape_objects)
 			
+			create axis.make
 			
-			create axis.make_position_material (
+			axis.extend(create {Q_GL_LINE}.make_position_material (
+				create {Q_VECTOR_3D}.make(0,0,0),
+				create {Q_VECTOR_3D}.make(500, 0, 0),
+				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
+			))
+			axis.extend(create {Q_GL_LINE}.make_position_material (
+				create {Q_VECTOR_3D}.make(0,0,0),
+				create {Q_VECTOR_3D}.make(0, 500, 0),
+				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
+			))
+			axis.extend(create {Q_GL_LINE}.make_position_material (
 				create {Q_VECTOR_3D}.make(0,0,0),
 				create {Q_VECTOR_3D}.make(0, 0, 500),
 				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
-			)
+			))
 		end
 	
 	make_table_size (holes_ : ARRAY[Q_HOLE]) is 
@@ -109,8 +120,15 @@ feature {NONE} -- Implementation
 				index_ > holes_.upper
 			loop
 				curr_ := holes_.item (index_).position
-				if curr_.x <= root.x and curr_.y <= root.y then
-					root.set_x_y (curr_.x, curr_.y)
+--				if curr_.x <= root.x and curr_.y <= root.y then
+--					root.set_x_y (curr_.x, curr_.y)
+--				end
+
+				if curr_.x <= root.x then
+					root.set_x (curr_.x)
+				end
+				if curr_.y > root.y then
+					root.set_y (curr_.y)
 				end
 				
 				index_ := index_ + 1
