@@ -83,14 +83,34 @@ feature -- Interface
 	
 	next_state (ressources_: Q_GAME_RESSOURCES) : Q_GAME_STATE is
 			-- next state according to the ruleset
+		local
+			reset_state_ : Q_8BALL_RESET_STATE
+			colls_ : LIST[Q_COLLISION_EVENT]
 		do
-			if first_shot and then not is_correct_opening (ressources_.simulation.collision_list) then
-				-- (rule 4.6 second part)
+			colls_ := ressources_.simulation.collision_list
+			if first_shot and then not is_correct_opening (colls_) then
+				-- rule 4.6 second part
 --				-- the current player made an error, the other player can
 --				a) die Position so übernehmen und weiterspielen oder
 --				b) die Kugeln neu aufbauen lassen und selbst einen neuen Eröffnungsstoß durchführen oder den Gegner neu anstoßen lassen.
-			elseif not first_shot and then not is_correct_shot (ressources_.simulation.collision_list, active_player)  then
+				is_open := true
+			elseif first_shot and then is_correct_opening (colls_) and then fallen_balls(colls_).has(white_number) then
+				-- rule 4.7
+				-- white has fallen in a correct opening shot
 				
+				is_open := true
+			elseif not first_shot and then not is_correct_shot (colls_, active_player)  then
+				-- rule 4.15
+				-- the player made an incorrect shot during the game
+--				(1) Der Gegner hat freie Lageverbesserung auf dem ganzen Tisch. (Es muß nicht aus dem Kopffeld gespielt werden außer nach dem Eröffnungsstoß).
+--				Diese Regelung hindert einen Spieler daran, absichtliche Fouls zu spielen, die seinem Gegner Nachteile bringen.
+				reset_state_ ?= ressources_.request_state( "8ball reset" )
+				if reset_state_ = void then
+					reset_state_ := create {Q_8BALL_RESET_STATE}.make
+					ressources_.put_state( reset_state_ )
+				end
+				reset_state_.set_headfield (false)
+				Result := reset_state_
 			else
 				
 				-- set next state as bird state
@@ -103,15 +123,13 @@ feature -- Interface
 			
 			first_shot := false
 		end
-		
-	switch_players is
-			-- the active player becomes non-active, the other one active
+
+	is_in_headfield(pos_ : Q_VECTOR_2D):BOOLEAN is
+			-- is pos_ in the headfield?
+		require
+			pos_ /= void
 		do
-			if active_player = player_a then
-				active_player := player_b
-			else
-				active_player := player_a
-			end
+			Result := pos_.x < head_point.x
 		end
 		
 		
@@ -245,6 +263,17 @@ feature -- Interface
 		
 
 feature {NONE} -- Implementation
+
+	switch_players is
+			-- the active player becomes non-active, the other one active
+		do
+			if active_player = player_a then
+				active_player := player_b
+			else
+				active_player := player_a
+			end
+		end
+		
 
 	first_shot : BOOLEAN
 
@@ -526,17 +555,16 @@ feature {NONE} -- Implementation
 				own_colored_first_ := ball_.owner.has(player_)
 			end
 			colored_ball_fallen_ := not fallen_balls (collisions_).is_empty and not fallen_balls (collisions_).has (white_number)
-			from
-				collisions_.start
-			until
-				collisions_.after
-			loop
-				any_bank_touched_ := any_bank_touched_ or collisions_.item.defendent.typeid = bank_type_id
-				collisions_.forth
-			end
+			any_bank_touched_ := not banks_touched (collisions_).is_empty
 			-- 4.12.2
 			-- white -> bank -> own_color -> (bank or color fallen)
 			if collisions_.first.defendent.typeid = bank_type_id then
+				if collisions_.i_th (2).defendent.typeid = ball_type_id then
+					ball_ ?= collisions_.i_th (2).defendent
+					if ball_.owner.has (active_player) and then (fallen_balls (collisions_).has (ball_.number) or else banks_touched (collisions_).count > 1) then
+						bank_shot_ := true
+					end
+				end
 				
 			end
 			Result := is_open implies (own_colored_first_ and then (colored_ball_fallen_ or else any_bank_touched_) or else bank_shot_)
@@ -562,9 +590,30 @@ feature {NONE} -- Implementation
 					REsult.force (ball_.number)
 				end
 				collisions_.forth
-			end
-			
+			end	
 		end
+	
+	banks_touched (collisions_ : LIST[Q_COLLISION_EVENT]) : LINKED_LIST[Q_BANK] is
+			-- all banks that have been touched
+		require
+			collisions_ /= void
+		local
+			bank_ : Q_BANK
+		do
+			create Result.make
+			from 
+				collisions_.start
+			until
+				collisions_.after
+			loop
+				if collisions_.item.defendent.typeid = bank_type_id then
+					bank_ ?= collisions_.item.defendent
+					REsult.force (bank_)
+				end
+				collisions_.forth
+			end	
+		end
+		
 		
 	ball_radius : DOUBLE is
 			-- the radius of the balls

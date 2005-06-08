@@ -21,11 +21,19 @@ feature{NONE} -- creation
 	
 	mode : Q_8BALL
 	
+	out_of_headfield : BOOLEAN -- if the player must play out of the headfield
+	
 feature
 	identifier : STRING is
 		do
 			result := "8ball aim"
 		end
+		
+	set_out_of_headfield(o_ : BOOLEAN) is
+		do
+			out_of_headfield := o_
+		end
+		
 		
 	prepare_next_state( direction_ : Q_VECTOR_2D; ressources_ : Q_GAME_RESSOURCES ): Q_GAME_STATE is
 		local
@@ -41,6 +49,13 @@ feature
 			spin_.set_shot_direction( direction_ )
 			result := spin_
 		end
+		
+	is_valid_direction(direction_ : Q_VECTOR_2D) : BOOLEAN is
+			-- is this a valid direction to shoot in the current state of the game
+		do
+			Result := out_of_headfield implies direction_.x>0
+		end
+		
 		
 
 end -- class Q_8BALL_AIM_STATE
