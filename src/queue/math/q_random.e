@@ -14,10 +14,11 @@ feature
 	
 	random_range(min:INTEGER; max:INTEGER): INTEGER is
 			-- returns random number in the range [min..max]
-		local 
-			r_: RANDOM
 		do
-			create r_.make
+			if r_ = void then
+				create r_.make
+				r_.set_seed (current_time_millis)
+			end
 			Result := (r_.double_i_th (random_i)*(max-min)+min).rounded
 			random_i := random_i+1
 		ensure
@@ -32,9 +33,10 @@ feature
 			s_ /= void
 		local
 			x1, x2,w,y1,y2 :DOUBLE
-			r_ : RANDOM
-		do
-			create r_.make
+		do	
+			if r_ = void then
+				create r_.make
+			end	
 			from
 				x1 := 2.0*r_.double_i_th(random_i)-1.0
 				random_i := random_i+1
@@ -59,5 +61,13 @@ feature
 		
 feature{NONE}
 	random_i :INTEGER
+	r_: RANDOM
+	
+	current_time_millis : INTEGER is
+		external
+			"C [macro <ewg_esdl_function_c_glue_code.h>] :Uint32"
+		alias
+			"ewg_function_macro_SDL_GetTicks"
+		end	
 
 end -- class Q_RANDOM

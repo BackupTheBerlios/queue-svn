@@ -600,7 +600,8 @@ feature{NONE} -- new games
 					create eball.make
 					ressources.put_mode( eball )
 				end
-				
+				-- reset the balls
+				eball.reset_balls
 				if human_player_zero.selected then
 					eball.set_player_a( eball.ai_player )
 					eball.set_player_b( eball.ai_player )

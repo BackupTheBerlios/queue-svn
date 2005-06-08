@@ -63,6 +63,13 @@ feature -- Interface
 			new_table_model
 			new_table
 		end
+	
+	reset_balls is
+			-- reset the balls randomly
+		do
+			new_table
+		end
+		
 		
 	table : Q_TABLE	
 	table_model: Q_TABLE_MODEL
@@ -85,25 +92,51 @@ feature -- Interface
 			-- next state according to the ruleset
 		local
 			reset_state_ : Q_8BALL_RESET_STATE
+			aim_state_ : Q_8BALL_AIM_STATE
 			colls_ : LIST[Q_COLLISION_EVENT]
 		do
 			colls_ := ressources_.simulation.collision_list
-			if first_shot and then not is_correct_opening (colls_) then
+			if is_game_lost(colls_) then
+
+			elseif is_game_won(colls_) then
+
+			elseif first_shot and then not is_correct_opening (colls_) then
 				-- rule 4.6 second part
 --				-- the current player made an error, the other player can
 --				a) die Position so übernehmen und weiterspielen oder
 --				b) die Kugeln neu aufbauen lassen und selbst einen neuen Eröffnungsstoß durchführen oder den Gegner neu anstoßen lassen.
+				switch_players
 				is_open := true
-			elseif first_shot and then is_correct_opening (colls_) and then fallen_balls(colls_).has(white_number) then
+			elseif first_shot and then is_correct_opening (colls_) and then fallen_balls(colls_).has(white_number) and not fallen_balls (colls_).has(8) then
 				-- rule 4.7
 				-- white has fallen in a correct opening shot
-				
+--				 Der dann aufnahmeberechtigte Spieler hat Lageverbesserung im Kopffeld und darf keine Kugel direkt anspielen, 
+				reset_state_ ?= ressources_.request_state( "8ball reset" )
+				if reset_state_ = void then
+					reset_state_ := create {Q_8BALL_RESET_STATE}.make
+					ressources_.put_state( reset_state_ )
+				end
+				reset_state_.set_headfield (true)
+				-- player can shot only out of headfield in next turn
+				aim_state_ ?= ressources_.request_state ("8ball aim")
+				aim_state_.set_out_of_headfield (true)
+				switch_players
 				is_open := true
+				Result := reset_state_
+			elseif first_shot and then is_correct_opening (colls_) and then fallen_balls (colls_).has(8) and not fallen_balls (colls_).has (white_number) then
+				-- rule 4.9 first part
+--				(1) Wird die "8" mit dem Eröffnungsstoß versenkt, so kann der eröffnende Spieler verlangen, daß
+--				a) neu aufgebaut wird oder
+--				b) die "8" wieder eingesetzt wird und er selbst so weiterspielt.
+			elseif first_shot and then is_correct_opening (colls_) and then fallen_balls (colls_).has(8) and fallen_balls (colls_).has (white_number) then
+--				-- rule 4.9 second part
+--				(2) Fallen dem Spieler beim Eröffnungsstoß die Weiße und die "8", so kann der Gegner
+--				a) neu aufbauen lassen oder
+--				b) die "8" wieder einsetzen lassen und aus dem Kopffeld weiterspielen.
 			elseif not first_shot and then not is_correct_shot (colls_, active_player)  then
 				-- rule 4.15
 				-- the player made an incorrect shot during the game
---				(1) Der Gegner hat freie Lageverbesserung auf dem ganzen Tisch. (Es muß nicht aus dem Kopffeld gespielt werden außer nach dem Eröffnungsstoß).
---				Diese Regelung hindert einen Spieler daran, absichtliche Fouls zu spielen, die seinem Gegner Nachteile bringen.
+--				(1) Der Gegner hat freie Lageverbesserung auf dem ganzen Tisch. 
 				reset_state_ ?= ressources_.request_state( "8ball reset" )
 				if reset_state_ = void then
 					reset_state_ := create {Q_8BALL_RESET_STATE}.make
@@ -112,13 +145,15 @@ feature -- Interface
 				reset_state_.set_headfield (false)
 				Result := reset_state_
 			else
-				
 				-- set next state as bird state
 				result := ressources_.request_state( "8ball bird" )
 				if result = void then
 					result := create {Q_8BALL_BIRD_STATE}.make_mode (Current)
 					ressources_.put_state( result )
 				end
+				
+				-- change players
+				switch_players
 			end
 			
 			first_shot := false
@@ -499,6 +534,33 @@ feature {NONE} -- Implementation
 			when 14 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y+ball_radius)
 			when 15 then create result.make(root_point.x, root_point.y)
 			end
+		end
+		
+	is_game_lost(collisions_: LIST[Q_COLLISION_EVENT]) : BOOLEAN is
+			-- is the game lost
+			-- 4.20 Verlust des Spiels
+--				(1) Ein Spieler verliert das Spiel, wenn er
+--				a) ein Foul spielt, während er die "8" versenkt (Ausnahme: siehe "8" fällt beim Eröffnungsstoß)
+--				b) die "8" mit demselben Stoß versenkt, mit dem er die letzte Farbige versenkt
+--				c) die "8" vom Tisch springen läßt
+--				d) die "8" in eine andere als die angesagte Tasche versenkt
+--				e) die "8" versenkt, bevor er berechtigt ist, darauf zu spielen.
+		do
+			
+		end
+		
+	is_game_won(collisions_:LIST[Q_COLLISION_EVENT]): BOOLEAN is
+			-- is the game won
+		do
+			
+		end
+		
+	close_table is
+			-- close the table, i.e. assign the owner to the balls
+		require
+			is_open
+		do
+			
 		end
 		
 		
