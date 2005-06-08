@@ -21,6 +21,7 @@ feature -- Interface
 		-- paint the table
 	do
 		model.draw (open_gl)
+		--axis.draw (open_gl)
 	end
 	
 	model: Q_GL_GROUP[Q_GL_MODEL]
@@ -62,6 +63,7 @@ feature {NONE} -- internal properties
 	
 	zero_level: DOUBLE
 
+	axis: Q_GL_LINE
 feature {NONE} -- Implementation
 	make_from_file (file_name_: STRING) is
 			-- create the model from out of a file
@@ -77,9 +79,16 @@ feature {NONE} -- Implementation
 			model := loader.create_flat_model
 			
 			-- create the logical modell
-			banks := make_banks (loader.shape_objects)
 			holes := make_holes (loader.shape_objects)
 			make_table_size (holes)
+			banks := make_banks (loader.shape_objects)
+			
+			
+			create axis.make_position_material (
+				create {Q_VECTOR_3D}.make(0,0,0),
+				create {Q_VECTOR_3D}.make(0, 0, 500),
+				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
+			)
 		end
 	
 	make_table_size (holes_ : ARRAY[Q_HOLE]) is 
@@ -112,6 +121,18 @@ feature {NONE} -- Implementation
 			
 			-- calculate the width
 			height := root.y.abs * 2
+			
+			-- adjust the middle points of the holes
+			from
+				index_ := holes_.lower
+			until
+				index_ > holes_.upper
+			loop
+				curr_ := holes_.item (index_).position
+				holes_.item (index_).set_position (position_world_to_table (create {Q_VECTOR_3D}.make (curr_.x, 0, curr_.y)))
+				
+				index_ := index_ + 1
+			end
 		end
 	
 	make_holes (shapes_ : ARRAY[Q_GL_3D_ASE_SHAPEOBJ]) : ARRAY[Q_HOLE] is
@@ -177,8 +198,6 @@ feature {NONE} -- Implementation
 			
 			inner_index_ : INTEGER
 			
-			edge1_, edge2_ : Q_VECTOR_2D
-			
 			list_ : LINKED_LIST[Q_BANK]
 		do
 			create list_.make
@@ -197,10 +216,11 @@ feature {NONE} -- Implementation
 					loop
 						if shape_.knot_types.item(inner_index_) then
 							if inner_index_ < shape_.knots.upper and then shape_.knot_types.item(inner_index_ + 1) then
-								create edge1_.make (shape_.knots.item(inner_index_).x, shape_.knots.item(inner_index_).z)
-								create edge2_.make (shape_.knots.item(inner_index_+1).x, shape_.knots.item(inner_index_+1).z)
 								
-								list_.extend (create {Q_BANK}.make (edge1_, edge2_))
+								list_.extend (create {Q_BANK}.make (
+									position_world_to_table (shape_.knots.item(inner_index_)),
+									position_world_to_table (shape_.knots.item(inner_index_+1))
+								))
 							end
 						end
 						

@@ -15,7 +15,6 @@ create
 	make	
 
 feature -- Interface
-	light : Q_GL_LIGHT	
 	light_one, light_two : Q_GL_LIGHT	
 	player_A : Q_PLAYER -- the first player
 	player_B : Q_PLAYER -- the second player
