@@ -18,16 +18,13 @@ feature {NONE} -- Creation
 	make is
 		do
 			precursor()
+
+			set_background_normal( color_defaults.color_of( "checkbox", "normal" ))
+			set_background_pressed( color_defaults.color_of( "checkbox", "pressed" ))
+			set_background_rollover( color_defaults.color_of( "checkbox", "rollover" ))
+			set_foreground( color_defaults.color_of( "checkbox", "foreground" ))
 			
-			set_background_normal( create {Q_GL_COLOR}.make_rgb( 0.5, 0.5, 1 ) )
-			set_background_pressed( create {Q_GL_COLOR}.make_rgb( 0.25, 0.25, 1 ) )
-			set_background_rollover( create {Q_GL_COLOR}.make_rgb( 0.75, 0.75, 1 ) )
-			
-			background_normal.set_alpha( 0.75 )
-			background_pressed.set_alpha( 0.75 )
-			background_rollover.set_alpha( 0.75 )
-			
-			set_blend_background( true )
+			set_blend_background( color_defaults.blend( "checkbox") )
 		end
 		
 feature -- drawing

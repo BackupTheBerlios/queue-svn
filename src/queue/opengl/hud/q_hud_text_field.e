@@ -23,10 +23,11 @@ feature{NONE} -- creation
 			
 			set_focusable( true )
 			set_enabled( true )
+
+			set_background( color_defaults.color_of( "textfield", "background" ))
+			set_foreground( color_defaults.color_of( "textfield", "foreground" ))
 			
-			set_background( create {Q_GL_COLOR}.make_green )
-			background.set_alpha( 0.75 )
-			set_blend_background( true )
+			set_blend_background( color_defaults.blend( "textfield") )			
 
 			set_cursor( 1 )
 			

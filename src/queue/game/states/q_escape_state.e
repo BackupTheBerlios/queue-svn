@@ -120,6 +120,7 @@ feature{NONE} -- menu creation
 		local
 			index_ : INTEGER
 			sliding_ : Q_HUD_SLIDING
+			help_text_ : Q_INI_FILE_READER
 		do
 			create menu.make
 			create moves.make( 1, 4 )
@@ -156,8 +157,9 @@ feature{NONE} -- menu creation
 			create_background( game_dialog )
 			
 			create help_menus.make( 1, 5 )
+			create help_text_.make_and_read( "data/help.ini" )
 			from index_ := 1 until index_ > 5 loop
-				help_menus.force( create_help_menu( index_ ), index_ )
+				help_menus.force( create_help_menu( index_, help_text_ ), index_ )
 				create_background( help_menus.item( index_ ))
 				index_ := index_ + 1
 			end
@@ -390,17 +392,20 @@ feature{NONE} -- menu creation
 			game_dialog := container_
 		end
 		
-	create_help_menu( menu_ : INTEGER ) : Q_HUD_CONTAINER is
+	create_help_menu( menu_ : INTEGER; text_ : Q_INI_FILE_READER ) : Q_HUD_CONTAINER is
 		local
 			labels_ : ARRAY[ Q_HUD_LABEL ]
 			label_ : Q_HUD_LABEL
 			index_ : INTEGER
 			container_ : Q_HUD_CONTAINER
 			button_ : Q_HUD_BUTTON
+			string_ : STRING
+			insets_ : Q_HUD_INSETS
 		do
 			-- create plane for writing
 			create labels_.make( 1, 7 )
 			create container_.make
+			create insets_.make( 0.01, 0.05, 0.01, 0.01 )
 			container_.set_bounds( 0, help_menu_move( menu_ ), 1, 1 )
 			container_.set_focus_handler( create{Q_FOCUS_DEFAULT_HANDLER} )
 			moves.item( help_menu_side( menu_ ) ).add( container_ )
@@ -410,6 +415,7 @@ feature{NONE} -- menu creation
 				labels_.force( label_, index_ )
 				container_.add( label_ )
 				label_.set_bounds( 0.1, index_ * 0.1, 0.8, 0.1 )
+				label_.set_insets( insets_ )
 				index_ := index_ + 1
 			end
 			
@@ -433,12 +439,12 @@ feature{NONE} -- menu creation
 			container_.add( button_ )			
 			
 			-- set text
-			inspect menu_
-			when 1 then
-			when 2 then
-			when 3 then
-			when 4 then
-			when 5 then
+			from index_ := 1 until index_ > 7 loop
+				string_ := text_.value( menu_.out, index_.out )
+				if string_ /= void then
+					labels_.item( index_ ).set_text( string_ )					
+				end
+				index_ := index_ + 1
 			end
 			
 			result := container_

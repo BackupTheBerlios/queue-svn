@@ -8,7 +8,7 @@ class
 	Q_INI_FILE_READER
 	
 create
-	make
+	make, make_and_read
 	
 feature {NONE} -- Private Features
 	values: HASH_TABLE[STRING, STRING]
@@ -27,7 +27,7 @@ feature -- Interface
 			left, right: STRING
 		do
 			create scanner.make_from_string_with_delimiters ("", " %T")
-			create line_scanner.make_from_string_with_delimiters ("", " =%T")
+			create line_scanner.make_from_string_with_delimiters ("", "=")
 			create section_scanner.make_from_string_with_delimiters ("", " %T[]")
 			
 			from
@@ -55,6 +55,9 @@ feature -- Interface
 					line_scanner.read_token
 					create right.make_from_string(line_scanner.last_string)
 					
+					trim( left )
+					trim( right )
+					
 					values.put (right, current_section + "." + left)
 				end
 
@@ -72,6 +75,40 @@ feature -- Interface
 			result := values.item (section_name + "." + value_name)
 		end
 		
+feature{NONE} -- string
+	trim( string_ : STRING ) is
+		local
+			count_ : INTEGER
+			index_ : INTEGER
+		do
+			from
+				index_ := 1
+			until
+				index_ > string_.count or
+				not (string_.item( index_ ) = ' ' or
+				string_.item( index_ ) = '%T')
+			loop
+				count_ := count_ + 1
+				index_ := index_ + 1
+			end
+			
+			string_.remove_head( count_ )
+			
+			from
+				index_ := string_.count
+				count_ := 0
+			until
+				index_ < 1 or
+				not (string_.item( index_ ) = ' ' or
+				string_.item( index_ ) = '%T')
+			loop
+				count_ := count_ + 1
+				index_ := index_ - 1
+			end
+			
+			string_.remove_tail( count_ )
+		end
+		
 	
 feature{NONE} -- Initialisation
 	make is
@@ -79,6 +116,21 @@ feature{NONE} -- Initialisation
 		do
 			create values.make (10)
 		end
+		
+	make_and_read( path_ : STRING ) is
+			-- Creates a reader, and read the file given by the path
+		require
+			path_ /= void
+		local
+			file_ : PLAIN_TEXT_FILE
+		do
+			make
+			
+			create file_.make_open_read( path_ )
+			load_ini_file( file_ )
+			file_.close
+		end
+		
 		
 invariant
 	values /= void

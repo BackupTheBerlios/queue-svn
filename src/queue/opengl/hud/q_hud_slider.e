@@ -21,13 +21,11 @@ feature{NONE}--creation
 			precursor
 			
 			set_focusable( false )
-			set_foreground( create {Q_GL_COLOR}.make_magenta )
-			set_background( create {Q_GL_COLOR}.make_magenta )
+
+			set_background( color_defaults.color_of( "slider", "background" ))
+			set_foreground( color_defaults.color_of( "slider", "foreground" ))
 			
-			set_blend_background( true )
-			
-			background.set_alpha( 0.75 )
-			foreground.set_alpha( 0.75 )
+			set_blend_background( color_defaults.blend( "slider") )
 			
 			mouse_button_up_listener.extend( agent mouse_button_up( ?,?,?,?,? ))
 			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,?,? ))
