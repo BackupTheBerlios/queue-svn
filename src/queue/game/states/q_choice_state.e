@@ -49,17 +49,9 @@ feature{NONE} -- creation
 			title_ /= void
 			identifier /= void
 			count_ > 1
-		local
-			label_ : Q_HUD_LABEL
 		do
-			
-			create label_.make
-			label_.set_text( title_ )
-			label_.set_bounds( 0.1, 0.0, 0.8, 0.09 )
-			
 			make( identifier_, count_, from_top_ )
-			
-			menu.add( label_ )
+			set_title( title_ )
 		end
 		
 		
@@ -373,6 +365,7 @@ feature{NONE} -- hud
 		end		
 		
 	buttons : ARRAYED_LIST[ Q_HUD_BUTTON ]
+	label : Q_HUD_LABEL
 	
 	menu : Q_HUD_SLIDING
 	cube : Q_HUD_4_CUBE_SIDES
@@ -385,6 +378,25 @@ feature -- info
 		end
 	
 	moving_from_top : BOOLEAN
+	
+	set_title( title_ : STRING ) is
+		do
+			if title_ = void then
+				menu.remove( label )
+			else
+				if label = void then
+					create label.make
+					label.set_bounds( 0.1, 0.0, 0.8, 0.09 )
+				end
+
+				label.set_text( title_ )
+				
+				if label.parent = void then
+					menu.add( label )
+				end
+			end
+		end
+		
 	
 feature -- state
 	awaiting_state : Q_GAME_STATE

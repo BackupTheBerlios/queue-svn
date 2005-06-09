@@ -48,7 +48,7 @@ feature
 
 	next( ressources_: Q_GAME_RESSOURCES ): Q_GAME_STATE is
 		do
-			if do_return then
+			if do_return and next_state = void then
 				result := return_state
 			else
 				result := next_state
