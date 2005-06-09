@@ -7,6 +7,9 @@ class
 
 inherit
 	Q_SPIN_STATE
+	redefine
+		install, uninstall
+	end
 	
 creation
 	make_mode
@@ -26,7 +29,7 @@ feature -- interface
 			-- set hit_point
 			shot_state_ ?= ressources_.request_state( "8ball shot" )
 			if shot_state_ = void then
-				create shot_state_.make
+				create shot_state_.make_mode( mode )
 				ressources_.put_state( shot_state_ )
 			end
 			shot.set_hitpoint (hit_point_)
@@ -38,7 +41,18 @@ feature -- interface
 		do
 			result := "8ball spin"
 		end
+	
+	install( ressources_ : Q_GAME_RESSOURCES ) is
+		do
+			precursor( ressources_ )
+			ressources_.gl_manager.add_hud( mode.info_hud )
+		end
 		
+	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
+		do
+			precursor( ressources_ )
+			ressources_.gl_manager.remove_hud( mode.info_hud )
+		end	
 
 feature -- mode
 	mode : Q_8BALL

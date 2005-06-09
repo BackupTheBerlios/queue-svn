@@ -18,6 +18,7 @@ feature -- Interface
 	light_one, light_two : Q_GL_LIGHT	
 	player_A : Q_PLAYER -- the first player
 	player_B : Q_PLAYER -- the second player
+	info_hud : Q_2_INFO_HUD -- the informations for the user
 	
 	set_player_a( player_ : Q_PLAYER ) is
 		do
@@ -62,6 +63,10 @@ feature -- Interface
 			-- create the model and the table
 			new_table_model
 			new_table
+			
+			-- create hud
+			create info_hud.make_ordered( true )
+			info_hud.set_location( 0.05, 0.75 )
 		end
 	
 	reset_balls is
@@ -93,21 +98,21 @@ feature -- Interface
 		local
 			reset_state_ : Q_8BALL_RESET_STATE
 			aim_state_ : Q_8BALL_AIM_STATE
-			choice_state_ :Q_CHOICE_STATE
+			choice_state_ : Q_8BALL_CHOICE_STATE
 			colls_ : LIST[Q_COLLISION_EVENT]
 			ball_: Q_BALL
 		do
 			ressources := ressources_
 			colls_ := ressources_.simulation.collision_list
 			if is_game_lost(colls_) then
-				create choice_state_.make (active_player.name+" loses",2)
+				create choice_state_.make_mode_titled( current, active_player.name+" loses", "id", 2)
 				choice_state_.button (1).set_text ("Play again")
 				choice_state_.button (1).actions.force (agent handle_restart)
 				choice_state_.button (2).set_text ("Main menu")
 				choice_state_.button (2).actions.force (agent handle_main_menu)
 				Result := choice_state_
 			elseif is_game_won(colls_) then
-				create choice_state_.make (active_player.name+" wins",2)
+				create choice_state_.make_mode_titled (current, active_player.name+" wins", "id", 2)
 				choice_state_.button (1).set_text ("Play again")
 				choice_state_.button (1).actions.force (agent handle_restart)
 				choice_state_.button (2).set_text ("Main menu")
@@ -118,7 +123,7 @@ feature -- Interface
 --				-- the current player made an error, the other player can
 --				a) die Position so übernehmen und weiterspielen oder
 --				b) die Kugeln neu aufbauen lassen und selbst einen neuen Eröffnungsstoß durchführen oder den Gegner neu anstoßen lassen.
-				create choice_state_.make ("Incorrect opening",3)
+				create choice_state_.make_mode_titled (current, "Incorrect opening", "id", 3)
 				choice_state_.button (1).set_text ("Continue playing with this board")
 				choice_state_.button (1).actions.force (agent handle_continue)
 				choice_state_.button (2).set_text ("Rebuild the table and start yourself")
@@ -132,7 +137,7 @@ feature -- Interface
 --				 Der dann aufnahmeberechtigte Spieler hat Lageverbesserung im Kopffeld und darf keine Kugel direkt anspielen, 
 				reset_state_ ?= ressources_.request_state( "8ball reset" )
 				if reset_state_ = void then
-					reset_state_ := create {Q_8BALL_RESET_STATE}.make
+					reset_state_ := create {Q_8BALL_RESET_STATE}.make_mode( current )
 					ressources_.put_state( reset_state_ )
 				end
 				reset_state_.set_headfield (true)
@@ -147,7 +152,7 @@ feature -- Interface
 --				(1) Wird die "8" mit dem Eröffnungsstoß versenkt, so kann der eröffnende Spieler verlangen, daß
 --				a) neu aufgebaut wird oder
 --				b) die "8" wieder eingesetzt wird und er selbst so weiterspielt.
-				create choice_state_.make ("Correct opening but has 8 fallen",2)
+				create choice_state_.make_mode_titled (current, "Correct opening but has 8 fallen", "id", 2)
 				choice_state_.button (1).set_text ("Rebuild the table and start yourself")
 				choice_state_.button (1).actions.force (agent handle_restart)
 				choice_state_.button (2).set_text ("Reset 8 and continue playing")
@@ -159,7 +164,7 @@ feature -- Interface
 --				(2) Fallen dem Spieler beim Eröffnungsstoß die Weiße und die "8", so kann der Gegner
 --				a) neu aufbauen lassen oder
 --				b) die "8" wieder einsetzen lassen und aus dem Kopffeld weiterspielen.
-				create choice_state_.make ("Correct opening but 8 and white have fallen",2)
+				create choice_state_.make_mode_titled (current,"Correct opening but 8 and white have fallen", "id",2)
 				choice_state_.button (1).set_text ("Rebuild the table and start yourself")
 				choice_state_.button (1).actions.force (agent handle_restart)
 				choice_state_.button (2).set_text ("Set 8, reset white in headfield and continue playing")
@@ -172,7 +177,7 @@ feature -- Interface
 --				(1) Der Gegner hat freie Lageverbesserung auf dem ganzen Tisch. 
 				reset_state_ ?= ressources_.request_state( "8ball reset" )
 				if reset_state_ = void then
-					reset_state_ := create {Q_8BALL_RESET_STATE}.make
+					reset_state_ := create {Q_8BALL_RESET_STATE}.make_mode( current )
 					ressources_.put_state( reset_state_ )
 				end
 				reset_state_.set_headfield (false)

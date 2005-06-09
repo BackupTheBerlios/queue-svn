@@ -72,6 +72,11 @@ feature -- modification
 			dz_ := z - vector_.z
 			result := math.sqrt( dx_*dx_ + dy_*dy_ + dz_*dz_ )
 		end
+	
+	equals ( vector_ : Q_VECTOR_3D ) : BOOLEAN is
+		do
+			result := x = vector_.x and y = vector_.y and z = vector_.z
+		end
 		
 
 	sum, infix "+" (vector_ : Q_VECTOR_3D ) : Q_VECTOR_3D is

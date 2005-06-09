@@ -1,5 +1,5 @@
 indexing
-	description: "Shows the user a menu with different choices. Per default, the menu will be shown in the lower 60 perzent of the screen"
+	description: "Shows the user a menu with different choices."
 	author: "Benjamin Sigg"
 
 class
@@ -12,26 +12,56 @@ inherit
 	end
 	
 creation
-	make
+	make, make_titled
 	
 feature{NONE} -- creation
-	make( identifier_ : STRING; count_ : INTEGER ) is
+	make( identifier_ : STRING; count_ : INTEGER; from_top_ : BOOLEAN ) is
 			-- creates a new choice. There must be at least tow different choises
 			-- don't forget to set the text for the choices, by calling the
 			-- button-feature
 			-- There is no limit for buttons, but if you add more than 16 buttons,
-			-- they will perhaps have some ugly bounds.
+			-- not all will be shown at one time.
+			-- from_top_ : if true, the menu will slide in from the top, and
+			-- need the upper 60% of the screen. If false, the menu will slide
+			-- in from the bottom, and need the lower 60% of the screen
 		require
 			identifier_ /= void
 			real_choice : count_ > 1
 		do
+			moving_from_top := from_top_
+			
 			create buttons.make( count_ )
 			identifier := identifier_
 			create_menu( count_ )
 
 			button_index := 1
 			old_back_side := 9
+			
+			menu.set_position( menu_location_invisible )
+			menu.set_duration( menu_velocity )
 		end
+		
+	make_titled( title_, identifier_ : STRING; count_ : INTEGER; from_top_ : BOOLEAN ) is
+			-- Creates a menu with a title. See "make".
+			-- With the title, the wohle menu will be shown in the lower
+			-- 70% of the screen.
+		require
+			title_ /= void
+			identifier /= void
+			count_ > 1
+		local
+			label_ : Q_HUD_LABEL
+		do
+			
+			create label_.make
+			label_.set_text( title_ )
+			label_.set_bounds( 0.1, 0.0, 0.8, 0.09 )
+			
+			make( identifier_, count_, from_top_ )
+			
+			menu.add( label_ )
+		end
+		
 		
 	create_menu( count_ : INTEGER ) is
 			-- creates the menu. That means, add all buttons to the menu,
@@ -45,15 +75,24 @@ feature{NONE} -- creation
 			
 			menu.set_duration( 250 )
 			
-			menu.set_bounds( 0, 0, 1, 1 )
-			container_.set_bounds( 0, 0, 1, 1 )
-			cube.set_bounds( 0, 0, 1, 1 )
+			container_.set_bounds( 0, 0, 0.6, 1 )
+			cube.set_bounds( 0, 0.0, 0.6, 1 )
 			
-			menu.add( container_ )
+			if moving_from_top then
+				menu.set_bounds( 0, 0.05, 0.6, 1 )
+			else
+				menu.set_bounds( 0.0, 0.3, 0.6, 1 )
+			end
+			
 			container_.add( cube )
+			menu.add( container_ )
 			
 			container_.scale( 2, 2, 2 )
-			container_.translate( -0.25, -0.25, -0.5 )
+			if moving_from_top then
+				container_.translate( -0.25, -0.075, -0.5 )
+			else
+				container_.translate( -0.25, 0.05, -0.5 )
+			end
 			cube.set_move_distance( 0 )
 			
 			if count_ <= 5 then
@@ -94,6 +133,7 @@ feature{NONE} -- creation
 		local
 			index_ : INTEGER
 			button_ : Q_HUD_BUTTON
+			top_ : DOUBLE
 		do
 			from
 				index_ := 1
@@ -101,7 +141,7 @@ feature{NONE} -- creation
 				index_ > count_
 			loop
 				create button_.make
-				button_.set_bounds( 0.1, 0.3 + index_ * 0.1, 0.8, 0.09 )
+				button_.set_bounds( 0.1, (index_-1) * 0.1, 0.8, 0.09 )
 				cube.side( side_ ).add( button_ )
 				
 				buttons.extend( button_ )
@@ -122,7 +162,7 @@ feature{NONE} -- creation
 			button_ : Q_HUD_BUTTON
 		do
 			create button_.make
-			button_.set_bounds( 0.6, 0.8, 0.3, 0.09 )
+			button_.set_bounds( 0.6, 0.4, 0.3, 0.09 )
 			button_.set_text( "next" )
 			button_.actions.extend( agent next_side( ?,?, side_ ))
 			
@@ -134,7 +174,7 @@ feature{NONE} -- creation
 			button_ : Q_HUD_BUTTON
 		do
 			create button_.make
-			button_.set_bounds( 0.2, 0.8, 0.3, 0.09 )
+			button_.set_bounds( 0.2, 0.4, 0.3, 0.09 )
 			button_.set_text( "previous" )
 			button_.actions.extend( agent previous_side( ?,?, side_ ))
 			
@@ -162,7 +202,7 @@ feature{NONE} -- creation
 					index_ > 4 or created_>= count_
 				loop
 					create button_.make
-					button_.set_bounds( 0.1, 0.3 + index_ * 0.1, 0.8, 0.09 )			
+					button_.set_bounds( 0.1, (index_-1) * 0.1, 0.8, 0.09 )			
 					buttons.extend( button_ )
 					
 					index_ := index_ + 1
@@ -338,13 +378,15 @@ feature{NONE} -- hud
 	menu : Q_HUD_SLIDING
 	cube : Q_HUD_4_CUBE_SIDES
 	
-feature -- buttons
+feature -- info
 	button( index_ : INTEGER ) : Q_HUD_BUTTON is
 			-- returns a button. You can add agents, or change the text...
 		do
 			result := buttons.i_th( index_ )
 		end
-		
+	
+	moving_from_top : BOOLEAN
+	
 feature -- state
 	awaiting_state : Q_GAME_STATE
 
@@ -370,17 +412,43 @@ feature -- state
 			if visible_ then
 				menu.move_to( 0 )
 			else
-				menu.move_to( -10 )
+				menu.move_to( menu_location_invisible )
 			end
 		end
 		
 	is_menu_visible : BOOLEAN is
 			-- true if the menu can be seen by the user, false otherwise
 		do
-			result := menu.current_location > -4
+			result := menu.current_position > menu_location_invisible + 0.1
 		end
 		
+	menu_location_invisible : DOUBLE is
+		do
+			if buttons.count > 5 then
+				if moving_from_top then
+					result := 1.5
+				else
+					result := -2.5
+				end
+			else
+				if moving_from_top then
+					result := 0.25
+				else
+					result := -1.25
+				end
+			end
+		end
+	
+	menu_velocity : INTEGER is
+		do
+			if buttons.count > 5 then
+				result := 1000
+			else
+				result := 1500
+			end
+		end
 		
+	
 feature -- interface
 	install( ressources_ : Q_GAME_RESSOURCES ) is
 		do

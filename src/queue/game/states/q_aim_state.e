@@ -102,11 +102,6 @@ feature {Q_AIM_STATE}
 	direction : Q_VECTOR_2D
 		-- the direction, where the ball should be fired to
 
-	is_valid_direction(direction_ : Q_VECTOR_2D) : BOOLEAN is
-			-- is this a valid direction to shoot in the current state of the game
-		deferred
-		end
-
 	ball : Q_BALL
 		-- the ball, witch will be shot
 

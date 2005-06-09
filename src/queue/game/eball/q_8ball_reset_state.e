@@ -9,22 +9,42 @@ class
 
 inherit
 	Q_RESET_STATE	redefine
-		identifier
+		identifier, install, uninstall
 	end
 	
 	Q_CONSTANTS
 	
 creation
-	make
+	make_mode
+	
+feature{NONE}
+	make_mode( mode_ : Q_8BALL ) is
+		do
+			make
+			mode := mode_
+		end
+		
 	
 feature
-
+	mode : Q_8BALL
+	
 	set_headfield(headfield_ : BOOLEAN) is
 			-- the user can reset the ball only in the headfield if headfield_ is true
 		do
 			headfield := headfield_
 		end
 		
+	install( ressources_ : Q_GAME_RESSOURCES ) is
+		do
+			precursor( ressources_ )
+			ressources_.gl_manager.add_hud( mode.info_hud )
+		end
+		
+	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
+		do
+			precursor( ressources_ )
+			ressources_.gl_manager.remove_hud( mode.info_hud )
+		end
 
 	identifier : STRING is
 		do

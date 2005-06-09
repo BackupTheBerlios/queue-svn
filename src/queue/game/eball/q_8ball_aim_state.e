@@ -7,6 +7,9 @@ class
 
 inherit
 	Q_AIM_STATE
+	redefine
+		install, uninstall
+	end
 
 creation
 	make_mode
@@ -29,6 +32,18 @@ feature
 			result := "8ball aim"
 		end
 		
+	install( ressources_ : Q_GAME_RESSOURCES ) is
+		do
+			precursor( ressources_ )
+			ressources_.gl_manager.add_hud( mode.info_hud )
+		end
+		
+	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
+		do
+			precursor( ressources_ )
+			ressources_.gl_manager.remove_hud( mode.info_hud )
+		end
+		
 	set_out_of_headfield(o_ : BOOLEAN) is
 		do
 			out_of_headfield := o_
@@ -39,15 +54,19 @@ feature
 		local
 			spin_ : Q_8BALL_SPIN_STATE
 		do
-			spin_ ?= ressources_.request_state( "8ball spin" )
-			if spin_ = void then
-				create spin_.make_mode( mode )
-				ressources_.put_state( spin_ )
+			if not is_valid_direction( direction_ ) then
+				result := void
+			else
+				spin_ ?= ressources_.request_state( "8ball spin" )
+				if spin_ = void then
+					create spin_.make_mode( mode )
+					ressources_.put_state( spin_ )
+				end
+				spin_.set_ball( ball )
+				spin_.set_shot( create {Q_SHOT}.make (direction_) )
+				spin_.set_shot_direction( direction_ )
+				result := spin_
 			end
-			spin_.set_ball( ball )
-			spin_.set_shot( create {Q_SHOT}.make (direction_) )
-			spin_.set_shot_direction( direction_ )
-			result := spin_
 		end
 		
 	is_valid_direction(direction_ : Q_VECTOR_2D) : BOOLEAN is

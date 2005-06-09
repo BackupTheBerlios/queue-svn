@@ -10,7 +10,7 @@ inherit
 	redefine
 		identifier,
 		default_next_state,
-		install
+		install, uninstall
 	end
 
 creation
@@ -27,13 +27,16 @@ feature{NONE} -- creation
 	
 feature
 	install( ressources_ : Q_GAME_RESSOURCES ) is
-		-- Installs this mode. For example, the mode can add
-		-- a speciall button to the hud
-		local
-			pos_: Q_VECTOR_3D
 		do
-			ressources_.gl_manager.set_camera_behaviour( behaviour )
+			precursor( ressources_ )
+			ressources_.gl_manager.add_hud( mode.info_hud )
 		end
+		
+	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
+		do
+			precursor( ressources_ )
+			ressources_.gl_manager.remove_hud( mode.info_hud )
+		end		
 		
 	identifier : STRING is
 		do

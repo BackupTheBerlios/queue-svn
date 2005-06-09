@@ -512,7 +512,7 @@ feature{NONE} -- event-handling
 
 	exit( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
-			if menu.rotated_to /= 1 or moves.item( 1 ).location.rounded /= 1 then
+			if menu.rotated_to /= 1 or moves.item( 1 ).destination_position.rounded /= 1 then
 				goto_quit_dialog( command_, button_ )
 			else
 				ressources.logic.quit
@@ -586,7 +586,7 @@ feature{NONE} -- new games
 	game_menu_armed : BOOLEAN is
 			-- Tests, if the game-menu is visible
 		do
-			result := menu.rotated_to = 4 and moves.item( 4 ).location.rounded = 0
+			result := menu.rotated_to = 4 and moves.item( 4 ).destination_position.rounded = 0
 		end
 
 	start_8_ball( command_ : STRING; button_ : Q_HUD_BUTTON ) is

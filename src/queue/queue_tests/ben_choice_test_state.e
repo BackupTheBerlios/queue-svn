@@ -13,8 +13,13 @@ inherit
 feature{NONE}
 
 	install (ressources_: Q_GAME_RESSOURCES) is
+		local
+			info_ : Q_2_INFO_HUD
 		do
-			
+			create info_.make_ordered( true )
+			info_.set_location( 0.05, 0.75 )
+			info_.set_left_active
+			ressources_.gl_manager.add_hud( info_ )
 		end
 		
 	uninstall (ressources_: Q_GAME_RESSOURCES) is
@@ -31,8 +36,8 @@ feature{NONE}
 		local
 			index_, count_ : INTEGER
 		do
-			count_ := 17
-			create choice.make( "bla", count_ )
+			count_ := 3
+			create choice.make_titled( "Title", "bla", count_, false )
 			
 			from
 				index_ := 1

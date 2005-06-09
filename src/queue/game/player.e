@@ -9,7 +9,6 @@ deferred class
 
 	
 feature -- Interface
-
 	name : STRING -- the name of the player
 	
 	set_name(name_: STRING) is

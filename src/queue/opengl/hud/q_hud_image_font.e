@@ -57,23 +57,42 @@ feature{NONE} -- creation
 			-- b the baseline. a value between 0 and height, for most characters, it will be 0
 			--
 			-- image_file is an image
+		do
+			create texture.make_with_colorkey ( image_file_, 1, 1, 1 )
+			letters := letter_cache.item( font_file_ )
+			
+			image_width := texture.width 
+			image_height := texture.height
+			
+			if letters = void then
+				load_letters( font_file_ )
+				letter_cache.put( letters, font_file_ )
+			end
+			
+			-- set factor = max( height )
+			from
+				letters.start
+				factor := 0
+			until
+				letters.after
+			loop
+				factor := factor.max( letters.item_for_iteration.height )
+				letters.forth
+			end
+		end
+
+	load_letters( font_file_ : STRING ) is
 		local
 			orakel_ : PLAIN_TEXT_FILE
 			
 			c_ : CHARACTER
-			x_t_, y_t_, width_t_, height_t_, width_, height_, base_ : INTEGER
+			x_t_, y_t_, width_t_, height_t_, width_, height_, base_ : INTEGER			
+			
 		do
---			create texture.make( image_file_ ) 
-			create texture.make_with_colorkey ( image_file_, 1, 1, 1 )
-
 			create letters.make( 80 )
-
-			image_width := texture.width 
-			image_height := texture.height
 			
 			from
 				create orakel_.make_open_read( font_file_ )
-				factor := 0
 			until
 				orakel_.end_of_file
 			loop
@@ -114,14 +133,18 @@ feature{NONE} -- creation
 					letters.force ( create{Q_HUD_IMAGE_LETTER}.make( 
 						x_t_, y_t_, width_t_, height_t_, 
 						width_, height_, base_, texture.id ), c_ )
-					
-					factor := factor.max( height_ )
 				end
 			end
 			
 			orakel_.close
 		end
 		
+	letter_cache : HASH_TABLE[ HASH_TABLE[ Q_HUD_IMAGE_LETTER, CHARACTER ], STRING ] is
+		once
+			create result.make( 5 )
+		end
+		
+	
 feature{NONE} -- Implementation
 	to_factor( size_ : DOUBLE ) : DOUBLE is
 		do

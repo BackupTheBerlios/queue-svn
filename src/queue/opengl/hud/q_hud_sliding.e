@@ -69,8 +69,6 @@ feature
 		end
 		
 	enqueue( queue_: Q_HUD_QUEUE ) is
-		local
-			component_ : Q_HUD_COMPONENT
 		do
 			queue_.insert( current )
 			queue_.push_matrix
@@ -81,15 +79,7 @@ feature
 				queue_.translate( 0, -source, 0 )
 			end
 			
-			from children.start until children.after loop
-				component_ := children.item
-				
-				queue_.translate( component_.x, component_.y, 0 )
-				component_.enqueue( queue_ )
-				queue_.translate( -component_.x, -component_.y, 0 )
-				
-				children.forth
-			end
+			precursor( queue_ )
 			
 			queue_.pop_matrix
 		end
@@ -108,19 +98,26 @@ feature
 			source := position
 			destination := location_
 		end
+	
+	set_position( location_ : DOUBLE ) is
+			-- Changes the actual position immidiatelly to the given location
+			-- No animation will be shown
+		do
+			position := location_
+			source := location_
+			destination := location_
+		end
 		
-	current_location : DOUBLE is
+		
+	current_position : DOUBLE is
 		do
 			result := position
 		end
 		
 		
-	location : DOUBLE is
-			-- The currently top-side of the component
+	destination_position : DOUBLE is
+			-- Where the current animation will stop
 		do
 			result := destination
 		end
-		
-		
-
 end -- class Q_HUD_SLIDING
