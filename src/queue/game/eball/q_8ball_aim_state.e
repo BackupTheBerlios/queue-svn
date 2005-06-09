@@ -53,9 +53,19 @@ feature
 	prepare_next_state( direction_ : Q_VECTOR_2D; ressources_ : Q_GAME_RESSOURCES ): Q_GAME_STATE is
 		local
 			spin_ : Q_8BALL_SPIN_STATE
+			info_ : Q_8BALL_INFO_STATE
 		do
 			if not is_valid_direction( direction_ ) then
-				result := void
+				info_ ?= ressources_.request_state( "8ball wrong aim" )
+				if info_ = void then
+					create info_.make_mode( mode, false, "8ball wrong aim" )
+					ressources_.put_state( info_ )
+					
+					info_.set_text( "Invalid direction for a shot.", 1 )
+					info_.set_text( "Try again.", 2 )
+				end
+				info_.set_waiting_next_state( current )
+				result := info_
 			else
 				spin_ ?= ressources_.request_state( "8ball spin" )
 				if spin_ = void then

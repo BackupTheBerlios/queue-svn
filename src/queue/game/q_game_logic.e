@@ -57,8 +57,7 @@ feature{NONE} -- creation
 			
 			-- create first state
 			state := create {Q_ESCAPE_STATE}.make( false )
---			state := create {BEN_CHOICE_TEST_STATE}
---			state := create {BEN_INGAME_MENU_TEST_STATE}
+
 			state.install( ressources )
 			
 			-- Set and launch the first scene.
