@@ -37,7 +37,7 @@ feature{NONE}
 			index_, count_ : INTEGER
 		do
 			count_ := 3
-			create choice.make_titled( "Title", "bla", count_, false )
+			create choice.make_titled( "Title", "bla", count_, true )
 			
 			from
 				index_ := 1

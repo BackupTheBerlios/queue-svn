@@ -39,7 +39,7 @@ feature{NONE} -- creation
 			
 			destination := 0
 			position := 0
-			velocity := 5000
+			duration := 6000
 			
 			set_move_distance( 1 )
 		end
@@ -113,7 +113,7 @@ feature{NONE} -- rotating
 	position : DOUBLE
 		-- between 0 and 1
 		
-	velocity : INTEGER
+	duration : INTEGER
 		-- how long for one rotation
 		
 	between( befor_, after_, test_ : DOUBLE; wrap_ : BOOLEAN ) : BOOLEAN is
@@ -164,13 +164,13 @@ feature
 				
 				if destination > position then
 					if destination - position > 0.5 then
-						position := position - open_gl.time.delta_time_millis / velocity
+						position := position - open_gl.time.delta_time_millis / duration
 						if position < 0 then
 							position := position + 1
 							wrap_ := true
 						end
 					else
-						position := position + open_gl.time.delta_time_millis / velocity
+						position := position + open_gl.time.delta_time_millis / duration
 						if position > 1 then
 							position := position - 1
 							wrap_ := true
@@ -178,13 +178,13 @@ feature
 					end
 				else
 					if position - destination > 0.5 then
-						position := position + open_gl.time.delta_time_millis / velocity
+						position := position + open_gl.time.delta_time_millis / duration
 						if position > 1 then
 							position := position - 1
 							wrap_ := true
 						end
 					else
-						position := position - open_gl.time.delta_time_millis / velocity
+						position := position - open_gl.time.delta_time_millis / duration
 						if position < 0 then
 							position := position + 1
 							wrap_ := true

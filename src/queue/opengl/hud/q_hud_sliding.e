@@ -23,7 +23,7 @@ feature{NONE} -- creation
 			source := 0
 			destination := 0
 			position := 0
-			duration := 1500
+			duration := 1000
 		end
 		
 feature{NONE}
@@ -70,7 +70,6 @@ feature
 		
 	enqueue( queue_: Q_HUD_QUEUE ) is
 		do
-			queue_.insert( current )
 			queue_.push_matrix
 			
 			if destination /= source then

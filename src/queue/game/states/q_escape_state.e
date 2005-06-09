@@ -133,6 +133,7 @@ feature{NONE} -- menu creation
 			loop
 				create sliding_.make
 				sliding_.set_bounds( 0, 0, 1, 1 )
+				sliding_.set_duration( 1500 )
 				moves.force( sliding_, index_ )
 				menu.side( index_ ).add( sliding_ )
 				index_ := index_ + 1

@@ -133,7 +133,6 @@ feature{NONE} -- creation
 		local
 			index_ : INTEGER
 			button_ : Q_HUD_BUTTON
-			top_ : DOUBLE
 		do
 			from
 				index_ := 1
@@ -419,7 +418,11 @@ feature -- state
 	is_menu_visible : BOOLEAN is
 			-- true if the menu can be seen by the user, false otherwise
 		do
-			result := menu.current_position > menu_location_invisible + 0.1
+			if moving_from_top then
+				result := menu.current_position < menu_location_invisible - 0.1
+			else
+				result := menu.current_position > menu_location_invisible + 0.1
+			end
 		end
 		
 	menu_location_invisible : DOUBLE is
@@ -432,7 +435,7 @@ feature -- state
 				end
 			else
 				if moving_from_top then
-					result := 0.25
+					result := 1
 				else
 					result := -1.25
 				end
@@ -442,9 +445,17 @@ feature -- state
 	menu_velocity : INTEGER is
 		do
 			if buttons.count > 5 then
-				result := 1000
+				if moving_from_top then
+					result := 1000
+				else
+					result := 500
+				end
 			else
-				result := 1500
+				if moving_from_top then
+					result := 1500
+				else
+					result := 1000
+				end
 			end
 		end
 		
