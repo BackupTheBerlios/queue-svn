@@ -1,6 +1,6 @@
 indexing
 	description: "Objects that call the physics engine and deal with the rules"
-	author: ""
+	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"
 

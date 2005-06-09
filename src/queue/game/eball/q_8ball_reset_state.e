@@ -1,6 +1,6 @@
 indexing
 	description: "Set the white ball on the table"
-	author: ""
+	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"
 

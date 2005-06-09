@@ -357,7 +357,7 @@ feature -- state features
 				end
 				
 				-- check if active player can play on black ball
-				if my_balls_fallen then
+				if all_balls_fallen then
 					table.balls.item (8).add_owner (active_player)
 				end
 				-- set next state as bird state
@@ -384,13 +384,22 @@ feature {NONE} -- event handlers
 				create ns_.make_mode (current)
 				ressources.put_state (ns_)
 			end
+			switch_players
 			cs_.set_next_state (ns_)
 		end
 	
 	handle_restart(command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is a new game in bird state
+		local
+			ns_ : Q_8BALL_BIRD_STATE
 		do
-			
+			ns_ ?= ressources.request_state ("8ball bird")
+			if ns_ = void then
+				create ns_.make_mode (current)
+				ressources.put_state (ns_)
+			end
+			reset_balls
+			cs_.set_next_state (ns_)
 		end
 		
 	handle_restart_other(command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
@@ -402,20 +411,44 @@ feature {NONE} -- event handlers
 		
 	handle_set8_and_continue(command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is bird state, don't switch players
+		local
+			ns_: Q_8BALL_BIRD_STATE
 		do
-			
+			ns_ ?= ressources.request_state ("8ball bird")
+			if ns_ = void then
+				create ns_.make_mode (current)
+				ressources.put_state (ns_)
+			end
+			insert_ball(table.balls.item (8))
+			cs_.set_next_state (ns_)
 		end
 		
 	handle_set8_and_continue_in_headfield(command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is reset state, don't switch players
+		local
+			ns_: Q_8BALL_RESET_STATE
 		do
-			
+			ns_ ?= ressources.request_state ("8ball reset")
+			if ns_ = void then
+				create ns_.make_mode (current)
+				ressources.put_state (ns_)
+			end
+			ns_.set_headfield (true)
+			insert_ball (table.balls.item (8))
+			cs_.set_next_state (ns_)
 		end
 		
 	handle_main_menu(command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- goto main menu, next state is escape state
+		local
+			ns_: Q_ESCAPE_STATE
 		do
-			
+			ns_ ?= ressources.request_state ("escape")
+			if ns_ = void then
+				create ns_.make (false)
+				ressources.put_state (ns_)
+			end
+			cs_.set_next_state (ns_)
 		end
 		
 		
@@ -446,6 +479,25 @@ feature -- Game Logic
 				result := player_a
 			end
 		end
+		
+	insert_ball(b_ : Q_BALL) is
+			-- insert a ball on the fusspunkt or a position nearby
+		local
+			x_: DOUBLE
+		do
+			from
+				x_ := head_point.x
+				b_.set_center (head_point)
+			until
+				x_ = width or else valid_position (b_.center)
+			loop
+				b_.set_center (create {Q_VECTOR_2D}.make (x_, head_point.y))
+				x_ := x_ + 0.5
+			end
+		ensure
+			valid_position(b_.center)
+		end
+		
 	
 	valid_position( v_ : Q_VECTOR_2D ) : BOOLEAN is
 		local 
@@ -483,7 +535,7 @@ feature -- Game Logic
 		
 	first_shot : BOOLEAN
 	
-	is_game_lost(collisions_: LIST[Q_COLLISION_EVENT]) : BOOLEAN is
+	is_game_lost(colls_: LIST[Q_COLLISION_EVENT]) : BOOLEAN is
 			-- is the game lost
 			-- 4.20 Verlust des Spiels
 --				(1) Ein Spieler verliert das Spiel, wenn er
@@ -492,20 +544,54 @@ feature -- Game Logic
 --				c) die "8" vom Tisch springen läßt
 --				d) die "8" in eine andere als die angesagte Tasche versenkt
 --				e) die "8" versenkt, bevor er berechtigt ist, darauf zu spielen.
+		local
+			foul_8, last_8, too_early_8: BOOLEAN
+			i : INTEGER
 		do
-			
+			foul_8 := fallen_balls (colls_).has (8) and not is_correct_shot (colls_,active_player)
+			from
+				i := 1
+			until
+				i > 15
+			loop
+				last_8 := last_8 or (fallen_balls (colls_).has (i) and table.balls.item (i).owner.has (active_player))
+				i := i+1
+			end
+			last_8 := last_8 and fallen_balls (colls_).has (8)
+			too_early_8 := not all_balls_fallen and fallen_balls (colls_).has (8)
+			Result := foul_8 or last_8 or too_early_8
 		end
 		
 	is_game_won(collisions_:LIST[Q_COLLISION_EVENT]): BOOLEAN is
 			-- is the game won
 		do
-			
+			Result := all_balls_fallen and fallen_balls (collisions_).has (8)
 		end
 		
-	my_balls_fallen : BOOLEAN is
-			-- are all balls of the active player's color fallen?
+	all_balls_fallen : BOOLEAN is
+			-- are all balls of the active player's color fallen? (but not 8)
+		local
+			i,j,f: INTEGER
 		do
-
+			from
+				i:= table.holes.lower
+			until
+				i > table.holes.upper
+			loop
+				from
+					j := table.balls.lower
+				until
+					j > table.balls.upper
+				loop
+					if table.holes.item (i).caught_balls.has (table.balls.item(j)) and then table.balls.item (j).owner.has (active_player) then
+						f := f+1
+					end
+					j:= j+1
+				end
+				i := i+1
+			end
+			
+			Result := f = 7
 		end
 	
 	close_table(ball_nr: INTEGER) is

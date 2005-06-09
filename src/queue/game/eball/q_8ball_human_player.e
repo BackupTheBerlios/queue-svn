@@ -1,6 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "an 8ball human player, makes the first_state"
+	author: "Severin Hacker"
 
 class
 	Q_8BALL_HUMAN_PLAYER
