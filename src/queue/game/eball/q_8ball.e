@@ -458,72 +458,6 @@ feature {NONE} -- temporary ressources
 
 feature -- Game Logic
 
-	switch_players is
-			-- the active player becomes non-active, the other one active
-		do
-			if active_player = player_a then
-				active_player := player_b
-				info_hud.set_right_active
-			else
-				active_player := player_a
-				info_hud.set_left_active
-			end
-		end
-		
-	other_player : Q_PLAYER is
-			-- the non-active player
-		do
-			if active_player = player_a then
-				result := player_b
-			else
-				result := player_a
-			end
-		end
-		
-	insert_ball(b_ : Q_BALL) is
-			-- insert a ball on the fusspunkt or a position nearby
-		local
-			x_: DOUBLE
-		do
-			from
-				x_ := head_point.x
-				b_.set_center (head_point)
-			until
-				x_ = width or else valid_position (b_.center)
-			loop
-				b_.set_center (create {Q_VECTOR_2D}.make (x_, head_point.y))
-				x_ := x_ + 0.5
-			end
-		ensure
-			valid_position(b_.center)
-		end
-		
-	
-	valid_position( v_ : Q_VECTOR_2D ) : BOOLEAN is
-		local 
-			ball_already_there_ : BOOLEAN
-			i_ : INTEGER
-		do
-			Result := true
-			from
-				i_ := table.balls.lower
-			until
-				i_ > table.balls.upper
-			loop
-				if (table.balls.item (i_).center - v_).length <= ball_radius then
-					Result := false
-				end
-				i_ := i_+1
-			end
-			Result := Result and v_.x>=0 and v_.x<=width and v_.y >= 0 and v_.y <= height
-		end
-	
-	reset_balls is
-			-- reset the balls randomly
-		do
-			new_table
-		end
-
 	is_in_headfield(pos_ : Q_VECTOR_2D):BOOLEAN is
 			-- is pos_ in the headfield?
 		require
@@ -532,9 +466,6 @@ feature -- Game Logic
 			Result := pos_.x < head_point.x
 		end
 		
-		
-	first_shot : BOOLEAN
-	
 	is_game_lost(colls_: LIST[Q_COLLISION_EVENT]) : BOOLEAN is
 			-- is the game lost
 			-- 4.20 Verlust des Spiels
@@ -568,59 +499,6 @@ feature -- Game Logic
 			Result := all_balls_fallen and fallen_balls (collisions_).has (8)
 		end
 		
-	all_balls_fallen : BOOLEAN is
-			-- are all balls of the active player's color fallen? (but not 8)
-		local
-			i,j,f: INTEGER
-		do
-			from
-				i:= table.holes.lower
-			until
-				i > table.holes.upper
-			loop
-				from
-					j := table.balls.lower
-				until
-					j > table.balls.upper
-				loop
-					if table.holes.item (i).caught_balls.has (table.balls.item(j)) and then table.balls.item (j).owner.has (active_player) then
-						f := f+1
-					end
-					j:= j+1
-				end
-				i := i+1
-			end
-			
-			Result := f = 7
-		end
-	
-	close_table(ball_nr: INTEGER) is
-			-- close the table, i.e. assign the active player to all balls with same colors as ball_nr
-		require
-			is_open
-			ball_nr /= void
-			ball_nr >0 and ball_nr <=15 and ball_nr /= 8
-		local
-			i: INTEGER
-		do
-			from
-				i := table.balls.lower
-			until
-				i > table.balls.upper
-			loop
-				if table.balls.item(i).number <8 and ball_nr < 8 then
-					-- same color
-					table.balls.item (i).add_owner (active_player)
-				else
-					-- different color
-					table.balls.item (i).add_owner (other_player)
-				end
-				i := i+1
-			end
-		end
-		
-		
-
 	is_correct_opening(collisions_: LIST[Q_COLLISION_EVENT]):BOOLEAN is
 			-- this implements rule 4.6 for a correct opening, the definition
 		local
@@ -689,6 +567,127 @@ feature -- Game Logic
 		end
 	
 	is_open : BOOLEAN -- is the table "open", i.e. no colors yet specified
+		
+	
+	valid_position( v_ : Q_VECTOR_2D ) : BOOLEAN is
+		local 
+			ball_already_there_ : BOOLEAN
+			i_ : INTEGER
+		do
+			Result := true
+			from
+				i_ := table.balls.lower
+			until
+				i_ > table.balls.upper
+			loop
+				if (table.balls.item (i_).center - v_).length <= ball_radius then
+					Result := false
+				end
+				i_ := i_+1
+			end
+			Result := Result and v_.x>=0 and v_.x<=width and v_.y >= 0 and v_.y <= height
+		end
+		
+	all_balls_fallen : BOOLEAN is
+			-- are all balls of the active player's color fallen? (but not 8)
+		local
+			i,j,f: INTEGER
+		do
+			from
+				i:= table.holes.lower
+			until
+				i > table.holes.upper
+			loop
+				from
+					j := table.balls.lower
+				until
+					j > table.balls.upper
+				loop
+					if table.holes.item (i).caught_balls.has (table.balls.item(j)) and then table.balls.item (j).owner.has (active_player) then
+						f := f+1
+					end
+					j:= j+1
+				end
+				i := i+1
+			end
+			
+			Result := f = 7
+		end
+
+	switch_players is
+			-- the active player becomes non-active, the other one active
+		do
+			if active_player = player_a then
+				active_player := player_b
+				info_hud.set_right_active
+			else
+				active_player := player_a
+				info_hud.set_left_active
+			end
+		end
+		
+	other_player : Q_PLAYER is
+			-- the non-active player
+		do
+			if active_player = player_a then
+				result := player_b
+			else
+				result := player_a
+			end
+		end
+		
+	insert_ball(b_ : Q_BALL) is
+			-- insert a ball on the fusspunkt or a position nearby
+		local
+			x_: DOUBLE
+		do
+			from
+				x_ := head_point.x
+				b_.set_center (head_point)
+			until
+				x_ = width or else valid_position (b_.center)
+			loop
+				b_.set_center (create {Q_VECTOR_2D}.make (x_, head_point.y))
+				x_ := x_ + 0.5
+			end
+		ensure
+			valid_position(b_.center)
+		end
+		
+
+	reset_balls is
+			-- reset the balls randomly
+		do
+			new_table
+		end
+
+
+		
+	first_shot : BOOLEAN
+	close_table(ball_nr: INTEGER) is
+			-- close the table, i.e. assign the active player to all balls with same colors as ball_nr
+		require
+			is_open
+			ball_nr /= void
+			ball_nr >0 and ball_nr <=15 and ball_nr /= 8
+		local
+			i: INTEGER
+		do
+			from
+				i := table.balls.lower
+			until
+				i > table.balls.upper
+			loop
+				if table.balls.item(i).number <8 and ball_nr < 8 then
+					-- same color
+					table.balls.item (i).add_owner (active_player)
+				else
+					-- different color
+					table.balls.item (i).add_owner (other_player)
+				end
+				i := i+1
+			end
+		end
 	
 	fallen_balls (collisions_ : LIST[Q_COLLISION_EVENT]) : LINKED_LIST[INTEGER] is
 			-- all balls that have fallen into holes since last shot
@@ -932,10 +931,5 @@ feature{NONE} -- set-up
 			-- creates/returns an AI-Player for this game mode
 		do
 		end
-		
-
-		
-
-
 
 end -- class Q_8BALL
