@@ -253,31 +253,42 @@ feature -- state features
 			ressources := ressources_
 			colls_ := ressources_.simulation.collision_list
 			if is_game_lost(colls_) then
-				create choice_state_.make_mode_titled( current, active_player.name+" loses", "id", 2)
-				choice_state_.button (1).set_text ("Play again")
-				choice_state_.button (1).actions.force (agent handle_restart)
-				choice_state_.button (2).set_text ("Main menu")
-				choice_state_.button (2).actions.force (agent handle_main_menu)
+				choice_state_ ?= ressources.request_state ("8ball lost")
+				if choice_state_ = void then
+					create choice_state_.make_mode_titled( current, active_player.name+" loses", "8ball lost", 2)
+					choice_state_.button (1).set_text ("Play again")
+					choice_state_.button (1).actions.force (agent handle_restart(?,?,choice_state_))
+					choice_state_.button (2).set_text ("Main menu")
+					choice_state_.button (2).actions.force (agent handle_main_menu(?,?,choice_state_))
+				end
+				choice_state_.set_title(active_player.name+" loses")
 				Result := choice_state_
 			elseif is_game_won(colls_) then
-				create choice_state_.make_mode_titled (current, active_player.name+" wins", "id", 2)
-				choice_state_.button (1).set_text ("Play again")
-				choice_state_.button (1).actions.force (agent handle_restart)
-				choice_state_.button (2).set_text ("Main menu")
-				choice_state_.button (2).actions.force (agent handle_main_menu)
+				choice_state_ ?= ressources.request_state("8ball won")
+				if choice_state_ = void then
+					create choice_state_.make_mode_titled (current, active_player.name+" wins", "8ball won", 2)
+					choice_state_.button (1).set_text ("Play again")
+					choice_state_.button (1).actions.force (agent handle_restart(?,?,choice_state_))
+					choice_state_.button (2).set_text ("Main menu")
+					choice_state_.button (2).actions.force (agent handle_main_menu(?,?,choice_state_))
+				end
+				choice_state_.set_title (active_player.name+" wins")
 				Result := choice_state_
 			elseif first_shot and then not is_correct_opening (colls_) then
 				-- rule 4.6 second part
 --				-- the current player made an error, the other player can
 --				a) die Position so übernehmen und weiterspielen oder
 --				b) die Kugeln neu aufbauen lassen und selbst einen neuen Eröffnungsstoß durchführen oder den Gegner neu anstoßen lassen.
-				create choice_state_.make_mode_titled (current, "Incorrect opening", "id", 3)
-				choice_state_.button (1).set_text ("Continue playing with this board")
-				choice_state_.button (1).actions.force (agent handle_continue)
-				choice_state_.button (2).set_text ("Rebuild the table and start yourself")
-				choice_state_.button (2).actions.force (agent handle_restart)
-				choice_state_.button (3).set_text ("Rebuild the table and let opponent start")
-				choice_state_.button (3).actions.force (agent handle_restart_other)
+				choice_state_ ?= ressources.request_state ("8ball incorrect opening")
+				if choice_state_ = void then
+					create choice_state_.make_mode_titled (current, "Incorrect opening", "8ball incorrect opening", 3)
+					choice_state_.button (1).set_text ("Continue playing with this board")
+					choice_state_.button (1).actions.force (agent handle_continue(?,?,choice_state_))
+					choice_state_.button (2).set_text ("Rebuild the table and start yourself")
+					choice_state_.button (2).actions.force (agent handle_restart (?,?,choice_state_))
+					choice_state_.button (3).set_text ("Rebuild the table and let opponent start")
+					choice_state_.button (3).actions.force (agent handle_restart_other (?,?,choice_state_))	
+				end
 				Result := choice_state_
 			elseif first_shot and then is_correct_opening (colls_) and then fallen_balls(colls_).has(white_number) and not fallen_balls (colls_).has(8) then
 				-- rule 4.7
@@ -300,24 +311,30 @@ feature -- state features
 --				(1) Wird die "8" mit dem Eröffnungsstoß versenkt, so kann der eröffnende Spieler verlangen, daß
 --				a) neu aufgebaut wird oder
 --				b) die "8" wieder eingesetzt wird und er selbst so weiterspielt.
-				create choice_state_.make_mode_titled (current, "Correct opening but has 8 fallen", "id", 2)
-				choice_state_.button (1).set_text ("Rebuild the table and start yourself")
-				choice_state_.button (1).actions.force (agent handle_restart)
-				choice_state_.button (2).set_text ("Reset 8 and continue playing")
-				choice_state_.button (2).actions.force (agent handle_set8_and_continue)
-				is_open := true
+				choice_state_ ?= ressources.request_state ("8ball 8 fallen")
+				if choice_state_ = void then
+					create choice_state_.make_mode_titled (current, "Correct opening but has 8 fallen", "8ball 8 fallen", 2)
+					choice_state_.button (1).set_text ("Rebuild the table and start yourself")
+					choice_state_.button (1).actions.force (agent handle_restart)
+					choice_state_.button (2).set_text ("Reset 8 and continue playing")
+					choice_state_.button (2).actions.force (agent handle_set8_and_continue)
+					is_open := true	
+				end
 				result := choice_state_
 			elseif first_shot and then is_correct_opening (colls_) and then fallen_balls (colls_).has(8) and fallen_balls (colls_).has (white_number) then
 --				-- rule 4.9 second part
 --				(2) Fallen dem Spieler beim Eröffnungsstoß die Weiße und die "8", so kann der Gegner
 --				a) neu aufbauen lassen oder
 --				b) die "8" wieder einsetzen lassen und aus dem Kopffeld weiterspielen.
-				create choice_state_.make_mode_titled (current,"Correct opening but 8 and white have fallen", "id",2)
-				choice_state_.button (1).set_text ("Rebuild the table and start yourself")
-				choice_state_.button (1).actions.force (agent handle_restart)
-				choice_state_.button (2).set_text ("Set 8, reset white in headfield and continue playing")
-				choice_state_.button (2).actions.force (agent handle_set8_and_continue_in_headfield)
-				is_open := true
+				choice_state_ ?= ressources.request_state ("8ball 8 and white fallen")
+				if choice_state_ = void then
+					create choice_state_.make_mode_titled (current,"Correct opening but 8 and white have fallen", "8ball 8 and white fallen",2)
+					choice_state_.button (1).set_text ("Rebuild the table and start yourself")
+					choice_state_.button (1).actions.force (agent handle_restart)
+					choice_state_.button (2).set_text ("Set 8, reset white in headfield and continue playing")
+					choice_state_.button (2).actions.force (agent handle_set8_and_continue_in_headfield)
+					is_open := true
+				end
 				result := choice_state_
 			elseif not first_shot and then not is_correct_shot (colls_, active_player)  then
 				-- rule 4.15
@@ -331,8 +348,7 @@ feature -- state features
 				reset_state_.set_headfield (false)
 				switch_players
 				Result := reset_state_
-			else
-				
+			else				
 				-- ok, everything seems fine
 				-- check if we can assign colors to players
 				if is_open then
@@ -349,8 +365,7 @@ feature -- state features
 				if result = void then
 					result := create {Q_8BALL_BIRD_STATE}.make_mode (Current)
 					ressources_.put_state( result )
-				end
-				
+				end	
 				-- change players
 				switch_players
 			end
@@ -359,38 +374,45 @@ feature -- state features
 		end
 		
 feature {NONE} -- event handlers
-	handle_continue(command_ :STRING; button_:Q_HUD_BUTTON) is
+	handle_continue(command_ :STRING; button_:Q_HUD_BUTTON;cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is bird state, switch players and continue
+		local
+			ns_ : Q_8BALL_BIRD_STATE
 		do
-			
+			ns_ ?= ressources.request_state ("8ball bird")
+			if ns_ = void then
+				create ns_.make_mode (current)
+				ressources.put_state (ns_)
+			end
+			cs_.set_next_state (ns_)
 		end
 	
-	handle_restart(command_ :STRING; button_:Q_HUD_BUTTON) is
+	handle_restart(command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is a new game in bird state
 		do
 			
 		end
 		
-	handle_restart_other(command_ :STRING; button_:Q_HUD_BUTTON) is
+	handle_restart_other(command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is a new game in bird state, switch players
 		do
-			handle_restart(command_, button_)
+			handle_restart(command_, button_,cs_)
 			switch_players
 		end
 		
-	handle_set8_and_continue(command_:STRING; button_:Q_HUD_BUTTON) is
+	handle_set8_and_continue(command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is bird state, don't switch players
 		do
 			
 		end
 		
-	handle_set8_and_continue_in_headfield(command_:STRING; button_:Q_HUD_BUTTON) is
+	handle_set8_and_continue_in_headfield(command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is reset state, don't switch players
 		do
 			
 		end
 		
-	handle_main_menu(command_:STRING; button_:Q_HUD_BUTTON) is
+	handle_main_menu(command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- goto main menu, next state is escape state
 		do
 			
@@ -408,8 +430,10 @@ feature -- Game Logic
 		do
 			if active_player = player_a then
 				active_player := player_b
+				info_hud.set_right_active
 			else
 				active_player := player_a
+				info_hud.set_left_active
 			end
 		end
 		
