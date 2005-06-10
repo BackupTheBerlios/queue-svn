@@ -84,9 +84,11 @@ feature{NONE} -- string
 			from
 				index_ := 1
 			until
-				index_ > string_.count or
+				index_ > string_.count or				
 				not (string_.item( index_ ) = ' ' or
-				string_.item( index_ ) = '%T')
+					string_.item( index_ ) = '%T' or
+					string_.item( index_ ) = '%R' or
+					string_.item( index_ ) = '%N')
 			loop
 				count_ := count_ + 1
 				index_ := index_ + 1
@@ -100,7 +102,9 @@ feature{NONE} -- string
 			until
 				index_ < 1 or
 				not (string_.item( index_ ) = ' ' or
-				string_.item( index_ ) = '%T')
+					string_.item( index_ ) = '%T' or
+					string_.item( index_ ) = '%R' or
+					string_.item( index_ ) = '%N')
 			loop
 				count_ := count_ + 1
 				index_ := index_ - 1

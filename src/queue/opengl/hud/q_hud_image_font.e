@@ -97,6 +97,7 @@ feature{NONE} -- creation
 				orakel_.end_of_file
 			loop
 				from
+					c_ := '0'
 				until
 					orakel_.end_of_file or c_ = '*'
 				loop

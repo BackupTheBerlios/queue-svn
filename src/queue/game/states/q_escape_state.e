@@ -121,6 +121,7 @@ feature{NONE} -- menu creation
 			index_ : INTEGER
 			sliding_ : Q_HUD_SLIDING
 			help_text_ : Q_INI_FILE_READER
+			defaults_ : Q_INI_FILE_READER
 		do
 			create menu.make
 			create moves.make( 1, 4 )
@@ -139,11 +140,13 @@ feature{NONE} -- menu creation
 				index_ := index_ + 1
 			end
 			
-			create_main_menu
-			create_option_menu
-			create_quit_dialog
-			create_game_menu
-			create_new_game_dialog
+			create defaults_.make_and_read( "data/menu.ini" )
+			
+			create_main_menu( defaults_ )
+			create_option_menu( defaults_ )
+			create_quit_dialog( defaults_ )
+			create_game_menu( defaults_ )
+			create_new_game_dialog( defaults_ )
 			
 			moves.item( 1 ).add( main_menu )
 			moves.item( 1 ).add( quit_dialog )
@@ -204,7 +207,7 @@ feature{NONE} -- menu creation
 		end
 		
 
-	create_main_menu is
+	create_main_menu( defaults_ : Q_INI_FILE_READER ) is
 		local
 			game_, option_, help_, exit_ : Q_HUD_BUTTON
 		do
@@ -229,11 +232,11 @@ feature{NONE} -- menu creation
 			exit_.actions.extend( agent goto_quit_dialog( ?, ? ))
 			return_button.actions.extend( agent return_to_game( ?, ? ))
 			
-			game_.set_text( "New Game" )
-			option_.set_text( "Options" )
-			help_.set_text( "Help" )
-			exit_.set_text( "Quit" )
-			return_button.set_text( "Return" )
+			game_.set_text( defaults_.value( "main", "new game" ))
+			option_.set_text( defaults_.value( "main", "option" ))
+			help_.set_text( defaults_.value( "main", "help" ))
+			exit_.set_text( defaults_.value( "main", "quit" ))
+			return_button.set_text(  defaults_.value( "main", "return" ))
 			
 			game_.set_bounds( 0.1, 0.1, 0.8, 0.1 )
 			option_.set_bounds( 0.1, 0.25, 0.8, 0.1 )
@@ -242,7 +245,7 @@ feature{NONE} -- menu creation
 			return_button.set_bounds( 0.5, 0.8, 0.4, 0.1 )
 		end
 		
-	create_quit_dialog is
+	create_quit_dialog( defaults_ : Q_INI_FILE_READER ) is
 		local
 			container_ : Q_HUD_CONTAINER
 			button_ : Q_HUD_BUTTON
@@ -253,19 +256,19 @@ feature{NONE} -- menu creation
 			container_.set_focus_handler( create {Q_FOCUS_DEFAULT_HANDLER} )
 			
 			create label_.make
-			label_.set_text( "Press Yes to quit now" )
+			label_.set_text( defaults_.value( "quit", "question" ))
 			label_.set_bounds( 0.1, 0.4, 0.8, 0.1 )
 			label_.set_insets( create {Q_HUD_INSETS}.make( 0.01, 0.05, 0.01, 0.01 ))
 			container_.add( label_ )
 			
 			create button_.make
-			button_.set_text( "No" )
+			button_.set_text( defaults_.value( "quit", "no" ))
 			button_.set_bounds( 0.6, 0.55, 0.3, 0.1 )
 			container_.add( button_ )
 			button_.actions.extend( agent goto_main_menu( ?, ? ))			
 			
 			create button_.make
-			button_.set_text( "Yes" )
+			button_.set_text( defaults_.value( "quit", "yes" ))
 			button_.set_bounds( 0.2, 0.55, 0.3, 0.1 )
 			container_.add( button_ )
 			button_.actions.extend( agent exit( ?, ? ))
@@ -274,7 +277,7 @@ feature{NONE} -- menu creation
 		end
 		
 	
-	create_option_menu is
+	create_option_menu( defaults_ : Q_INI_FILE_READER ) is
 		local
 			menu_ : Q_HUD_BUTTON
 			group_ : Q_HUD_SELECTABLE_BUTTON_GROUP
@@ -304,14 +307,14 @@ feature{NONE} -- menu creation
 			
 			human_player_two.set_selected( true )
 			
-			human_player_zero.set_text( "AI vs. AI" )
-			human_player_one.set_text( "Human vs. AI" )
-			human_player_two.set_text( "Human vs. Human" )
+			human_player_zero.set_text( defaults_.value( "option", "ai ai" ))
+			human_player_one.set_text( defaults_.value( "option", "human ai" ))
+			human_player_two.set_text( defaults_.value( "option", "human human" ))
 			
-			label_1_.set_text( "Name Player 1" )
-			label_2_.set_text( "Name Player 2" )
+			label_1_.set_text( defaults_.value( "option", "name player 1" ))
+			label_2_.set_text( defaults_.value( "option", "name player 2" ))
 			
-			menu_.set_text( "Return" )
+			menu_.set_text( defaults_.value( "option", "return" ))
 			
 			option_menu.add( human_player_zero )
 			option_menu.add( human_player_one )
@@ -338,7 +341,7 @@ feature{NONE} -- menu creation
 		end
 		
 		
-	create_game_menu  is
+	create_game_menu( defaults_ : Q_INI_FILE_READER ) is
 		local
 			container_ : Q_HUD_CONTAINER
 			button_ : Q_HUD_BUTTON
@@ -348,21 +351,21 @@ feature{NONE} -- menu creation
 			container_.set_focus_handler( create {Q_FOCUS_DEFAULT_HANDLER} )
 			container_.set_bounds( 0, 0, 1, 1 )
 			
-			button_.set_text( "8 Ball" )
+			button_.set_text( defaults_.value( "game", "8ball" ))
 			button_.set_bounds( 0.1, 0.1, 0.8, 0.1 )
 			container_.add( button_ )
 			button_.actions.extend( agent start_8_ball( ?, ? ))
 			
 			create button_.make
 			button_.set_bounds( 0.5, 0.8, 0.4, 0.1 )
-			button_.set_text( "Return" )
+			button_.set_text( defaults_.value( "game", "return" ))
 			container_.add( button_ )
 			button_.actions.extend( agent goto_main_menu( ?, ? ))
 			
 			game_menu := container_
 		end
 		
-	create_new_game_dialog is
+	create_new_game_dialog( defaults_ : Q_INI_FILE_READER ) is
 		local
 			container_ : Q_HUD_CONTAINER
 			button_ : Q_HUD_BUTTON
@@ -373,19 +376,19 @@ feature{NONE} -- menu creation
 			container_.set_bounds( 0, 1, 1, 1 )
 			
 			create label_.make
-			label_.set_text( "Press Yes to start a new game" )
+			label_.set_text( defaults_.value( "new_game", "question" ))
 			label_.set_bounds( 0.1, 0.4, 0.8, 0.1 )
 			label_.set_insets( create {Q_HUD_INSETS}.make( 0.01, 0.05, 0.01, 0.01 ))
 			container_.add( label_ )
 			
 			create button_.make
-			button_.set_text( "No" )
+			button_.set_text( defaults_.value( "new_game", "no" ))
 			button_.set_bounds( 0.6, 0.55, 0.3, 0.1 )
 			container_.add( button_ )
 			button_.actions.extend( agent goto_main_menu( ?, ? ))			
 			
 			create button_.make
-			button_.set_text( "Yes" )
+			button_.set_text( defaults_.value( "new_game", "yes" ))
 			button_.set_bounds( 0.2, 0.55, 0.3, 0.1 )
 			container_.add( button_ )
 			button_.actions.extend( agent goto_game_menu( ?, ? ))
@@ -424,19 +427,19 @@ feature{NONE} -- menu creation
 			
 			-- add some buttons
 			create button_.make
-			button_.set_text( "back" )
+			button_.set_text( text_.value( "help", "back" ))
 			button_.actions.extend( agent goto_help( ?,?,menu_-1 ) )
 			button_.set_bounds( 0.1, 0.81, 0.2, 0.09 )
 			container_.add( button_ )
 			
 			create button_.make
-			button_.set_text( "menu" )
+			button_.set_text( text_.value( "help", "menu" ))
 			button_.actions.extend( agent goto_main_menu( ?,? ) )
 			button_.set_bounds( 0.4, 0.81, 0.2, 0.09 )
 			container_.add( button_ )
 			
 			create button_.make
-			button_.set_text( "next" )
+			button_.set_text( text_.value( "help", "next" ))
 			button_.actions.extend( agent goto_help( ?,?,menu_+1 ) )
 			button_.set_bounds( 0.7, 0.81, 0.2, 0.09 )
 			container_.add( button_ )			
