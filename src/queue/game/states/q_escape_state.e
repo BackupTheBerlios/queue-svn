@@ -594,6 +594,7 @@ feature{NONE} -- new games
 			-- Starts an 8ball-game
 		local
 			eball: Q_8BALL
+			player_a_, player_b_ : Q_PLAYER
 		do
 			if game_menu_armed then
 				eball ?= ressources.request_mode( "8ball" )
@@ -604,18 +605,21 @@ feature{NONE} -- new games
 				-- reset the balls
 				eball.reset_balls
 				if human_player_zero.selected then
-					eball.set_player_a( eball.ai_player )
-					eball.set_player_b( eball.ai_player )
+					player_a_ := eball.ai_player
+					player_b_ := eball.ai_player
 				elseif human_player_one.selected then
-					eball.set_player_a( eball.human_player )
-					eball.set_player_b( eball.ai_player )
+					player_a_ := eball.human_player
+					player_b_ := eball.ai_player					
 				else
-					eball.set_player_a( eball.human_player )
-					eball.set_player_b( eball.human_player )
+					player_a_ := eball.human_player
+					player_b_ := eball.human_player
 				end
 				
-				eball.player_a.set_name( player_name_1.text )
-				eball.player_b.set_name( player_name_2.text )
+				player_a_.set_name( player_name_1.text )
+				player_b_.set_name( player_name_2.text )
+				
+				eball.set_player_a( player_a_ )
+				eball.set_player_b( player_b_ )
 				
 				ressources.set_mode( eball )
 				next_state := eball.first_state( ressources )

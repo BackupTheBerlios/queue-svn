@@ -8,7 +8,7 @@ deferred class
 inherit
 	Q_ESCAPABLE_STATE
 	redefine
-		step
+		step, default_next_state
 	end
 	
 feature{Q_SHOT_STATE}
@@ -58,7 +58,13 @@ feature -- interface
 				slider.set_value( slider.minimum.max( slider.value - (slider.maximum - slider.minimum) / time_for_whole_change * ressources_.time.delta_time_millis ) )
 			end
 		end
-	
+		
+	default_next_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
+		do
+			result := prepare_next_state( slider.value, ressources_ )
+		end
+		
+		
 	prepare_next_state( pressure_ : DOUBLE; ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
 			-- Creates the next state. This involvs, saving the pressur.
 			-- Returns void, if no next state should be choosen

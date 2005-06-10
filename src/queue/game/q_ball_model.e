@@ -126,6 +126,15 @@ feature {NONE} -- Creation
 			radius := (middle_point - create {Q_VECTOR_3D}.make (curr_.x, curr_.y, curr_.z)).length
 		end
 		
+feature -- ball
+	ball : Q_BALL
+	
+	set_ball( ball_ : Q_BALL ) is
+		do
+			ball := ball_
+		end
+		
+		
 invariant
 	model /= void
 	height_translation/= void

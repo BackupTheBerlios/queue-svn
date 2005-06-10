@@ -15,6 +15,7 @@ feature{NONE} -- creation
 			create state_list.make( 20 )
 			create mode_list.make( 20 )
 			create gl_manager.make_timed( logic_.screen.width, logic_.screen.height, time )
+			create simulation.make
 			
 			logic := logic_
 		end
@@ -24,7 +25,7 @@ feature -- time
 
 feature	-- Physics
 	simulation : Q_SIMULATION
-	
+
 feature  -- game logic
 	logic : Q_GAME_LOGIC
 	

@@ -58,6 +58,7 @@ feature
 				if position > destination then
 					position := destination
 				end
+			
 			else
 				position := position - open_gl.time.delta_time_millis / duration
 				

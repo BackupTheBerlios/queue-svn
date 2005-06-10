@@ -15,6 +15,7 @@ feature{NONE}
 	make is
 		do
 			create keys.make( 20 )
+			set_max_key_pressed( 2 )
 		end
 		
 feature -- interaction
@@ -61,15 +62,37 @@ feature -- access
 
 feature -- set
 	tell_pressed( key_ : INTEGER ) is
+			-- tells that a key is pressed. If the number of pressed keys
+			-- is greater than the maximum, the oldest pressed key will
+			-- be marked as not-pressed
 		do
 			if not keys.has( key_ ) then
 				keys.extend( key_ )
+			end
+			
+			if keys.count > max_key_pressed then
+				keys.start
+				keys.remove
 			end
 		end
 		
 	tell_released( key_ : INTEGER ) is
 		do
 			keys.prune_all( key_ )
+		end
+		
+	max_key_pressed : INTEGER
+		-- how many keys can be pressed maximally.
+		
+	set_max_key_pressed( max_ : INTEGER ) is
+		require
+			max_ > 0
+		do
+			max_key_pressed := max_
+			
+			from keys.start	until keys.count <= max_key_pressed	loop
+				keys.remove
+			end
 		end
 		
 feature{Q_KEY_MAP}

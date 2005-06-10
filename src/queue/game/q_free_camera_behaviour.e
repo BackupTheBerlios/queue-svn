@@ -114,6 +114,7 @@ feature -- factors
 		
 feature -- key requirement
 	ctrl, shift, alt : BOOLEAN
+	mouse_ctrl, mouse_shift, mouse_alt : BOOLEAN
 	
 	set_ctrl( ctrl_ : BOOLEAN ) is
 		do
@@ -130,6 +131,29 @@ feature -- key requirement
 			alt := alt_
 		end
 		
+	set_mouse_ctrl( mouse_ctrl_ : BOOLEAN ) is
+			-- If true, the user must press the ctrl-key to
+			-- control the camera by mouse. If false, the camera
+			-- will only react, if the mouse is not pressed.
+		do
+			mouse_ctrl := mouse_ctrl_
+		end
+
+	set_mouse_alt( mouse_alt_ : BOOLEAN ) is
+			-- If true, the user must press the alt-key to
+			-- control the camera by mouse. If false, the camera
+			-- will only react, if the mouse is not pressed.
+		do
+			mouse_alt := mouse_alt_
+		end
+		
+	set_mouse_shift( mouse_shift_ : BOOLEAN ) is
+			-- If true, the user must press the shift-key to
+			-- control the camera by mouse. If false, the camera
+			-- will only react, if the mouse is not pressed.
+		do
+			mouse_shift := mouse_shift_
+		end
 	
 feature{NONE} -- event handling
 	key_map, original_key_map : Q_KEY_MAP
@@ -320,9 +344,9 @@ feature{NONE} -- event handling
 		do
 			original_key_map := map_
 			
-			if original_key_map.ctrl = ctrl and 
-				original_key_map.shift = shift and 
-				original_key_map.alt = alt then
+			if original_key_map.ctrl = mouse_ctrl and 
+				original_key_map.shift = mouse_shift and 
+				original_key_map.alt = mouse_alt then
 					
 				last_x := x_
 				last_y := y_

@@ -22,7 +22,15 @@ feature -- Interface
 	do
 		model.draw (open_gl)
 		--axis.draw (open_gl)
+		
+		from balls.start until balls.after loop
+			balls.item.set_position( position_table_to_world( balls.item.ball.center ))
+			balls.forth
+		end
 	end
+	
+	balls : ARRAYED_LIST[ Q_BALL_MODEL ]
+		-- the balls
 	
 	model: Q_GL_GROUP[Q_GL_MODEL]
 		-- the model
@@ -51,7 +59,10 @@ feature -- Interface
 		
 	position_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
 		do
-			create result.make (world_.x - root.x, world_.z + root.y)
+--			create result.make (world_.x - root.x, world_.z + root.y)
+
+-- don't know how this should work in real, but the old one is false
+			create result.make (world_.x - root.x, root.y - world_.z )
 		end
 		
 	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
@@ -73,7 +84,8 @@ feature {NONE} -- Implementation
 			loader : Q_GL_3D_ASE_LOADER
 		do
 			create loader.make
-		
+			create balls.make( 15 )
+			
 			-- create the modell	
 			loader.load_file (file_name_)
 			model := loader.create_flat_model

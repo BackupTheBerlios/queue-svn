@@ -55,7 +55,7 @@ feature{Q_DEFAULT_GAME_STATE}
 			until
 				event_queue_.is_empty or result /= void
 			loop
-				if event_queue_.is_key_up_event then
+				if event_queue_.is_key_down_event then
 					key_event_ := event_queue_.pop_keyboard_event
 					if key_event_.key = key_event_.sdlk_escape then
 						result := escape_menu( ressources_ )

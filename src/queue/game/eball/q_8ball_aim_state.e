@@ -19,7 +19,6 @@ feature{NONE} -- creation
 		do
 			make
 			mode := mode_
-			set_ball( mode.table.balls.item( mode.white_number ))
 		end
 	
 	mode : Q_8BALL
@@ -34,7 +33,9 @@ feature
 		
 	install( ressources_ : Q_GAME_RESSOURCES ) is
 		do
-			precursor( ressources_ )
+			set_ball( mode.table.balls.item( mode.white_number ))
+			
+			precursor( ressources_ )			
 			ressources_.gl_manager.add_hud( mode.info_hud )
 		end
 		

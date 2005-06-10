@@ -8,12 +8,14 @@ deferred class
 inherit
 	Q_ESCAPABLE_STATE
 	redefine
-		step
+		step, default_next_state
 	end
 
 feature{Q_GAME_STATE} -- creation
 	make is
 		do
+			create behaviour.make
+			behaviour.set_mouse_ctrl( true )
 		end
 		
 feature -- interface
@@ -22,6 +24,7 @@ feature -- interface
 		local
 			event_queue_ : Q_EVENT_QUEUE
 			motion_event_ : ESDL_MOUSEMOTION_EVENT
+			press_event_ : ESDL_MOUSEBUTTON_EVENT
 			key_event_ : ESDL_KEYBOARD_EVENT
 		do
 			from
@@ -30,16 +33,15 @@ feature -- interface
 				event_queue_.is_empty
 			loop
 				if event_queue_.is_mouse_button_down_event then
-					--event_queue_.pop_mouse_button_event
-					event_queue_.pop
-					pressed( ressources_ )
+					press_event_ := event_queue_.pop_mouse_button_event
+					pressed( event_queue_.screen_to_hud( press_event_.x, press_event_.y ), ressources_ )
 				elseif event_queue_.is_mouse_motion_event then
 					motion_event_ := event_queue_.pop_mouse_motion_event
 					motion( motion_event_, event_queue_.screen_to_hud( motion_event_.x, motion_event_.y ), ressources_ )
 				elseif event_queue_.is_key_down_event  then
 					key_event_ := event_queue_.pop_keyboard_event
 					if key_event_.key = key_event_.sdlk_space then
-						pressed( ressources_ )
+						goto_default_next( ressources_ )
 					elseif key_event_.key = key_event_.sdlk_escape then
 						goto_escape_menu( ressources_ )
 					end
@@ -55,12 +57,13 @@ feature -- interface
 		
 	install (ressources_:Q_GAME_RESSOURCES) is
 		do
-			--
+			mouse_pressed := false
+			ressources_.gl_manager.set_camera_behaviour( behaviour )
 		end
 		
 	uninstall (ressources_ :Q_GAME_RESSOURCES) is
 		do
-			--
+			ressources_.gl_manager.set_camera_behaviour( void )
 		end
 		
 	identifier : STRING is
@@ -68,24 +71,38 @@ feature -- interface
 			Result := "reset state"
 		end
 		
-		
-		
 feature -- event handling
 
 	motion( event_ : ESDL_MOUSEMOTION_EVENT; position_ : Q_VECTOR_2D; ressources_ : Q_GAME_RESSOURCES ) is
 		do
-			ball_position := position_of_ball( position_.x, position_.y, ressources_ )
-			if not valid_position( ball_position, ressources_ ) then
-				ball_position := void
+			if not mouse_pressed then
+				ball_position := position_of_ball( position_.x, position_.y, ressources_ )
+				if not valid_position( ball_position, ressources_ ) then
+					ball_position := void
+				else
+					ball.set_center( ball_position )
+				end
 			end
 		end
 	
-	pressed( ressources_ : Q_GAME_RESSOURCES ) is
+	pressed( position_ : Q_VECTOR_2D; ressources_ : Q_GAME_RESSOURCES ) is
 		do
-			if ball_position /= void then
-				set_next_state( prepare_next_state( ball_position, ressources_ ))
+			ball_position := position_of_ball( position_.x, position_.y, ressources_ )
+			if not valid_position( ball_position, ressources_ ) then
+				ball_position := void
+			else
+				ball.set_center( ball_position )
+				mouse_pressed := true
+			end			
+		end
+		
+	default_next_state( ressources_: Q_GAME_RESSOURCES ) : Q_GAME_STATE is
+		do
+			if ball_position /= void and then valid_position( ball_position, ressources_ ) then
+				result := prepare_next_state( ball_position, ressources_ )
 			end
 		end
+		
 		
 	valid_position( ball_position_ : Q_VECTOR_2D; ressources_: Q_GAME_RESSOURCES ) : BOOLEAN is
 			-- true if the given ball-position is valid, otherwise false
@@ -131,6 +148,9 @@ feature -- 3d & table
 				result := void
 			end
 		end
+
+feature -- mouse
+	mouse_pressed : BOOLEAN
 
 feature -- ball
 	ball_position : Q_VECTOR_2D

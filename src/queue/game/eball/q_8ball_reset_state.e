@@ -65,10 +65,10 @@ feature
 			ressources_.mode.table.balls.item (white_number).set_center (ball_position)
 			
 			-- set next state as bird state
-			result := ressources_.request_state( "8ball bird" )
+			result := ressources_.request_state( "8ball aim" )
 			if result = void then
 				mode_ ?= ressources_.mode
-				result := create {Q_8BALL_BIRD_STATE}.make_mode (mode_)
+				result := create {Q_8BALL_AIM_STATE}.make_mode (mode_)
 				ressources_.put_state( result )
 			end
 		end
@@ -77,12 +77,13 @@ feature
 			-- true if the given ball-position is valid, otherwise false
 		local
 			mode_ : Q_8BALL
-		do
+		do			
 			if headfield then
 				mode_ ?= ressources_.mode
-				Result := mode_.is_in_headfield (ball_position_) and then mode_.valid_position (ball_position_)
+				Result := mode_.is_in_headfield (ball_position_) 
+					and then mode_.valid_position (ball_position_, ball)
 			else
-				Result := ressources_.mode.valid_position (ball_position_)
+				Result := ressources_.mode.valid_position (ball_position_, ball)
 			end
 		end
 		

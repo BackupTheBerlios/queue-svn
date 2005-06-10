@@ -42,11 +42,13 @@ feature	-- Interface
 	set_player_a( player_ : Q_PLAYER ) is
 		do
 			player_a := player_
+			info_hud.set_big_left_text( player_.name )
 		end
 	
 	set_player_b( player_ : Q_PLAYER ) is
 		do
 			player_b := player_
+			info_hud.set_big_right_text( player_.name )
 		end
 		
 	first_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
@@ -569,7 +571,7 @@ feature -- Game Logic
 	is_open : BOOLEAN -- is the table "open", i.e. no colors yet specified
 		
 	
-	valid_position( v_ : Q_VECTOR_2D ) : BOOLEAN is
+	valid_position( v_ : Q_VECTOR_2D; ball_ : Q_BALL ) : BOOLEAN is
 		local 
 			ball_already_there_ : BOOLEAN
 			i_ : INTEGER
@@ -578,10 +580,12 @@ feature -- Game Logic
 			from
 				i_ := table.balls.lower
 			until
-				i_ > table.balls.upper
+				i_ > table.balls.upper or not result
 			loop
-				if (table.balls.item (i_).center - v_).length <= ball_radius then
-					Result := false
+				if table.balls.item( i_ ) /= ball_ then
+					if (table.balls.item (i_).center - v_).length <= ball_radius then
+						Result := false
+					end
 				end
 				i_ := i_+1
 			end
@@ -645,13 +649,13 @@ feature -- Game Logic
 				x_ := head_point.x
 				b_.set_center (head_point)
 			until
-				x_ = width or else valid_position (b_.center)
+				x_ = width or else valid_position (b_.center, b_)
 			loop
 				b_.set_center (create {Q_VECTOR_2D}.make (x_, head_point.y))
 				x_ := x_ + 0.5
 			end
 		ensure
-			valid_position(b_.center)
+			valid_position(b_.center, b_)
 		end
 		
 
@@ -874,7 +878,30 @@ feature{NONE} -- set-up
 				y := y +1
 			end
 			create table.make (balls_, table_model.banks, table_model.holes)
+			
+			link_table_and_balls
 		end
+		
+	link_table_and_balls is
+		local
+			index_ : INTEGER
+		do
+			from table_model.balls.start until table_model.balls.empty loop
+				table_model.balls.remove
+			end
+			
+			-- link table and balls
+			from
+				index_ := ball_models.lower
+			until
+				index_ > ball_models.upper
+			loop
+				ball_models.item( index_ ).set_ball( table.balls.item( index_ ))
+				table_model.balls.extend( ball_models.item( index_ ))
+				index_ := index_ + 1
+			end			
+		end
+		
 		
 	new_table_model is
 			-- creates/returns a 3D-model of the table for this game mode
