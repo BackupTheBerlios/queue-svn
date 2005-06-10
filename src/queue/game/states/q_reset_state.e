@@ -35,6 +35,10 @@ feature -- interface
 				if event_queue_.is_mouse_button_down_event then
 					press_event_ := event_queue_.pop_mouse_button_event
 					pressed( event_queue_.screen_to_hud( press_event_.x, press_event_.y ), ressources_ )
+					mouse_pressed := true
+				elseif event_queue_.is_mouse_button_up_event then
+					event_queue_.pop
+					mouse_pressed := false
 				elseif event_queue_.is_mouse_motion_event then
 					motion_event_ := event_queue_.pop_mouse_motion_event
 					motion( motion_event_, event_queue_.screen_to_hud( motion_event_.x, motion_event_.y ), ressources_ )
@@ -48,6 +52,8 @@ feature -- interface
 				else
 					event_queue_.pop
 				end
+				
+				ctrl_up := not event_queue_.key_map.ctrl
 			end
 			
 			if ball_position /= void then
@@ -57,6 +63,7 @@ feature -- interface
 		
 	install (ressources_:Q_GAME_RESSOURCES) is
 		do
+			only_on_mouse_drag := false
 			mouse_pressed := false
 			ressources_.gl_manager.set_camera_behaviour( behaviour )
 		end
@@ -75,7 +82,7 @@ feature -- event handling
 
 	motion( event_ : ESDL_MOUSEMOTION_EVENT; position_ : Q_VECTOR_2D; ressources_ : Q_GAME_RESSOURCES ) is
 		do
-			if not mouse_pressed then
+			if only_on_mouse_drag implies (mouse_pressed and ctrl_up) then
 				ball_position := position_of_ball( position_.x, position_.y, ressources_ )
 				if not valid_position( ball_position, ressources_ ) then
 					ball_position := void
@@ -92,7 +99,7 @@ feature -- event handling
 				ball_position := void
 			else
 				ball.set_center( ball_position )
-				mouse_pressed := true
+				only_on_mouse_drag := true
 			end			
 		end
 		
@@ -150,7 +157,9 @@ feature -- 3d & table
 		end
 
 feature -- mouse
+	only_on_mouse_drag : BOOLEAN
 	mouse_pressed : BOOLEAN
+	ctrl_up : BOOLEAN
 
 feature -- ball
 	ball_position : Q_VECTOR_2D

@@ -167,7 +167,7 @@ feature{NONE} -- event handling
 			alpha_, beta_ : DOUBLE
 			change_ : BOOLEAN
 		do
-			if original_key_map /= void then
+			if original_key_map /= void and camera /= void then
 				original_key_map.ensure_subset( key_map )
 				
 				if original_key_map.ctrl = ctrl and 
