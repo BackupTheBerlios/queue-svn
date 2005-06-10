@@ -63,7 +63,7 @@ feature
 					until
 						j > table.holes.upper
 					loop
-						create shot_.make(gr_.simulation.cue_vector_for_collision (table.balls.item (i), table.holes.item(j).position))
+						create shot_.make(table.balls.item (i), gr_.simulation.cue_vector_for_collision (table.balls.item (i), table.holes.item(j).position))
 						obstacle_free := is_obstacle_free(table.balls.item (white_number),table.balls.item(i).center) and then is_obstacle_free (table.balls.item(i), table.holes.item(j).position)
 						if shot_ /= void and then obstacle_free then
 							possible_direct_shots_.force (shot_)
@@ -75,7 +75,7 @@ feature
 			end
 			-- if there is no meaningful direct shot, just make a dummy random shot
 			if possible_direct_shots_.is_empty then
-				Result := create {Q_SHOT}.make (create {Q_VECTOR_2D}.make (rand_.random_range (-5,5),rand_.random_range (-5,5)))
+				Result := create {Q_SHOT}.make (table.balls.item (white_number), create {Q_VECTOR_2D}.make (rand_.random_range (-5,5),rand_.random_range (-5,5)))
 			else
 				Result := possible_direct_shots_.first
 				Result.direction.rotate (rand_.random_gaussian (0,ability_to_variance))

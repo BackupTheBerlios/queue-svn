@@ -49,6 +49,17 @@ feature -- interface
 			set_y(y_)
 		end
 		
+	unit_vector: Q_VECTOR_2D is
+			-- v / ||v||
+		do
+			if x = 0 and y = 0 then
+				Result := create {Q_VECTOR_2D}.make (0, 0)
+			else
+				Result := Current / length
+			end
+		end
+		
+		
 
 end -- class Q_VECTOR_2D
 

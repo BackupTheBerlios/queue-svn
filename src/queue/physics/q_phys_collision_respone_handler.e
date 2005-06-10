@@ -56,17 +56,39 @@ feature -- interface
 		end
 	
 	on_collide_ball_ball (o1, o2: Q_OBJECT) is
-			-- Handle collision of to balls.
+			-- Handle collision of two balls.
 		require
 			o1 /= void
 			o2 /= void
 		local
 			ball1, ball2: Q_BALL
+			t, n: Q_VECTOR_2D
+			v1_minus_v2, v1_new, v2_new: Q_VECTOR_2D
 		do
 			ball1 ?= o1
 			ball2 ?= o2
 			
+			--  Idea: The collision of two balls is easy if one of them is standing still.
+			--> Reduce the more complex problem to the above one by substracting v2 from
+			--  both vectors v1 and v2.
 			
+			-- So let's first calculate the normal and the tangent vectors
+			n := ball2.center - ball1.center
+			n.normalize
+			
+			t := n.twin
+			t.rotate_rectangularly
+			
+			v1_minus_v2 := ball1.velocity - ball2.velocity
+			
+			-- v1* = (v1*t) * t
+			-- v1* = length * direction
+			v1_new := t * v1_minus_v2.scalar_product (t)
+			v2_new := n * v1_minus_v2.scalar_product (n)
+			
+			ball1.set_velocity (v1_new + ball2.velocity)
+			ball2.set_velocity (v2_new + ball2.velocity)
+
 		end
 		
 	on_collide_ball_bank (o1, o2: Q_OBJECT) is
@@ -109,17 +131,13 @@ feature -- interface
 		local
 			ball: Q_BALL
 			hole: Q_HOLE
-			d: DOUBLE
 		do
 			ball ?= o1
 			hole ?= o2
 			
 			if ball.center.distance (hole.position) < hole.radius then
 				-- Ball "inside" hole
-				collision_detector.remove_object (ball)
-				
-				
-				
+				collision_detector.remove_object (ball)	
 			end
 			
 		end

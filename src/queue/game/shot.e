@@ -11,10 +11,14 @@ create
 	
 feature -- Interface
 
-	make (dir_: Q_VECTOR_2D) is
+	make (ball: Q_BALL; dir: Q_VECTOR_2D) is
 			-- create a shot with direction vector
+		require
+			ball /= Void
+			dir /= Void
 		do
-			direction := dir_
+			direction := dir
+			hitball := ball
 		end
 		
 	make_empty is
@@ -39,6 +43,14 @@ feature -- Interface
 			direction := direction_
 		ensure
 			direction = direction_
+		end
+	
+	set_ball (ball: Q_BALL) is
+			-- Set hitball to ball.
+		require
+			ball /= Void
+		do
+			hitball := ball
 		end
 		
 	-- hit_plane : Q_PLANE
@@ -70,8 +82,11 @@ feature -- Interface
 	direction: Q_VECTOR_2D
 			-- Direction of the shot in (x,y) coordinates
 	
-	hitpoint : Q_VECTOR_3D
+	hitpoint: Q_VECTOR_3D
 			-- Hit point of the queue on the ball surface
+			
+	hitball: Q_BALL
+			-- Hit ball
 			
 feature {NONE} -- implementation
 

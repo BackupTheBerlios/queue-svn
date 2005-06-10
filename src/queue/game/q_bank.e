@@ -34,16 +34,6 @@ feature {NONE} -- create
 
 
 feature -- interface
-
-	update_position (step: DOUBLE) is
-			-- Do not update position since bank does not move.
-		do
-		end
-	
-	on_collide (other: like Current) is
-			-- Collisionn with other detected!
-		do
-		end
 		
 	set_edge1 (e1: Q_VECTOR_2D) is
 			-- Set edge1.

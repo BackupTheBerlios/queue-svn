@@ -38,7 +38,7 @@ feature -- interface
 			obj_list.delete (o)
 		end
 		
-	collision_test is
+	collision_test (step: DOUBLE) is
 			-- Check if any element collides with any other element.
 		local
 			cursor1, cursor2: DS_LINKED_LIST_CURSOR [Q_OBJECT]
@@ -57,12 +57,20 @@ feature -- interface
 					cursor2.off
 				loop
 					if does_collide (cursor1.item.bounding_object, cursor2.item.bounding_object) then
+						
+						cursor1.item.revert_update_position
+						cursor2.item.revert_update_position
+						
 						cursor1.item.on_collide (cursor2.item)
 						cursor2.item.on_collide (cursor1.item)
 						
 						if response_handler /= void then
 							response_handler.on_collide (cursor1.item, cursor2.item)	
 						end
+						
+--						cursor1.item.do_update_position (step)
+--						cursor2.item.do_update_position (step)
+						
 					end
 					cursor2.forth
 				end

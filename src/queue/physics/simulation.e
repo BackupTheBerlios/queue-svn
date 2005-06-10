@@ -22,20 +22,21 @@ feature -- create
 		
 feature -- interface
 		
-	new (table: Q_TABLE ; shot: Q_SHOT) is
+	new (table: Q_TABLE; shot: Q_SHOT) is
 			-- Start a new simulation.
 		require
 			table /= void
 		local
 			arr: ARRAY[Q_OBJECT]
-			i: INTEGER
 		do
 			oldticks := timer_funcs.sdl_get_ticks_external
+
+			shot.hitball.set_velocity (shot.direction)
 			
 			-- add balls
 			arr := table.balls
 			arr.do_all (agent addto_detector)
-			
+
 			-- add banks
 			arr := table.banks
 			arr.do_all (agent addto_detector)
@@ -49,7 +50,6 @@ feature -- interface
 		local
 			newticks, stepsize: INTEGER
 			stepd: DOUBLE
-			arr: ARRAY[Q_OBJECT]
 		do
 			newticks := timer_funcs.sdl_get_ticks_external
 			stepsize := newticks - oldticks
@@ -57,14 +57,11 @@ feature -- interface
 			oldticks := newticks
 			
 			-- update objects
-			arr := table.balls
-			arr.do_all (agent update_position(?, stepd))
-
-			arr := table.banks
-			arr.do_all (agent update_position(?, stepd))
+			table.balls.do_all (agent do_update_position(?, stepd))
 
 			-- collision detection
-			collision_detector.collision_test
+			collision_detector.collision_test (stepd)
+
 		end
 		
 	has_finished: BOOLEAN is
@@ -78,15 +75,15 @@ feature -- interface
 			result := collision_handler.position_list
 		end
 		
-	cue_vector_for_collision(ball_: Q_BALL; velocity_after_collision: Q_VECTOR_2D): Q_VECTOR_2D is
-			-- Compute the velocity of the cue ball so that ball_ has a given velocity vector
-			-- after a collision cue / ball_
-			-- return void if there is no such collision
+	cue_vector_for_collision (b: Q_BALL; velocity_after_collision: Q_VECTOR_2D): Q_VECTOR_2D is
+			-- Compute the velocity of the cue ball so that ball b has a given velocity vector
+			-- after a collision cue / ball
+			-- Return Void if there is no such collision
 		do
 			-- implemented by physics engine
 		end
 		
-	collision_list : LIST[Q_COLLISION_EVENT] is
+	collision_list: LIST[Q_COLLISION_EVENT] is
 			-- the list of all collisions since last start of the simulation, is called from Q_SHOT_STATE
 		do
 			-- implemented by physics engine
@@ -103,12 +100,12 @@ feature {NONE} -- implementation
 			collision_detector.add_object (o)
 		end
 		
-	update_position (o: Q_OBJECT; stepsize: DOUBLE) is
+	do_update_position (b: Q_BALL; stepsize: DOUBLE) is
 			-- Update position of object 'o'.
 		require
-			o /= void
+			b /= void
 		do
-			o.update_position (stepsize)
+			b.do_update_position (stepsize)
 		end
 		
 
