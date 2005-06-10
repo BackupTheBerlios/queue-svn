@@ -14,6 +14,8 @@ feature {NONE} -- create
 			-- Create response handler. 
 			-- Initialize function list for the various object types.
 		do
+			create collision_list.make
+			
 			create fun_list.make(3, 3)
 			
 			fun_list.put (agent on_collide_ball_ball, 1, 1)
@@ -27,10 +29,7 @@ feature {NONE} -- create
 			fun_list.put (agent on_collide_dummy, 2, 2)
 			
 			collision_detector := detector
-			
-			-- BEGIN DEBUG --
-			create position_list.make
-			-- END DEBUG --
+
 		end
 		
 feature -- interface
@@ -67,6 +66,13 @@ feature -- interface
 		do
 			ball1 ?= o1
 			ball2 ?= o2
+			
+			-- First of all add event to collision list
+			if ball1.velocity.is_null then
+				add_collision (ball2, ball2)
+			else
+				add_collision (ball1, ball2)
+			end
 			
 			--  Idea: The collision of two balls is easy if one of them is standing still.
 			--> Reduce the more complex problem to the above one by substracting v2 from
@@ -106,6 +112,9 @@ feature -- interface
 			bank ?= o2
 			line := bank.bounding_object
 			
+			-- First of all add event to collision list
+			add_collision (ball, bank)
+			
 			-- calc bounce point on bank
 			distv := line.distance_vector (ball.center)
 			a := ball.center - distv		-- bounce point on bank
@@ -113,12 +122,7 @@ feature -- interface
 			distv := line.distance_vector (p)
 			pr := p - (distv * 2)			-- point "gespiegelt" at bank
 			
-			ball.set_velocity (a - pr)		-- bounced velocity
-			
-			-- BEGIN DEBUG --
-			position_list.put_first (create {Q_VECTOR_2D}.make_from_other(a))
-			-- END DEBUG --
-			
+			ball.set_velocity (a - pr)		-- bounced velocity			
 
 		end
 	
@@ -137,6 +141,7 @@ feature -- interface
 			
 			if ball.center.distance (hole.position) < hole.radius then
 				-- Ball "inside" hole
+				add_collision (ball, hole)
 				collision_detector.remove_object (ball)	
 			end
 			
@@ -146,12 +151,22 @@ feature -- interface
 			-- Do nothing on collision of these two types.
 		once
 		end
-
-	position_list: DS_LINKED_LIST[Q_VECTOR_2D]
-			-- Debugging: Keeping track of ball positions
+		
+	collision_list: LINKED_LIST[Q_COLLISION_EVENT]
+			-- List of all collisions since last start of the simulation, called by Q_SHOT_STATE
 
 feature {NONE} -- implementation
 
+	add_collision (agr: Q_BALL; def: Q_OBJECT) is
+			-- Add collision event to collision_list
+		local
+			event: Q_COLLISION_EVENT
+		do
+			create event.make (agr, def)
+			collision_list.put_right (event)
+			
+		end
+		
 	fun_list: ARRAY2[PROCEDURE[ANY, TUPLE[Q_OBJECT, Q_OBJECT]]]
 	
 	collision_detector: Q_PHYS_COLLISION_DETECTOR

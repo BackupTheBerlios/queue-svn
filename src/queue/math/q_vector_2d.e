@@ -48,11 +48,17 @@ feature -- interface
 			set_x(x_)
 			set_y(y_)
 		end
+	
+	is_null: BOOLEAN is
+			-- Is 'Current' equals to (0, 0)?
+		do
+			Result := (x = 0) and (y = 0)
+		end
 		
 	unit_vector: Q_VECTOR_2D is
 			-- v / ||v||
 		do
-			if x = 0 and y = 0 then
+			if is_null then
 				Result := create {Q_VECTOR_2D}.make (0, 0)
 			else
 				Result := Current / length

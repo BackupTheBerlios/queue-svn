@@ -33,6 +33,10 @@ feature -- interface
 
 			shot.hitball.set_velocity (shot.direction)
 			
+			-- empty collision list
+			-- DO I REALLY HAVE TO DO THIS, SEVERIN?
+			collision_handler.collision_list.wipe_out
+			
 			-- add balls
 			arr := table.balls
 			arr.do_all (agent addto_detector)
@@ -70,11 +74,6 @@ feature -- interface
 			result := False
 		end
 		
-	position_list: DS_LINKED_LIST[Q_VECTOR_2D] is
-		do
-			result := collision_handler.position_list
-		end
-		
 	cue_vector_for_collision (b: Q_BALL; velocity_after_collision: Q_VECTOR_2D): Q_VECTOR_2D is
 			-- Compute the velocity of the cue ball so that ball b has a given velocity vector
 			-- after a collision cue / ball
@@ -84,9 +83,9 @@ feature -- interface
 		end
 		
 	collision_list: LIST[Q_COLLISION_EVENT] is
-			-- the list of all collisions since last start of the simulation, is called from Q_SHOT_STATE
+			-- List of all collisions since last start of the simulation, called by Q_SHOT_STATE
 		do
-			-- implemented by physics engine
+			Result := collision_handler.collision_list
 		end
 		
 
