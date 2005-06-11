@@ -63,7 +63,6 @@ feature
 				create simulation_state_.make_mode( mode )
 				ressources_.put_state( simulation_state_ )
 			end
-			simulation_state_.set_shot( shot )
 			result := simulation_state_
 		end
 		
