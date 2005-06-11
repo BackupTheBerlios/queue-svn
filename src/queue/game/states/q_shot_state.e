@@ -18,7 +18,7 @@ feature{Q_SHOT_STATE}
 			
 			slider.set_bounds( 0.1, 0.1, 0.8, 0.1 )
 
-			slider.set_min_max( 0, 1 )
+			slider.set_min_max( 0, 100 )
 			slider.set_value( 0 )
 			
 			create behaviour.make
@@ -29,6 +29,9 @@ feature -- interface
 		do
 			ressources_.gl_manager.add_hud( slider )
 			ressources_.gl_manager.set_camera_behaviour( behaviour )
+			
+			-- set default-strengh
+			slider.set_value( slider.minimum + 0.25 * (slider.maximum - slider.minimum ))
 		end
 		
 	uninstall( ressources_: Q_GAME_RESSOURCES ) is

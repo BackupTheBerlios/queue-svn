@@ -23,6 +23,9 @@ feature{Q_SPIN_STATE}
 				create {Q_VECTOR_3D}.default_create,
 				create {Q_GL_COLOR}.make_red,
 				10 )				
+				
+			pressed_set := false
+			moving_set := false
 		end
 		
 feature -- interface
@@ -42,6 +45,8 @@ feature -- interface
 			behaviour.calculate_from( ressources_.gl_manager.camera )
 			
 			ressources_.gl_manager.set_camera_behaviour( behaviour )
+			
+			set_default_hit( ressources_ )
 		end
 		
 	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
@@ -214,6 +219,30 @@ feature -- 3d calculation
 		do
 			hit_point := hit( x_, y_, ressources_ )
 		end
+		
+	set_default_hit( ressources_ : Q_GAME_RESSOURCES ) is
+		local
+			center_ : Q_VECTOR_3D
+			direction_ : Q_VECTOR_3D
+		do
+			center_ := ressources_.mode.position_table_to_world( ball.center )
+			center_.add_xyz( 0, ball.radius, 0 )
+			
+			direction_ := ressources_.mode.direction_table_to_world( shot_direction )
+			direction_.normaliced
+			direction_.scaled( ball.radius )
+			
+			center_.sub( direction_ )
+			
+			hit_point := center_
+			
+			if not pressed_set then
+				pressed_set := true
+				ressources_.gl_manager.add_object( pressed_cross )
+				pressed_cross.set_position( hit_point )
+			end
+		end
+		
 		
 feature -- values
 	behaviour : Q_BALL_CAMERA_BEHAVIOUR
