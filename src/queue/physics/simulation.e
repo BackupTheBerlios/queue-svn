@@ -83,7 +83,7 @@ feature -- interface
 		end
 		
 	collision_list: LIST[Q_COLLISION_EVENT] is
-			-- List of all collisions since last start of the simulation, called by Q_SHOT_STATE
+			-- List of all collisions since last start of the simulation, called from game logic
 		do
 			Result := collision_handler.collision_list
 		end

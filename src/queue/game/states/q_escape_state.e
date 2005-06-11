@@ -355,7 +355,14 @@ feature{NONE} -- menu creation
 			button_.set_bounds( 0.1, 0.1, 0.8, 0.1 )
 			container_.add( button_ )
 			button_.actions.extend( agent start_8_ball( ?, ? ))
-			
+
+
+			create button_.make
+			button_.set_bounds( 0.1, 0.25, 0.8, 0.1 )
+			button_.set_text( defaults_.value( "game", "eth" ))
+			container_.add( button_ )
+			button_.actions.extend( agent start_eth ( ?, ? ))
+
 			create button_.make
 			button_.set_bounds( 0.5, 0.8, 0.4, 0.1 )
 			button_.set_text( defaults_.value( "game", "return" ))
@@ -630,6 +637,32 @@ feature{NONE} -- new games
 				goto_game_menu( command_, button_ )
 			end
 		end
+		
+	start_eth(command_: STRING; button_ : Q_HUD_BUTTON) is
+			-- starts an eth game
+		local
+			eth: Q_ETH
+			player_a_ : Q_PLAYER
+		do
+			if game_menu_armed then
+				eth ?= ressources.request_mode( "eth" )
+				if eth = void then
+					create eth.make
+					ressources.put_mode( eth )
+				end
+				-- reset the balls
+				eth.reset_balls
+				player_a_ := eth.human_player
+				player_a_.set_name (player_name_1.text)
+				eth.set_player_a( player_a_ )
+				eth.set_player_b( player_a_)
+				ressources.set_mode( eth )
+				next_state := eth.first_state( ressources )
+			else
+				goto_game_menu( command_, button_ )
+			end
+		end
+		
 		
 
 end -- class Q_ESCAPE_STATE

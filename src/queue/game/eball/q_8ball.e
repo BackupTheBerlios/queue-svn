@@ -20,6 +20,7 @@ feature -- creation
 			-- creation procedure
 		do
 			-- create the ball_models
+
 			new_ball_models
 			-- create the model and the table
 			new_table_model
@@ -105,6 +106,12 @@ feature	-- Interface
 	identifier : STRING is
 		do
 			result := "8ball"
+		end
+		
+	number_of_balls : INTEGER is
+		-- the total number of colored balls in 8ball
+		do
+			Result := 15 
 		end
 		
 feature --helper functions
@@ -920,7 +927,7 @@ feature{NONE} -- set-up
 			rand_: RANDOM
 			axis_: Q_VECTOR_3D
 		do
-			create ball_models.make (0, 15)
+			create ball_models.make (0, number_of_balls)
 			create loader_.make
 			create rand_.make
 			
