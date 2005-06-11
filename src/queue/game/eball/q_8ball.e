@@ -580,7 +580,6 @@ feature -- Game Logic
 	
 	valid_position( v_ : Q_VECTOR_2D; ball_ : Q_BALL ) : BOOLEAN is
 		local 
-			ball_already_there_ : BOOLEAN
 			i_ : INTEGER
 		do
 			Result := true
@@ -893,9 +892,7 @@ feature{NONE} -- set-up
 		local
 			index_ : INTEGER
 		do
-			from table_model.balls.start until table_model.balls.empty loop
-				table_model.balls.remove
-			end
+			table_model.balls.wipe_out
 			
 			-- link table and balls
 			from
