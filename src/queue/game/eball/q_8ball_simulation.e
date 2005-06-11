@@ -34,7 +34,11 @@ feature
 		do
 			precursor( ressources_ )
 			ressources_.gl_manager.add_hud( mode.info_hud )
-			ressources_.simulation.new( mode.table, shot )
+			
+			if shot /= void then
+				ressources_.simulation.new( mode.table, shot )
+				shot := void
+			end
 		end
 		
 	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
@@ -66,7 +70,6 @@ feature
 		do
 			shot := shot_
 		end
-		
 		
 feature{NONE}
 	shot : Q_SHOT
