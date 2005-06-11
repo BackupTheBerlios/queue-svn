@@ -143,7 +143,7 @@ feature -- 3d & table
 				ressources_.gl_manager.position_hud_to_world( x_, y_ ),
 				ressources_.gl_manager.direction_hud_to_world( x_, y_ ))
 				
-			vector_ := ressources_.mode.direction_table_to_world( create {Q_VECTOR_2D}.make( 0, 0 ) )
+			vector_ := ressources_.mode.position_table_to_world( create {Q_VECTOR_2D}.make( 0, 0 ) )
 			vector_.add_xyz( 0, ball.radius, 0 )
 			
 			create plane_.make_normal( vector_, create {Q_VECTOR_3D}.make( 0, 1, 0 ))
