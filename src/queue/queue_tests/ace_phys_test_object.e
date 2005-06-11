@@ -16,6 +16,7 @@ feature {NONE} -- create
 	make is
 		do
 			create simulation.make
+			create ballpos_list.make
 			
 			new
 		end
@@ -26,8 +27,6 @@ feature -- interface
 	new is
 			-- Reinitialize scene.
 		do
-			create ballpos_list.make
-			
 			create balls.make (1, 3)
 			create banks.make (1, 4)
 			
@@ -66,7 +65,7 @@ feature -- interface
 			-- Draw visualisation.
 		local
 		do
-			simulation.step (table)
+			simulation.step (table, Void)
 			
 			draw_ball (ogl, ball1)
 			draw_ball (ogl, ball2)
@@ -82,6 +81,10 @@ feature -- interface
 			
 			draw_track (ogl)
 			draw_ballvectors (ogl, ball1)
+			
+			if simulation.has_finished then
+				new
+			end
 		end
 		
 		

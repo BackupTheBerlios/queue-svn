@@ -47,7 +47,7 @@ feature
 			-- returns. If the physics is still working, true is returned.
 		do
 			if not ressources_.simulation.has_finished then
-				ressources_.simulation.step (ressources_.mode.table)
+				ressources_.simulation.step (ressources_.mode.table, ressources_.time)
 				Result := true
 			else
 				Result := false

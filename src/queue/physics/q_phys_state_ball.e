@@ -31,7 +31,7 @@ feature -- interface
 			o.set_angular_velocity (angular_velocity)
 		end
 
-feature {NONE} -- implementation
+feature {Q_BALL} -- implementation
 
 	bounding_object: Q_BOUNDING_CIRCLE
 	

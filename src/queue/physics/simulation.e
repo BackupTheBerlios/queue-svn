@@ -25,7 +25,8 @@ feature -- interface
 	new (table: Q_TABLE; shot: Q_SHOT) is
 			-- Start a new simulation.
 		require
-			table /= void
+			table /= Void
+			shot /= Void
 		local
 			arr: ARRAY[Q_OBJECT]
 		do
@@ -47,22 +48,42 @@ feature -- interface
 
 		end
 		
-	step (table: Q_TABLE) is
+	step (table: Q_TABLE; time: Q_TIME) is
 			-- Compute one step of the current simulation.
 		require
 			table /= void
 		local
 			newticks, stepsize: INTEGER
 			stepd: DOUBLE
+			i: INTEGER
 		do
-			newticks := timer_funcs.sdl_get_ticks_external
-			stepsize := newticks - oldticks
-			stepd := stepsize / 1000
-			oldticks := newticks
+			if is_test then
+				newticks := timer_funcs.sdl_get_ticks_external
+				stepsize := newticks - oldticks
+				stepd := stepsize / 1000
+				oldticks := newticks
+			else
+				stepd := time.delta_time_millis / 1000
+			end
 			
 			-- update objects
 			table.balls.do_all (agent do_update_position(?, stepd))
-
+			
+			-- balls standing still?
+			if table.balls.item (1).is_stationary then
+				i := 1	
+			end
+			
+			from 
+				finished := true
+				i := table.balls.lower
+			until
+				(finished = false) or (i > table.balls.upper)
+			loop
+				finished := finished and (table.balls.item (i).is_stationary)
+				i := i + 1
+			end
+			
 			-- collision detection
 			collision_detector.collision_test (stepd)
 
@@ -71,7 +92,7 @@ feature -- interface
 	has_finished: BOOLEAN is
 			-- Has current simulation finished?
 		do
-			result := False
+			result := finished
 		end
 		
 	cue_vector_for_collision (b: Q_BALL; velocity_after_collision: Q_VECTOR_2D): Q_VECTOR_2D is
@@ -83,7 +104,7 @@ feature -- interface
 		end
 		
 	collision_list: LIST[Q_COLLISION_EVENT] is
-			-- List of all collisions since last start of the simulation, called from game logic
+			-- List of all collisions since last start of the simulation, called by Q_SHOT_STATE
 		do
 			Result := collision_handler.collision_list
 		end
@@ -113,11 +134,17 @@ feature {NONE} -- implementation
 	collision_handler: Q_PHYS_COLLISION_RESPONSE_HANDLER
 	
 	oldticks: INTEGER
+	
+	finished: BOOLEAN
 
 	timer_funcs: SDL_TIMER_FUNCTIONS_EXTERNAL is
 			-- sdl timer functions, directly used, sorry Benno :-p
 		once
 			create Result
 		end
+		
+	-- START DEBUG --
+	is_test: BOOLEAN is true
+	-- END DEBUG --
 		
 end -- class SIMULATION

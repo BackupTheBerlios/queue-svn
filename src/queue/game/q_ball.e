@@ -117,6 +117,16 @@ feature -- interface
 			
 		end
 		
+	is_stationary: BOOLEAN is
+			-- Ball is not moving
+		do
+			result := True
+		
+			result := result and (velocity.length < 0.1)
+			result := result and (angular_velocity.length < 1)
+			
+		end	
+		
 	on_collide (other: like Current) is
 			-- Collisionn with other detected!
 		do
