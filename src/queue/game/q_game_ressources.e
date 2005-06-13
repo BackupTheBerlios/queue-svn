@@ -48,6 +48,15 @@ feature  -- game logic
 feature  -- graphics
 	gl_manager : Q_GL_MANAGER -- manager of the OpenGL-Tree
 
+	follow_on_shot : BOOLEAN
+		-- true if the normally, the camera will follow the ball when it is shot
+		
+	set_follow_on_shot( follow_ : BOOLEAN ) is
+		do
+			follow_on_shot := follow_
+		end
+		
+
 feature  -- I/O
 	event_queue : Q_EVENT_QUEUE is
 			-- 

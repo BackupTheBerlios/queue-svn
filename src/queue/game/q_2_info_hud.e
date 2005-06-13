@@ -7,9 +7,6 @@ class
 
 inherit
 	Q_HUD_CONTAINER
-	redefine
-		enqueue
-	end
 
 creation
 	make_ordered
@@ -121,11 +118,4 @@ feature -- hud
 			right.set_position( create {Q_VECTOR_3D}.make( 0, 0, 0.2 ))			
 		end
 		
-		
-feature -- queue
-	enqueue( queue_: Q_HUD_QUEUE ) is
-		do
-			precursor( queue_ )
-		end	
-
 end -- class Q_2_INFO_HUD

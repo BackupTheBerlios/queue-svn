@@ -24,6 +24,7 @@ feature
 			ressources := ressources_
 			ressources_.put_state ( current )
 			
+			follow_on_shot.set_selected( ressources_.follow_on_shot )
 			goto_main_menu( void, void )
 		end
 
@@ -35,6 +36,8 @@ feature
 			human_player_one.set_enabled( true )
 			human_player_two.set_enabled( true )
 			human_player_zero.set_enabled( true )
+			
+			ressources_.set_follow_on_shot( follow_on_shot.selected )
 			
 			main_menu.remove( return_button )
 			return_state := void
@@ -95,7 +98,7 @@ feature{NONE} -- menus
 	menu : Q_HUD_4_CUBE_SIDES
 	moves : ARRAY[ Q_HUD_SLIDING ]
 	
-	main_menu, option_menu, game_menu, quit_dialog, game_dialog : Q_HUD_CONTAINER
+	main_menu, option_menu, secondary_option, game_menu, quit_dialog, game_dialog : Q_HUD_CONTAINER
 		-- the Menus
 		
 	help_menus: ARRAY[ Q_HUD_CONTAINER ]
@@ -105,6 +108,8 @@ feature{NONE} -- menus
 
 	human_player_zero, human_player_one, human_player_two : Q_HUD_RADIO_BUTTON
 		-- how many human players should be allowed
+		
+	follow_on_shot : Q_HUD_CHECK_BOX
 		
 	player_name_1, player_name_2 : Q_HUD_TEXT_FIELD
 		-- name of the player(s)
@@ -144,6 +149,7 @@ feature{NONE} -- menu creation
 			
 			create_main_menu( defaults_ )
 			create_option_menu( defaults_ )
+			create_secondary_options( defaults_ )
 			create_quit_dialog( defaults_ )
 			create_game_menu( defaults_ )
 			create_new_game_dialog( defaults_ )
@@ -151,6 +157,7 @@ feature{NONE} -- menu creation
 			moves.item( 1 ).add( main_menu )
 			moves.item( 1 ).add( quit_dialog )
 			moves.item( 2 ).add( option_menu )
+			moves.item( 2 ).add( secondary_option )
 			moves.item( 4 ).add( game_menu )
 			moves.item( 4 ).add( game_dialog )
 			
@@ -159,6 +166,7 @@ feature{NONE} -- menu creation
 			create_background( quit_dialog )
 			create_background( game_menu )
 			create_background( game_dialog )
+			create_background( secondary_option )
 			
 			create help_menus.make( 1, 5 )
 			create help_text_.make_and_read( "data/help.ini" )
@@ -279,7 +287,7 @@ feature{NONE} -- menu creation
 	
 	create_option_menu( defaults_ : Q_INI_FILE_READER ) is
 		local
-			menu_ : Q_HUD_BUTTON
+			menu_, secondary_ : Q_HUD_BUTTON
 			group_ : Q_HUD_SELECTABLE_BUTTON_GROUP
 			label_1_, label_2_ : Q_HUD_LABEL
 		do
@@ -291,6 +299,7 @@ feature{NONE} -- menu creation
 			create human_player_two.make
 			
 			create menu_.make
+			create secondary_.make
 			create group_.make
 			
 			create player_name_1.make
@@ -315,6 +324,7 @@ feature{NONE} -- menu creation
 			label_2_.set_text( defaults_.value( "option", "name player 2" ))
 			
 			menu_.set_text( defaults_.value( "option", "return" ))
+			secondary_.set_text( defaults_.value( "option", "secondary" ))
 			
 			option_menu.add( human_player_zero )
 			option_menu.add( human_player_one )
@@ -323,6 +333,7 @@ feature{NONE} -- menu creation
 			option_menu.add( label_2_ )
 			option_menu.add( player_name_1 )
 			option_menu.add( player_name_2 )
+			option_menu.add( secondary_ )
 			option_menu.add( menu_ )
 			
 			human_player_zero.set_bounds( 0.1, 0.1, 0.8, 0.08 )
@@ -335,9 +346,37 @@ feature{NONE} -- menu creation
 			player_name_1.set_bounds( 0.1, 0.6, 0.35, 0.08 )
 			player_name_2.set_bounds( 0.55, 0.6, 0.35, 0.08 )			
 			
-			menu_.set_bounds( 0.5, 0.8, 0.4, 0.08 )
-
+			menu_.set_bounds( 0.55, 0.8, 0.35, 0.08 )
 			menu_.actions.extend( agent goto_main_menu( ?, ? ))
+			
+			secondary_.set_bounds( 0.15, 0.8, 0.35, 0.08 )
+			secondary_.actions.extend( agent goto_secondary_option )
+		end
+		
+	create_secondary_options( defaults_ : Q_INI_FILE_READER ) is
+		local
+			menu_, option_ : Q_HUD_BUTTON
+		do
+			create secondary_option.make
+			secondary_option.set_focus_handler( create {Q_FOCUS_DEFAULT_HANDLER} )
+			secondary_option.set_bounds( 0, 1, 1, 1 )
+			
+			create follow_on_shot.make
+			follow_on_shot.set_text( defaults_.value( "secondary", "follow" ))
+			follow_on_shot.set_bounds( 0.1, 0.1, 0.8, 0.1 )
+			secondary_option.add( follow_on_shot )
+
+			create menu_.make
+			menu_.set_text( defaults_.value( "secondary", "menu" ))
+			menu_.set_bounds( 0.15, 0.8, 0.35, 0.08 )
+			menu_.actions.extend( agent goto_main_menu )
+			secondary_option.add( menu_ )
+			
+			create option_.make
+			option_.set_text( defaults_.value( "secondary", "option" ))
+			option_.set_bounds( 0.55, 0.8, 0.35, 0.08 )
+			option_.actions.extend( agent goto_option_menu( ?, ? ))
+			secondary_option.add( option_ )
 		end
 		
 		
@@ -536,6 +575,12 @@ feature{NONE} -- event-handling
 			option_menu.focus_handler.focus_default( option_menu )
 		end
 
+	goto_secondary_option( command_ : STRING; button_ : Q_HUD_BUTTON ) is
+		do
+			goto_side( 2, 1 )
+			secondary_option.focus_handler.focus_default( secondary_option )
+		end
+		
 
 	goto_quit_dialog( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do

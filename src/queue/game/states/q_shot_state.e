@@ -18,7 +18,7 @@ feature{Q_SHOT_STATE}
 			
 			slider.set_bounds( 0.1, 0.1, 0.8, 0.1 )
 
-			slider.set_min_max( 0, 100 )
+			slider.set_min_max( 0, 1000 )
 			slider.set_value( 0 )
 			
 			create behaviour.make

@@ -11,16 +11,30 @@ inherit
 feature{NONE} -- creation
 	make is
 		do
-			create behaviour.make
 		end
 
 feature{NONE} -- values
-	behaviour : Q_FREE_CAMERA_BEHAVIOUR
+	free_behaviour : Q_FREE_CAMERA_BEHAVIOUR
+	ball_behaviour : Q_BALL_CAMERA_BEHAVIOUR
 
 feature
 	install( ressources_: Q_GAME_RESSOURCES ) is
 		do
-			ressources_.gl_manager.set_camera_behaviour( behaviour )
+			if ressources_.follow_on_shot then
+				if ball_behaviour = void then
+					create ball_behaviour.make( ressources_ )
+				end
+				
+				ball_behaviour.set_ball( ball )
+				ball_behaviour.calculate_from( ressources_.gl_manager.camera )
+				ressources_.gl_manager.set_camera_behaviour( ball_behaviour )
+			else
+				if free_behaviour = void then
+					create free_behaviour.make
+				end
+				
+				ressources_.gl_manager.set_camera_behaviour( free_behaviour )
+			end
 		end
 	
 	uninstall(ressources_: Q_GAME_RESSOURCES ) is
@@ -49,5 +63,14 @@ feature
 			-- If you don't want to change into a new state, return void.
 		deferred
 		end
+		
+feature -- ball
+	ball : Q_BALL
+	
+	set_ball( ball_ : Q_BALL ) is
+		do
+			ball := ball_
+		end
+		
 		
 end -- class Q_SIMULATION_STATE
