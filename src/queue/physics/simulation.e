@@ -109,6 +109,8 @@ feature -- interface
 			Result := collision_handler.collision_list
 		end
 		
+	collision_detector: Q_PHYS_COLLISION_DETECTOR
+		
 
 feature {NONE} -- implementation
 
@@ -129,7 +131,7 @@ feature {NONE} -- implementation
 		end
 		
 
-	collision_detector: Q_PHYS_COLLISION_DETECTOR
+
 	
 	collision_handler: Q_PHYS_COLLISION_RESPONSE_HANDLER
 	

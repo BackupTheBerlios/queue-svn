@@ -14,6 +14,7 @@ inherit
 		new_table,
 		ball_number_to_texture_name,
 		number_of_balls,
+		next_state,
 		make
 	end
 	
@@ -32,14 +33,15 @@ feature -- Interface
 	identifier :STRING is "eth"	
 	
 	number_of_balls : INTEGER is 28
-feature {NONE} -- Implementation
+	
+feature {NONE} -- setup
 	
 	new_table is
 			-- create an eth table
 		local
 			balls_: ARRAY[Q_BALL]
 			ball_ : Q_BALL
-			y,nr : INTEGER
+			nr : INTEGER
 			rand_ : Q_RANDOM
 			used_integers : LINKED_LIST[INTEGER]
 		do
@@ -119,5 +121,64 @@ feature {NONE} -- Implementation
 			end
 		end
 		
+feature --state
 		
+	next_state (ressources_: Q_GAME_RESSOURCES) : Q_GAME_STATE is
+			-- next state according to ruleset. If there is still time to play and there are balls on the table next state is bird state else statistics screen
+		local
+			fb_: LIST[INTEGER]
+			colls_ : LIST[Q_COLLISION_EVENT]
+			choice_state_ : Q_8BALL_CHOICE_STATE
+		do
+			colls_ := ressources_.simulation.collision_list
+			fb_ := fallen_balls (colls_)
+			if is_lost then
+				choice_state_ ?= ressources.request_state ("eth lost")
+				if choice_state_ = void then
+					create choice_state_.make_mode_titled( current,"Time is up "+ active_player.name+" loses", "eth lost", 2)
+					choice_state_.button (1).set_text ("Play again")
+					choice_state_.button (1).actions.force (agent handle_restart(?,?,choice_state_))
+					choice_state_.button (2).set_text ("Main menu")
+					choice_state_.button (2).actions.force (agent handle_main_menu(?,?,choice_state_))
+				end
+				choice_state_.set_title(active_player.name+" loses")
+				Result := choice_state_
+			elseif is_won then
+				choice_state_ ?= ressources.request_state("eth won")
+				if choice_state_ = void then
+					create choice_state_.make_mode_titled (current,"Congratulation, "+ active_player.name+" wins", "eth won", 2)
+					choice_state_.button (1).set_text ("Play again")
+					choice_state_.button (1).actions.force (agent handle_restart(?,?,choice_state_))
+					choice_state_.button (2).set_text ("Main menu")
+					choice_state_.button (2).actions.force (agent handle_main_menu(?,?,choice_state_))
+				end
+				choice_state_.set_title ("Congratulation, "+ active_player.name+" wins")
+				Result := choice_state_
+			else
+				result := ressources_.request_state( "8ball bird" )
+				if result = void then
+					result := create {Q_8BALL_BIRD_STATE}.make_mode (Current)
+					ressources_.put_state( result )
+				end	
+			end
+			assign_fallen_balls (fb_)
+		end
+		
+
+feature{NONE} -- game logic
+	
+	is_won :BOOLEAN is
+			-- have all balls fallen?
+		do
+			Result := active_player.fallen_balls.count = 28
+		end
+		
+	is_lost:BOOLEAN is
+			-- is time up?
+		do
+			Result := time_to_play <= 0
+		end
+	
+	time_to_play: INTEGER	
+	
 end -- class Q_ETH

@@ -9,6 +9,9 @@ class
 
 inherit
 	Q_MODE
+	redefine
+		active_player
+	end
 	Q_CONSTANTS
 	
 create
@@ -36,30 +39,32 @@ feature	-- Interface
 	table : Q_TABLE	
 	table_model: Q_TABLE_MODEL
 	ball_models: ARRAY[Q_BALL_MODEL]
-	player_A : Q_PLAYER -- the first player
-	player_B : Q_PLAYER -- the second player
+	player_A : Q_8BALL_PLAYER -- the first player
+	player_B : Q_8BALL_PLAYER -- the second player
+	active_player : Q_8BALL_PLAYER
 	info_hud : Q_2_INFO_HUD -- the informations for the user
 	
 	set_player_a( player_ : Q_PLAYER ) is
 		do
-			player_a := player_
+			player_a ?= player_
 			info_hud.set_big_left_text( player_.name )
 		end
 	
 	set_player_b( player_ : Q_PLAYER ) is
 		do
-			player_b := player_
+			player_b ?= player_
 			info_hud.set_big_right_text( player_.name )
 		end
-		
-	first_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
-		do
-			result := player_a.first_state( ressources_ )
-		end
-	
+
 	ai_player : Q_AI_PLAYER is
 		do
 			result := create {Q_8BALL_NAIVE_AI_PLAYER}.make
+		end
+		
+	reset_balls is
+			-- reset the balls randomly
+		do
+			new_table
 		end
 	
 	human_player : Q_HUMAN_PLAYER is
@@ -102,6 +107,21 @@ feature	-- Interface
 		do
 			create Result.make (table_model.width / 4, table_model.height / 2)
 		end
+		
+	valid_position( v_ : Q_VECTOR_2D; ball_ : Q_BALL ) : BOOLEAN is
+			-- is v_ a valid position, no ball in environment, not in bank, etc.
+		do
+			Result := True
+		end
+	
+	is_in_headfield(pos_ : Q_VECTOR_2D):BOOLEAN is
+			-- is pos_ in the headfield?
+		require
+			pos_ /= void
+		do
+			Result := pos_.x < head_point.x
+		end
+		
 
 	identifier : STRING is
 		do
@@ -250,6 +270,12 @@ feature -- state features
 		end
 		
 			
+	first_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
+		do
+			result := player_a.first_state( ressources_ )
+		end
+	
+			
 	next_state (ressources_: Q_GAME_RESSOURCES) : Q_GAME_STATE is
 			-- next state according to the ruleset
 		local
@@ -257,10 +283,11 @@ feature -- state features
 			aim_state_ : Q_8BALL_AIM_STATE
 			choice_state_ : Q_8BALL_CHOICE_STATE
 			colls_ : LIST[Q_COLLISION_EVENT]
-			ball_: Q_BALL
+			fb_: LIST[INTEGER]
 		do
 			ressources := ressources_
 			colls_ := ressources_.simulation.collision_list
+			fb_ := fallen_balls (colls_)
 			if is_game_lost(colls_) then
 				choice_state_ ?= ressources.request_state ("8ball lost")
 				if choice_state_ = void then
@@ -299,7 +326,7 @@ feature -- state features
 					choice_state_.button (3).actions.force (agent handle_restart_other (?,?,choice_state_))	
 				end
 				Result := choice_state_
-			elseif first_shot and then is_correct_opening (colls_) and then fallen_balls(colls_).has(white_number) and not fallen_balls (colls_).has(8) then
+			elseif first_shot and then is_correct_opening (colls_) and then fb_.has(white_number) and not fb_.has(8) then
 				-- rule 4.7
 				-- white has fallen in a correct opening shot
 --				 Der dann aufnahmeberechtigte Spieler hat Lageverbesserung im Kopffeld und darf keine Kugel direkt anspielen, 
@@ -315,7 +342,7 @@ feature -- state features
 				switch_players
 				is_open := true
 				Result := reset_state_
-			elseif first_shot and then is_correct_opening (colls_) and then fallen_balls (colls_).has(8) and not fallen_balls (colls_).has (white_number) then
+			elseif first_shot and then is_correct_opening (colls_) and then fb_.has(8) and not fb_.has (white_number) then
 				-- rule 4.9 first part
 --				(1) Wird die "8" mit dem Eröffnungsstoß versenkt, so kann der eröffnende Spieler verlangen, daß
 --				a) neu aufgebaut wird oder
@@ -330,7 +357,7 @@ feature -- state features
 					is_open := true	
 				end
 				result := choice_state_
-			elseif first_shot and then is_correct_opening (colls_) and then fallen_balls (colls_).has(8) and fallen_balls (colls_).has (white_number) then
+			elseif first_shot and then is_correct_opening (colls_) and then fb_.has(8) and fb_.has (white_number) then
 --				-- rule 4.9 second part
 --				(2) Fallen dem Spieler beim Eröffnungsstoß die Weiße und die "8", so kann der Gegner
 --				a) neu aufbauen lassen oder
@@ -378,8 +405,7 @@ feature -- state features
 				-- change players
 				switch_players
 			end
-			
-			first_shot := false
+			assign_fallen_balls (fb_)
 		end
 		
 feature {NONE} -- event handlers
@@ -465,16 +491,7 @@ feature {NONE} -- temporary ressources
 	ressources: Q_GAME_RESSOURCES
 		
 
-feature -- Game Logic
-
-	is_in_headfield(pos_ : Q_VECTOR_2D):BOOLEAN is
-			-- is pos_ in the headfield?
-		require
-			pos_ /= void
-		do
-			Result := pos_.x < head_point.x
-		end
-		
+feature{NONE} -- Game Logic
 	is_game_lost(colls_: LIST[Q_COLLISION_EVENT]) : BOOLEAN is
 			-- is the game lost
 			-- 4.20 Verlust des Spiels
@@ -576,54 +593,31 @@ feature -- Game Logic
 		end
 	
 	is_open : BOOLEAN -- is the table "open", i.e. no colors yet specified
-		
-	
-	valid_position( v_ : Q_VECTOR_2D; ball_ : Q_BALL ) : BOOLEAN is
-		local 
-			i_ : INTEGER
-		do
-			Result := true
-			from
-				i_ := table.balls.lower
-			until
-				i_ > table.balls.upper or not result
-			loop
-				if table.balls.item( i_ ) /= ball_ then
-					if (table.balls.item (i_).center - v_).length <= ball_radius then
-						Result := false
-					end
-				end
-				i_ := i_+1
-			end
-			Result := Result and v_.x>=0 and v_.x<=width and v_.y >= 0 and v_.y <= height
-		end
-		
+
 	all_balls_fallen : BOOLEAN is
 			-- are all balls of the active player's color fallen? (but not 8)
-		local
-			i,j,f: INTEGER
 		do
-			from
-				i:= table.holes.lower
-			until
-				i > table.holes.upper
-			loop
-				from
-					j := table.balls.lower
-				until
-					j > table.balls.upper
-				loop
-					if table.holes.item (i).caught_balls.has (table.balls.item(j)) and then table.balls.item (j).owner.has (active_player) then
-						f := f+1
-					end
-					j:= j+1
-				end
-				i := i+1
-			end
-			
-			Result := f = 7
+			Result := active_player.fallen_balls.count = 7
 		end
 
+	assign_fallen_balls(fb_: LIST[INTEGER]) is
+		-- assign fallen balls to players
+		local
+			p_ : Q_8BALL_PLAYER
+		do
+			from
+				fb_.start
+			until
+				fb_.after
+			loop
+				if fb_.item /= 8 and fb_.item /= white_number then
+					p_ ?= table.balls.item (fb_.item).owner
+					p_.fallen_balls.force (table.balls.item(fb_.item))
+				end
+				fb_.forth
+			end
+		end
+			
 	switch_players is
 			-- the active player becomes non-active, the other one active
 		do
@@ -664,16 +658,8 @@ feature -- Game Logic
 			valid_position(b_.center, b_)
 		end
 		
-
-	reset_balls is
-			-- reset the balls randomly
-		do
-			new_table
-		end
-
-
-		
 	first_shot : BOOLEAN
+	
 	close_table(ball_nr: INTEGER) is
 			-- close the table, i.e. assign the active player to all balls with same colors as ball_nr
 		require

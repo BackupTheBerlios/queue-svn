@@ -7,7 +7,8 @@ class
 
 inherit
 	Q_HUMAN_PLAYER
-
+	Q_8BALL_PLAYER
+	
 creation
 	make_mode
 	
