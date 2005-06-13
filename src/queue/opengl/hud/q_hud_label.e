@@ -27,5 +27,7 @@ feature {NONE} -- creation
 			set_blend_background( color_defaults.blend( "label" ) )
 			
 			set_insets( create {Q_HUD_INSETS}.make( 0.01, 0.05, 0.01, 0.01 ))
+			
+			set_font( font_defaults.font( "label" ) )
 		end
 end -- class Q_HUD_LABEL

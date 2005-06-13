@@ -25,6 +25,8 @@ feature {NONE} -- Creation
 			set_foreground( color_defaults.color_of( "checkbox", "foreground" ))
 			
 			set_blend_background( color_defaults.blend( "checkbox") )
+			
+			set_font( font_defaults.font( "checkbox" ))
 		end
 		
 feature -- drawing

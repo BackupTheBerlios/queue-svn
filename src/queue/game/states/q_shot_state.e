@@ -22,16 +22,21 @@ feature{Q_SHOT_STATE}
 			slider.set_value( 0 )
 			
 			create behaviour.make
+			
+			to_default_strength
 		end
+	
+	to_default_strength is
+		do
+			slider.set_value( slider.minimum + 0.25 * (slider.maximum - slider.minimum ))
+		end
+		
 	
 feature -- interface
 	install( ressources_: Q_GAME_RESSOURCES ) is
 		do
 			ressources_.gl_manager.add_hud( slider )
 			ressources_.gl_manager.set_camera_behaviour( behaviour )
-			
-			-- set default-strengh
-			slider.set_value( slider.minimum + 0.25 * (slider.maximum - slider.minimum ))
 		end
 		
 	uninstall( ressources_: Q_GAME_RESSOURCES ) is
@@ -65,6 +70,10 @@ feature -- interface
 	default_next_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
 		do
 			result := prepare_next_state( slider.value, ressources_ )
+			
+			if result /= void then
+				to_default_strength
+			end
 		end
 		
 		

@@ -86,7 +86,7 @@ feature{NONE} -- creation
 			orakel_ : PLAIN_TEXT_FILE
 			
 			c_ : CHARACTER
-			x_t_, y_t_, width_t_, height_t_, width_, height_, base_ : INTEGER			
+			x_t_, y_t_, width_t_, height_t_, width_, height_, base_, space_ : INTEGER			
 			
 		do
 			create letters.make( 80 )
@@ -131,9 +131,12 @@ feature{NONE} -- creation
 					orakel_.read_integer
 					base_ := orakel_.last_integer
 					
+					orakel_.read_integer
+					space_ := orakel_.last_integer
+					
 					letters.force ( create{Q_HUD_IMAGE_LETTER}.make( 
 						x_t_, y_t_, width_t_, height_t_, 
-						width_, height_, base_, texture.id ), c_ )
+						width_, height_, base_, space_, texture.id ), c_ )
 				end
 			end
 			
@@ -185,7 +188,7 @@ feature -- Interface
 		
 	width( letter_ : CHARACTER; size_ : DOUBLE ) : DOUBLE is
 		do
-			result := letters.item( letter_ ).width * to_factor( size_ )
+			result := (letters.item( letter_ ).width + letters.item( letter_).space ) * to_factor( size_ )
 		end
 	
 	height( letter_ : CHARACTER; size_ : DOUBLE ) : DOUBLE is

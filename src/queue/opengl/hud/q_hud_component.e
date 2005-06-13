@@ -35,6 +35,11 @@ feature -- creation
 			create result.make( "data/colors.ini" )
 		end
 		
+	font_defaults : Q_FONT_DEFAULTS is
+		once
+			create result.make( "data/fonts.ini" )
+		end
+		
 
 feature -- drawing
 	enqueue( queue_ : Q_HUD_QUEUE ) is

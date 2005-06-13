@@ -18,19 +18,15 @@ feature {NONE} -- Creation
 	make is
 		do
 			precursor
---
---			set_background_normal( create {Q_GL_COLOR}.make_rgba( 0.5, 1, 0.5, 0.75 ) )
---			set_background_pressed( create {Q_GL_COLOR}.make_rgba( 0.25, 1, 0.25, 0.75 ) )
---			set_background_rollover( create {Q_GL_COLOR}.make_rgba( 0.75, 1, 0.75, 0.75 ) )
---			
---			set_blend_background( true )
 			
 			set_background_normal( color_defaults.color_of( "radiobutton", "normal" ))
 			set_background_pressed( color_defaults.color_of( "radiobutton", "pressed" ))
 			set_background_rollover( color_defaults.color_of( "radiobutton", "rollover" ))
 			set_foreground( color_defaults.color_of( "radiobutton", "foreground" ))
 			
-			set_blend_background( color_defaults.blend( "radiobutton") )	
+			set_blend_background( color_defaults.blend( "radiobutton"))
+			
+			set_font( font_defaults.font( "radiobutton" ))
 		end
 		
 feature -- drawing

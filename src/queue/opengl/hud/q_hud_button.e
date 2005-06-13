@@ -47,12 +47,15 @@ feature {NONE} -- creation
 			set_alignement_x( 0.5 )
 			set_alignement_y( 0.5 )
 
-			set_background_normal( create {Q_GL_COLOR}.make_rgba( 1, 0.5, 0, 0.75 )) -- orange
-			set_background_pressed( create {Q_GL_COLOR}.make_rgba( 1, 0, 0, 0.75 )) -- red
-			set_background_rollover( create {Q_GL_COLOR}.make_rgba( 1, 1, 0, 0.75 )) -- yellow
+			set_background_normal( color_defaults.color_of( "button", "normal" ))
+			set_background_pressed( color_defaults.color_of( "button", "pressed" ))
+			set_background_rollover( color_defaults.color_of( "button", "rollover" ))
+			set_foreground( color_defaults.color_of( "button", "foreground" ))
 			set_blend_background( true )
 			
 			key_down_listener.extend( agent do_click_on_event( ?,?,? ))
+			
+			set_font( font_defaults.font( "button" ))
 		end		
 
 feature -- eventhandling

@@ -38,6 +38,86 @@ feature -- interaction
 		
 
 feature -- access
+	is_write_key( key_ : INTEGER ) : BOOLEAN is
+			-- true if the key is a letter, number or another sign witch have
+			-- a associated sign in the standard-fonts
+		do
+			result :=
+				-- number
+				key_ = sdlk_0 or
+				key_ = sdlk_1 or
+				key_ = sdlk_2 or
+				key_ = sdlk_3 or
+				key_ = sdlk_4 or
+				key_ = sdlk_5 or
+				key_ = sdlk_6 or
+				key_ = sdlk_7 or
+				key_ = sdlk_8 or
+				key_ = sdlk_9 or
+				
+				-- standard letter
+				key_ = sdlk_a or
+				key_ = sdlk_b or
+				key_ = sdlk_c or
+				key_ = sdlk_d or
+				key_ = sdlk_e or
+				key_ = sdlk_f or
+				key_ = sdlk_g or
+				key_ = sdlk_h or
+				key_ = sdlk_i or
+				key_ = sdlk_j or
+				key_ = sdlk_k or
+				key_ = sdlk_l or
+				key_ = sdlk_m or
+				key_ = sdlk_n or
+				key_ = sdlk_o or
+				key_ = sdlk_p or
+				key_ = sdlk_q or
+				key_ = sdlk_r or
+				key_ = sdlk_s or
+				key_ = sdlk_t or
+				key_ = sdlk_u or
+				key_ = sdlk_v or
+				key_ = sdlk_w or
+				key_ = sdlk_x or
+				key_ = sdlk_y or
+				key_ = sdlk_z or
+				
+				-- signs
+				key_ = sdlk_ampersand or
+				key_ = sdlk_asterisk or
+				key_ = sdlk_at or
+				key_ = sdlk_colon or
+				key_ = sdlk_comma or
+				key_ = sdlk_compose or
+				key_ = sdlk_dollar or
+				key_ = sdlk_euro or
+				key_ = sdlk_exclaim or
+				key_ = sdlk_kp_divide or
+				key_ = sdlk_kp_equals or
+				key_ = sdlk_kp_minus or
+				key_ = sdlk_kp_multiply or
+				key_ = sdlk_kp_period or
+				key_ = sdlk_kp_plus or
+				key_ = sdlk_leftbracket or
+				key_ = sdlk_leftparen or
+				key_ = sdlk_less or
+				key_ = sdlk_minus or
+				key_ = sdlk_period or
+				key_ = sdlk_plus or
+				key_ = sdlk_power or
+				key_ = sdlk_quote or
+				key_ = sdlk_quotedbl or
+				key_ = sdlk_rightbracket or
+				key_ = sdlk_rightparen or
+				key_ = sdlk_semicolon or
+				key_ = sdlk_slash or
+				key_ = sdlk_space or
+				key_ = sdlk_tab or
+				key_ = sdlk_underscore
+		end
+		
+
 	pressed( key_ : INTEGER ) : BOOLEAN is
 			-- true if the given key is pressed, false otherwise
 		do

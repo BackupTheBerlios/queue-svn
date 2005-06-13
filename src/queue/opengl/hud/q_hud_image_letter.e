@@ -10,7 +10,7 @@ creation
 	make
 
 feature{NONE} -- creation
-	make( x_texture_, y_texture_, width_texture_, height_texture_, width_, height_, base_, texture_id_ : INTEGER ) is
+	make( x_texture_, y_texture_, width_texture_, height_texture_, width_, height_, base_, space_, texture_id_ : INTEGER ) is
 		do
 			x_texture := x_texture_
 			y_texture := y_texture_
@@ -18,6 +18,7 @@ feature{NONE} -- creation
 			height_texture := height_texture_
 			width := width_
 			height := height_
+			space := space_
 			base := base_
 			texture_id := texture_id_
 		end
@@ -32,22 +33,12 @@ feature -- draw
 			open_gl.gl.gl_color3f( 1, 1, 1)
 
 			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_blend )
-			--open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_texture_2d )
 			open_gl.gl.gl_enable( open_gl.gl_constants.esdl_gl_alpha_test )
-			
---			open_gl.gl.gl_tex_envi( 
---				open_gl.gl_constants.esdl_gl_texture_env,
---				open_gl.gl_constants.esdl_gl_texture_env_mode,
---				open_gl.gl_constants.esdl_gl_modulate )
---		
+		
 			open_gl.gl.gl_blend_func( 
 				open_gl.gl_constants.esdl_gl_zero, 
 				open_gl.gl_constants.esdl_gl_src_color )
 
---			open_gl.gl.gl_blend_func( 
---				open_gl.gl_constants.esdl_gl_src_alpha, 
---				open_gl.gl_constants.esdl_gl_one_minus_src_alpha )
-				
 			open_gl.gl.gl_alpha_func( 
 				open_gl.gl_constants.esdl_gl_notequal, 0 )
 
@@ -67,7 +58,6 @@ feature -- draw
 			
 			open_gl.gl.gl_end
 		
-			--open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_texture_2d )
 			open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_alpha_test )
 			open_gl.gl.gl_disable( open_gl.gl_constants.esdl_gl_blend )
 		end
@@ -80,7 +70,7 @@ feature -- information
 	x_texture, y_texture, width_texture, height_texture : INTEGER
 		-- position of the Letter on the texture
 		
-	width, height, base : INTEGER
+	width, height, base, space : INTEGER
 		-- the real size of the letter. Base is the position of the baseline, measured from the bottom of the letter
 
 end -- class Q_HUD_IMAGE_LETTER

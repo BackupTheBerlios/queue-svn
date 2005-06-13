@@ -36,6 +36,7 @@ feature{NONE} -- creation
 			
 			set_insets( create {Q_HUD_INSETS}.make( 0, 0.1, 0, 0.1 ))
 			set_text( "" )
+			set_font( font_defaults.font( "textfield" ))
 			
 			mouse_button_down_listener.extend( agent mouse_button_down( ?,?,?,?,? ))
 			key_down_listener.extend( agent key_down( ?,?,? ))
@@ -184,30 +185,32 @@ feature {NONE} -- event handling
 					set_cursor( text.count + 1 )
 					result := true
 				else
-					character_ := event_.character
+					if map_.is_write_key( event_.key ) then
+						character_ := event_.character
 					
-					if (event_.is_caps_locked and not event_.is_shift_pressed) or
-						(not event_.is_caps_locked and event_.is_shift_pressed) then
-						
-						character_ := character_.upper
-					end
-					
-					if font.known_letter( character_ ) then
-						if text.count = 0 then
-							set_text( character_.out )
-						elseif cursor = 1 then
-							set_text( character_.out + text )
-						elseif cursor = text.count+1 then
-							set_text( text + character_.out )
-						else
-							set_text(
-								text.substring( 1, cursor-1 ) +
-								character_.out + 
-								text.substring( cursor, text.count ))
+						if (event_.is_caps_locked and not event_.is_shift_pressed) or
+							(not event_.is_caps_locked and event_.is_shift_pressed) then
+							
+							character_ := character_.upper
 						end
-						cursor := cursor + 1
-						result := true
-					end	
+						
+						if font.known_letter( character_ ) then
+							if text.count = 0 then
+								set_text( character_.out )
+							elseif cursor = 1 then
+								set_text( character_.out + text )
+							elseif cursor = text.count+1 then
+								set_text( text + character_.out )
+							else
+								set_text(
+									text.substring( 1, cursor-1 ) +
+									character_.out + 
+									text.substring( cursor, text.count ))
+							end
+							cursor := cursor + 1
+							result := true
+						end	
+					end
 				end
 			end
 		end
