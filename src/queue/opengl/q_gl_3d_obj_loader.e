@@ -74,7 +74,7 @@ feature  -- Commands
 					elseif tokenizer_.last_string.is_equal ("vt") then
 						-- read a vector
 						tokenizer_.read_token
-						vectors.force (read_vector (tokenizer_), texture_coordinate_count)
+						texture_coordinates.force (read_vector (tokenizer_), texture_coordinate_count)
 						texture_coordinate_count := texture_coordinate_count + 1
 						has_texture_cooridnates := TRUE
 					elseif tokenizer_.last_string.is_equal ("f")  then
