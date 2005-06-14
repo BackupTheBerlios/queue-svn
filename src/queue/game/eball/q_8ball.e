@@ -156,9 +156,13 @@ feature	-- Interface
 			create Result.make (table_model.width / 4, table_model.height / 2)
 		end
 		
-	valid_position(sim_:Q_SIMULATION; v_ : Q_VECTOR_2D; ball_ : Q_BALL ) : BOOLEAN is
+	valid_position( v_ : Q_VECTOR_2D; ball_ : Q_BALL ) : BOOLEAN is
 			-- is v_ a valid position, no ball in environment, not in bank, etc.
+		local
+			sim_: Q_SIMULATION
 		do
+			create sim_.make
+			sim_.new (table,create {Q_SHOT}.make (table.balls.item (white_number), create {Q_VECTOR_2D}.default_create))
 			Result := not sim_.collision_detector.collision_test
 		end
 	
@@ -700,7 +704,7 @@ feature{NONE} -- Game Logic
 				x_ := head_point.x
 				b_.set_center (head_point)
 			until
-				x_ = width or else valid_position (ressources.simulation, b_.center, b_)
+				x_ = width or else valid_position (b_.center, b_)
 			loop
 				b_.set_center (create {Q_VECTOR_2D}.make (x_, head_point.y))
 				x_ := x_ + 0.5

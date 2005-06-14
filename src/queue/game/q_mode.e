@@ -95,7 +95,7 @@ feature -- Interface
 		deferred
 		end
 		
-	valid_position(sim_: Q_SIMULATION; ball_position_ : Q_VECTOR_2D; ball_ : Q_BALL ) : BOOLEAN is
+	valid_position(ball_position_ : Q_VECTOR_2D; ball_ : Q_BALL ) : BOOLEAN is
 			-- true if the given ball-position is valid, otherwise false
 		require
 			ball_position_ /= void
