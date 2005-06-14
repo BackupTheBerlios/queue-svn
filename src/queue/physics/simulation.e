@@ -43,10 +43,10 @@ feature -- interface
 			-- DO I REALLY HAVE TO DO THIS, SEVERIN?
 			collision_handler.collision_list.wipe_out
 			
-			collision_detector.add_object (table.balls.item (0))
+--			collision_detector.add_object (table.balls.item (0))
 			-- add balls
 			arr := table.balls
---			arr.do_all (agent addto_detector)
+			arr.do_all (agent addto_detector)
 
 			-- add banks
 			arr := table.banks
@@ -86,8 +86,8 @@ feature -- interface
 			table /= void
 		local
 			newticks, stepsize: INTEGER
-			stepd: DOUBLE
-			i, j: INTEGER
+			stepd, maxv, t: DOUBLE
+			i, j, steps_per_frame: INTEGER
 			b: BOOLEAN
 		do
 			if is_test then
@@ -99,15 +99,27 @@ feature -- interface
 				stepd := time.delta_time_millis / 1000
 			end
 			
+			-- Determine step from maximum velocity of a ball
+			-- v = s/t,  v = maxv,  s = radius/4
+			--> t = radius / (4*maxv)
+			maxv := maximum_velocity (table.balls)
+			t := (table.balls @ table.balls.lower).radius
+			t := t / (4*maxv)
+
+			steps_per_frame := 1 -- (stepd / t).ceiling
 			stepd := stepd / steps_per_frame
+			
+			io.putstring ("steps: ")
+			io.putint (steps_per_frame)
+			io.put_new_line
 			
 			from i := 0
 			until
 				i >= steps_per_frame
 			loop		
 				-- update objects
-				table.balls.item (0).do_update_position (stepd)
---				table.balls.do_all (agent do_update_position(?, stepd))
+--				table.balls.item (0).do_update_position (stepd)
+				table.balls.do_all (agent do_update_position(?, stepd))
 				
 				-- balls standing still?
 				from 
@@ -170,6 +182,29 @@ feature {NONE} -- implementation
 			b.do_update_position (stepsize)
 		end
 	
+	maximum_velocity (balls: ARRAY[Q_BALL]): DOUBLE is
+			-- Velocity of fastet ball in array.
+		local
+			i: INTEGER
+			d: DOUBLE
+			b: Q_BALL
+		do
+			from
+				result := 0.0
+				i := balls.lower
+			until
+				i > balls.upper
+			loop
+				b := balls @ i
+				d := b.velocity.length
+				if d > result then
+					result := d
+				end
+				
+				i := i + 1
+			end
+		end
+	
 	oldticks: INTEGER
 	
 	finished: BOOLEAN
@@ -179,8 +214,6 @@ feature {NONE} -- implementation
 		once
 			create result
 		end
-		
-	steps_per_frame: INTEGER is 1
 		
 	-- START DEBUG --
 	is_test: BOOLEAN is False

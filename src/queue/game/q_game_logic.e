@@ -30,7 +30,7 @@ feature -- Interface
 feature{NONE} -- creation
 	make is
 			-- the creation procedure of the root class, creates the event_queue and others
-		do
+		do			
 			default_create
 		
 			-- set defaults
