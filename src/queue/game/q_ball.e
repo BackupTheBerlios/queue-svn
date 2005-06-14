@@ -38,9 +38,6 @@ feature -- create
 		do
 			create bounding_object.make (center_, radius_)
 			create old_state
-			
-			-- e.g. to calculate radvec
-			set_radius (radius_)
 
 			create velocity.default_create
 			create angular_velocity.default_create
@@ -101,7 +98,7 @@ feature -- interface
 			-- > Calculate velocity dv = a*t --> v[new] = a*t + v[old]
 			a := f / mass
 			
---			velocity := velocity + (a * step)
+			velocity := velocity + (a * step)
 			
 			-- v = s/t --> s = v * t
 			c := center + velocity * step			
@@ -113,7 +110,7 @@ feature -- interface
 			mom := radvec.cross ( dim2_to_dim3 (f_sf) )
 			om := mom / theta
 			
---			angular_velocity := angular_velocity + (om * step)
+			angular_velocity := angular_velocity + (om * step)
 			
 			if number = 0 then
 				io.putstring ("pos: " + center.out)
@@ -154,9 +151,6 @@ feature -- interface
 		require
 			r >= 0
 		do
-			radvec := create {Q_VECTOR_3D}.make (0, -1 * radius, 0)
-			theta  := 2/5 * mass * r*r
-		
 			bounding_object.set_radius(r)
 		end
 		
@@ -205,7 +199,24 @@ feature -- interface
 	
 	typeid: INTEGER is 1
 			-- Type id for collision response
-			
+	
+	set_mu_sf (mu: DOUBLE) is
+			-- Set sliding friction constant
+		do
+			mu_sf := mu
+		end
+		
+	set_mu_rf (mu: DOUBLE) is
+			-- Set sliding friction constant
+		do
+			mu_rf := mu
+		end
+	
+	set_mass (m: DOUBLE) is
+			-- Set sliding friction constant
+		do
+			mass := m
+		end
 	
 feature -- implementation
 	
@@ -215,31 +226,39 @@ feature -- implementation
 			Result := create {Q_PHYSICS}
 		end
 	
-	radvec: Q_VECTOR_3D
+	radvec: Q_VECTOR_3D is
 			-- Radius vector
+		do
+			result := create {Q_VECTOR_3D}.make (0, -1 * radius, 0)
+		end
 	
-	mass: DOUBLE is 0.2
+	mass: DOUBLE -- is 0.2
 	
-	theta: DOUBLE
+	theta: DOUBLE is
 			-- Theta would actually be a matrix.
 			-- But since the matrix is the identify matrix for a ball it can
-			-- be reduced to a real number	
+			-- be reduced to a real number
+		do
+			result := 2/5 * mass * radius * radius
+		end
 	
-	mu_sf: DOUBLE is 0.5
+--	mu_sf: DOUBLE is 0.5
+	mu_sf: DOUBLE
 			-- Sliding friction constant (Gleitreibung)
 			
-	mu_rf: DOUBLE is 2.5
+--	mu_rf: DOUBLE is 2.5
+	mu_rf: DOUBLE
 			-- Rolling friction constant (Rollreibung)
 	
 	sf_const: DOUBLE is
 			-- Constant part of sliding friction: mu_sf * fn
-		once
+		do
 			Result := mu_sf * physics.force_normal_val (mass)
 		end
 		
 	rf_const: DOUBLE is
 			-- Constant part of rolling friction: mu_rf * fn
-		once
+		do
 			Result := mu_rf * physics.force_normal_val (mass)
 		end
 		

@@ -43,38 +43,38 @@ feature -- interface
 			-- DO I REALLY HAVE TO DO THIS, SEVERIN?
 			collision_handler.collision_list.wipe_out
 			
---			collision_detector.add_object (table.balls.item (0))
+			collision_detector.add_object (table.balls.item (0))
 			-- add balls
 			arr := table.balls
-			arr.do_all (agent addto_detector)
+--			arr.do_all (agent addto_detector)
 
 			-- add banks
 			arr := table.banks
 			arr.do_all (agent addto_detector)
 			
 			-- START DEBUG --
-			from
-				i := arr.lower
-			until
-				i > arr.upper
-			loop
-				b ?= arr @ i
-				
-				io.putstring ("banks.put (create bank.make (create {Q_VECTOR_2D}.make (")
-				io.putdouble (b.edge1.x)
-				io.putstring (", ")
-				io.putdouble (b.edge1.y)
-				io.putstring ("), create {Q_VECTOR_2D}.make (")
-				io.putdouble (b.edge2.x)
-				io.putstring (", ")
-				io.putdouble (b.edge2.y)
-				io.putstring (")), ")
-				io.putint (i)
-				io.putstring (")")
-				io.put_new_line
-				
-				i := i + 1	
-			end
+--			from
+--				i := arr.lower
+--			until
+--				i > arr.upper
+--			loop
+--				b ?= arr @ i
+--				
+--				io.putstring ("banks.put (create bank.make (create {Q_VECTOR_2D}.make (")
+--				io.putdouble (b.edge1.x)
+--				io.putstring (", ")
+--				io.putdouble (b.edge1.y)
+--				io.putstring ("), create {Q_VECTOR_2D}.make (")
+--				io.putdouble (b.edge2.x)
+--				io.putstring (", ")
+--				io.putdouble (b.edge2.y)
+--				io.putstring (")), ")
+--				io.putint (i)
+--				io.putstring (")")
+--				io.put_new_line
+--				
+--				i := i + 1	
+--			end
 			
 			-- END DEBUG --
 
@@ -106,8 +106,8 @@ feature -- interface
 				i >= steps_per_frame
 			loop		
 				-- update objects
---				table.balls.item (0).do_update_position (stepd)
-				table.balls.do_all (agent do_update_position(?, stepd))
+				table.balls.item (0).do_update_position (stepd)
+--				table.balls.do_all (agent do_update_position(?, stepd))
 				
 				-- balls standing still?
 				from 
@@ -180,7 +180,7 @@ feature {NONE} -- implementation
 			create result
 		end
 		
-	steps_per_frame: INTEGER is 3
+	steps_per_frame: INTEGER is 1
 		
 	-- START DEBUG --
 	is_test: BOOLEAN is False

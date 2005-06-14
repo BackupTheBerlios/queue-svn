@@ -27,10 +27,10 @@ feature -- interface
 	new is
 			-- Reinitialize scene.
 		do
-			create balls.make (1, 1)
+			create balls.make (0, 0)
 			create banks.make (0, 19)
 			
-			create ball1.make (create {Q_VECTOR_2D}.make (30, 60), 2.5)
+			create ball1.make (create {Q_VECTOR_2D}.make (50, 60), 2.5)
 --			create ball2.make (create {Q_VECTOR_2D}.make (300, 50), 2.5)
 --			create ball3.make (create {Q_VECTOR_2D}.make (0, -100), 2.5)
 			
@@ -62,9 +62,9 @@ feature -- interface
 --			create bank3.make (create {Q_VECTOR_2D}.make (-50, 300), create {Q_VECTOR_2D}.make (500, 300))
 --			create bank4.make (create {Q_VECTOR_2D}.make (-50, -300), create {Q_VECTOR_2D}.make (500, -300))
 			
-			balls.put (ball1, 1)
---			balls.put (ball2, 2)
---			balls.put (ball3, 3)
+			balls.put (ball1, 0)
+--			balls.put (ball2, 1)
+--			balls.put (ball3, 2)
 			
 --			banks.put (bank1, 1)
 --			banks.put (bank2, 2)
@@ -75,7 +75,7 @@ feature -- interface
 
 			-- ball1.set_velocity (create {Q_VECTOR_2D}.make (500, 125))
 --			ball2.set_velocity (create {Q_VECTOR_2D}.make (-90, -24))
-			ball1.set_angular_velocity (create {Q_VECTOR_3D}.make (0, 0, 0))
+--			ball1.set_angular_velocity (create {Q_VECTOR_3D}.make (30, 0, 0))
 			
 			ballpos_list.wipe_out
 			
