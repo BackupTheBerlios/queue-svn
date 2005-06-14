@@ -14,7 +14,7 @@ inherit
 	rename
 		screen as scene_screen
 	redefine
-		redraw
+		redraw, quit
 	end
 	
 create
@@ -27,10 +27,17 @@ feature -- Interface
 			
 		end
 		
+	quit is
+		do
+			precursor
+			ressources.values.save_file( "data/preferences.ini" )
+		end
+		
+		
 feature{NONE} -- creation
 	make is
 			-- the creation procedure of the root class, creates the event_queue and others
-		do			
+		do
 			default_create
 		
 			-- set defaults
@@ -51,7 +58,8 @@ feature{NONE} -- creation
 		
 			-- Create ressources
 			create ressources.make( current )
-		
+			ressources.values.load_file( "data/preferences.ini" )
+			
 			-- Create the event_queue
 			create event_queue.make( event_loop, video_subsystem )
 			

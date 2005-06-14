@@ -15,21 +15,27 @@ feature{NONE}--creation
 	make( move_ : BOOLEAN ) is
 		do
 			create_menus( move_ )
+			settings_read := false
 		end
 
 feature
 	install( ressources_: Q_GAME_RESSOURCES ) is
-		do			
+		do					
 			ressources_.gl_manager.add_hud( container )
 			ressources := ressources_
 			ressources_.put_state ( current )
 			
 			follow_on_shot.set_selected( ressources_.follow_on_shot )
 			goto_main_menu( void, void )
+			
+			if not settings_read then
+				read_settings
+			end
 		end
 
 	uninstall( ressources_: Q_GAME_RESSOURCES ) is
 		do
+			save_settings
 			ressources_.gl_manager.remove_hud( container )
 			ressources := void
 			
@@ -546,6 +552,64 @@ feature{NONE} -- menu creation
 		
 	
 feature{NONE} -- event-handling
+	settings_read : BOOLEAN
+	
+	read_settings is
+		local
+			value_ : STRING
+		do
+			settings_read := true
+			
+			value_ := ressources.values.value( "escape", "human player" )
+			if value_ /= void then
+				if value_.is_equal( "0" ) then
+					human_player_zero.set_selected( true )
+				elseif value_.is_equal( "1" ) then
+					human_player_one.set_selected( true )
+				else
+					human_player_two.set_selected( true )
+				end
+			end
+			
+			value_ := ressources.values.value( "escape", "player name a" )
+			if value_ /= void then
+				player_name_1.set_text( value_ )
+			end
+			
+			value_ := ressources.values.value( "escape", "player name b" )
+			if value_ /= void then
+				player_name_2.set_text( value_ )
+			end
+			
+			value_ := ressources.values.value( "escape", "follow" )
+			if value_ /= void then
+				follow_on_shot.set_selected( value_.to_boolean )
+			end			
+		end
+		
+
+	save_settings is
+		do
+			if human_player_zero.selected then
+				ressources.values.put( "escape", "human player", "0" )
+			elseif human_player_one.selected then
+				ressources.values.put( "escape", "human player", "1" )
+			else
+				ressources.values.put( "escape", "human player", "2" )
+			end
+			
+			if player_name_1.text.count > 0 then
+				ressources.values.put( "escape", "player name a", player_name_1.text )				
+			end
+			
+			if player_name_2.text.count > 0 then
+				ressources.values.put( "escape", "player name b", player_name_2.text )
+			end
+			
+			ressources.values.put( "escape", "follow", follow_on_shot.selected.out )
+		end
+		
+
 	new_game( command_ : STRING; button_ : Q_HUD_BUTTON ) is
 		do
 			if return_state = void then
@@ -565,6 +629,7 @@ feature{NONE} -- event-handling
 			if menu.rotated_to /= 1 or moves.item( 1 ).destination_position.rounded /= 1 then
 				goto_quit_dialog( command_, button_ )
 			else
+				save_settings
 				ressources.logic.quit
 			end
 		end

@@ -11,10 +11,20 @@ create
 	make, make_and_read
 	
 feature {NONE} -- Private Features
-	values: HASH_TABLE[STRING, STRING]
+	values: HASH_TABLE[HASH_TABLE[STRING, STRING], STRING]
 		-- The keys and values
-	
-feature -- Interface
+
+feature -- read & get
+	load_file( path_ : STRING ) is
+		local
+			file_ : PLAIN_TEXT_FILE
+		do
+			create file_.make_open_read( path_ )
+			load_ini_file( file_ )
+			file_.close
+		end
+		
+
 	load_ini_file (ini_file: PLAIN_TEXT_FILE) is
 			-- Load the specified file.
 		require
@@ -58,7 +68,7 @@ feature -- Interface
 					trim( left )
 					trim( right )
 					
-					values.put (right, current_section + "." + left)
+					put( current_section, left, right )
 				end
 
 				ini_file.read_line
@@ -71,10 +81,75 @@ feature -- Interface
 		require
 			section_name /= void
 			value_name /= void
+		local
+			table_ : HASH_TABLE[ STRING, STRING ]
 		do
-			result := values.item (section_name + "." + value_name)
+			table_ := values.item( section_name )
+			if table_ /= void then
+				result := table_.item( value_name )
+			end
 		end
 		
+feature -- write & set
+	save_file( path_ : STRING ) is
+		local
+			file_ : PLAIN_TEXT_FILE
+		do
+			create file_.make_open_write( path_ )
+			save_ini_file( file_ )
+			file_.close
+		end
+		
+
+	save_ini_file( file_ : PLAIN_TEXT_FILE ) is
+			-- writes all values of this reader into the given textfile
+		require
+			file_not_void : file_ /= void
+			can_write : file_.writable
+		local
+			table_ : HASH_TABLE[ STRING, STRING ]
+		do
+			from
+				values.start
+			until
+				values.after
+			loop
+				file_.put_string( "[" )
+				file_.put_string( values.key_for_iteration )
+				file_.put_string( "]" )
+				file_.put_new_line
+				
+				from
+					table_ := values.item_for_iteration
+					table_.start
+				until
+					table_.after
+				loop
+					file_.put_string( "%T" )
+					file_.put_string( table_.key_for_iteration )
+					file_.put_string( " = " )
+					file_.put_string( table_.item_for_iteration )
+					file_.put_new_line
+					table_.forth
+				end
+				
+				values.forth
+			end
+		end
+		
+
+	put( section_, key_, value_ : STRING ) is
+		local
+			table_ : HASH_TABLE[ STRING, STRING ]
+		do
+			table_ := values.item( section_ )
+			if table_ = void then
+				create table_.make( 20 )
+				values.put( table_, section_ )
+			end
+			table_.force( value_, key_ )
+		end	
+	
 feature{NONE} -- string
 	trim( string_ : STRING ) is
 		local

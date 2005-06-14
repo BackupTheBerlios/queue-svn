@@ -17,6 +17,8 @@ feature{NONE} -- creation
 			create gl_manager.make_timed( logic_.screen.width, logic_.screen.height, time )
 			create simulation.make
 			
+			create values.make
+			
 			logic := logic_
 		end
 
@@ -64,7 +66,7 @@ feature  -- I/O
 			result := gl_manager.unused_events
 		end
 		
-
+	values : Q_INI_FILE_READER
 
 feature -- states
 	request_state( name_ : STRING ) : Q_GAME_STATE is
