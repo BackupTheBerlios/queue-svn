@@ -764,7 +764,7 @@ feature{NONE} -- new games
 				eth.reset_balls
 				player_a_ := eth.human_player
 				player_a_.set_name (player_name_1.text)
-				eth.set_player_a( player_a_ )
+				eth.set_player( player_a_ )
 				ressources.set_mode( eth )
 				next_state := eth.first_state( ressources )
 			else

@@ -8,26 +8,30 @@ class
 	Q_ETH
 
 inherit
-	Q_8BALL
+	Q_ABSTRACT_MODE
 	redefine
-		identifier,
-		new_table,
-		ball_number_to_texture_name,
-		number_of_balls,
-		next_state,
-		set_player_a,
-		make
+		active_player
 	end
-	
+	Q_CONSTANTS
+
 creation
 	make
-
+	
 feature -- Interface
 
 	make is
 			-- create an eth mode
 		do
-			precursor
+			-- create the ball_models
+			new_ball_models
+			-- create the model and the table
+			new_table_model
+			new_table
+			create ball_updater.make( current )
+			
+			-- create hud
+			create time_info_hud.make
+			time_info_hud.set_location( 0.05, 0.75 )
 		end
 		
 		
@@ -35,17 +39,89 @@ feature -- Interface
 	
 	number_of_balls : INTEGER is 28
 	
-	set_player_a(p_: Q_PLAYER) is
+	set_player(p_: Q_PLAYER) is
 			-- don't change the info hud
 		do
-			player_a ?= p_
+			player ?= p_
+		end
+	
+	active_player: Q_ETH_PLAYER
+	
+	human_player : Q_HUMAN_PLAYER is
+			-- an eth human player
+		do
+			Result := create {Q_ETH_HUMAN_PLAYER}
 		end
 		
-feature -- state
+	ai_player : Q_AI_PLAYER is
+			-- an eth ai player
+		do
+			result := void
+		end
+	
+	reset_balls is
+			-- reset the balls randomly
+		do
+			new_table
+		end
 		
+	assign_fallen_balls(fb_: LIST[INTEGER]) is
+		-- assign fallen balls to players
+		local
+			p_ : Q_ETH_PLAYER
+		do
+			from
+				fb_.start
+			until
+				fb_.after
+			loop
+				if fb_.item /= white_number then
+					p_ ?= table.balls.item (fb_.item).owner
+					p_.fallen_balls.force (table.balls.item(fb_.item))
+				end
+				fb_.forth
+			end
+		end
+		
+	
+
 feature -- hud
 	time_info_hud: Q_TIME_INFO_HUD
 	
+feature {NONE} -- temporary ressources
+	ressources: Q_GAME_RESSOURCES
+		
+feature{NONE} -- agent handlers
+
+	handle_restart(command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_ETH_CHOICE_STATE) is
+			-- next state is a new game in bird state
+		local
+			ns_ : Q_ETH_BIRD_STATE
+		do
+			ns_ ?= ressources.request_state ("eth bird")
+			if ns_ = void then
+				create ns_.make_mode (current)
+				ressources.put_state (ns_)
+			end
+			reset_balls
+			cs_.set_next_state (ns_)
+		end
+		
+	handle_main_menu(command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_ETH_CHOICE_STATE) is
+			-- goto main menu, next state is escape state
+		local
+			ns_: Q_ESCAPE_STATE
+		do
+			ns_ ?= ressources.request_state ("escape")
+			if ns_ = void then
+				create ns_.make (false)
+				ressources.put_state (ns_)
+			end
+			cs_.set_next_state (ns_)
+		end
+		
+feature -- game logic
+	player : Q_ETH_PLAYER
 feature {NONE} -- setup
 	
 	new_table is
@@ -135,18 +211,25 @@ feature {NONE} -- setup
 		end
 		
 feature --state
+
+	first_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
+		do
+			result := player.first_state( ressources_ )
+			active_player := player
+		end
+	
 		
 	next_state (ressources_: Q_GAME_RESSOURCES) : Q_GAME_STATE is
 			-- next state according to ruleset. If there is still time to play and there are balls on the table next state is bird state else statistics screen
 		local
 			fb_: LIST[INTEGER]
 			colls_ : LIST[Q_COLLISION_EVENT]
-			choice_state_ : Q_8BALL_CHOICE_STATE
+			choice_state_ : Q_ETH_CHOICE_STATE
 		do
 			colls_ := ressources_.simulation.collision_list
 			fb_ := fallen_balls (colls_)
 			if is_lost then
-				choice_state_ ?= ressources.request_state ("eth lost")
+				choice_state_ ?= ressources_.request_state ("eth lost")
 				if choice_state_ = void then
 					create choice_state_.make_mode_titled( current,"Time is up "+ active_player.name+" loses", "eth lost", 2)
 					choice_state_.button (1).set_text ("Play again")
@@ -168,9 +251,9 @@ feature --state
 				choice_state_.set_title ("Congratulation, "+ active_player.name+" wins")
 				Result := choice_state_
 			else
-				result := ressources_.request_state( "8ball bird" )
+				result := ressources_.request_state( "eth bird" )
 				if result = void then
-					result := create {Q_8BALL_BIRD_STATE}.make_mode (Current)
+					result := create {Q_ETH_BIRD_STATE}.make_mode (Current)
 					ressources_.put_state( result )
 				end	
 			end
