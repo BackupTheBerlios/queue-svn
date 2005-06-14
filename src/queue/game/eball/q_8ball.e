@@ -329,6 +329,7 @@ feature -- state features
 		do
 			result := player_a.first_state( ressources_ )
 			active_player := player_a
+			info_hud.set_left_active
 		end
 	
 			
