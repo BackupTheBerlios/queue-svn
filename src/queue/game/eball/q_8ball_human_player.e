@@ -16,6 +16,7 @@ feature{NONE}
 	make_mode( mode_ : Q_8BALL ) is
 		do
 			mode := mode_
+			create fallen_balls.make
 		end
 		
 	mode : Q_8BALL

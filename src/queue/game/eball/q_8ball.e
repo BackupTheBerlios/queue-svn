@@ -156,10 +156,10 @@ feature	-- Interface
 			create Result.make (table_model.width / 4, table_model.height / 2)
 		end
 		
-	valid_position( v_ : Q_VECTOR_2D; ball_ : Q_BALL ) : BOOLEAN is
+	valid_position(sim_:Q_SIMULATION; v_ : Q_VECTOR_2D; ball_ : Q_BALL ) : BOOLEAN is
 			-- is v_ a valid position, no ball in environment, not in bank, etc.
 		do
-			Result := True
+			Result := not sim_.collision_detector.collision_test
 		end
 	
 	is_in_headfield(pos_ : Q_VECTOR_2D):BOOLEAN is
@@ -203,7 +203,7 @@ feature --helper functions
 		end
 		
 	ball_number_to_texture_name (number_: INTEGER):STRING is
-			-- convertes the ball number to the apropriate texture name
+			-- converts the ball number to the apropriate texture name
 		do
 			inspect number_
 				when  0 then result := "model/voll_00_weiss.png"
@@ -323,6 +323,7 @@ feature -- state features
 	first_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
 		do
 			result := player_a.first_state( ressources_ )
+			active_player := player_a
 		end
 	
 			
@@ -699,13 +700,11 @@ feature{NONE} -- Game Logic
 				x_ := head_point.x
 				b_.set_center (head_point)
 			until
-				x_ = width or else valid_position (b_.center, b_)
+				x_ = width or else valid_position (ressources.simulation, b_.center, b_)
 			loop
 				b_.set_center (create {Q_VECTOR_2D}.make (x_, head_point.y))
 				x_ := x_ + 0.5
 			end
-		ensure
-			valid_position(b_.center, b_)
 		end
 		
 	first_shot : BOOLEAN

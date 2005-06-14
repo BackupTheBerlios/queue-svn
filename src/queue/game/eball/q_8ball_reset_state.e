@@ -81,9 +81,9 @@ feature
 			if headfield then
 				mode_ ?= ressources_.mode
 				Result := mode_.is_in_headfield (ball_position_) 
-					and then mode_.valid_position (ball_position_, ball)
+					and then mode_.valid_position (ressources_.simulation, ball_position_, ball)
 			else
-				Result := ressources_.mode.valid_position (ball_position_, ball)
+				Result := ressources_.mode.valid_position (ressources_.simulation, ball_position_, ball)
 			end
 		end
 		
