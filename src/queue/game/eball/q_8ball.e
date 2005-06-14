@@ -163,6 +163,7 @@ feature	-- Interface
 		do
 			create sim_.make
 			sim_.new (table,create {Q_SHOT}.make (table.balls.item (white_number), create {Q_VECTOR_2D}.default_create))
+			sim_.collision_detector.set_response_handler (void)
 			Result := not sim_.collision_detector.collision_test
 		end
 	
@@ -790,21 +791,21 @@ feature{NONE} -- Game Logic
 		do
 			factor_ := 0.86602540378445
 			inspect nr_
-			when 1 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y-4*ball_radius)
-			when 2 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y-2*ball_radius)
-			when 3 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y)
-			when 4 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y+2*ball_radius)
-			when 5 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y+4*ball_radius)
-			when 6 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y-3*ball_radius)
-			when 7 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y-1*ball_radius)
-			when 8 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y+1*ball_radius)
-			when 9 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y+3*ball_radius)
-			when 10 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y-2*ball_radius)
-			when 11 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y)
-			when 12 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y+2*ball_radius)
-			when 13 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y-ball_radius)
-			when 14 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y+ball_radius)
-			when 15 then create result.make(root_point.x, root_point.y)
+				when 1 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y-4*ball_radius)
+				when 2 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y-2*ball_radius)
+				when 3 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y)
+				when 4 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y+2*ball_radius)
+				when 5 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y+4*ball_radius)
+				when 6 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y-3*ball_radius)
+				when 7 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y-1*ball_radius)
+				when 8 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y+1*ball_radius)
+				when 9 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y+3*ball_radius)
+				when 10 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y-2*ball_radius)
+				when 11 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y)
+				when 12 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y+2*ball_radius)
+				when 13 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y-ball_radius)
+				when 14 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y+ball_radius)
+				when 15 then create result.make(root_point.x, root_point.y)
 			end
 		end
 		

@@ -700,7 +700,6 @@ feature{NONE} -- new games
 				player_a_ := eth.human_player
 				player_a_.set_name (player_name_1.text)
 				eth.set_player_a( player_a_ )
-				eth.set_player_b( player_a_)
 				ressources.set_mode( eth )
 				next_state := eth.first_state( ressources )
 			else

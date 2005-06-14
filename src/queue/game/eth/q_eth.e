@@ -15,6 +15,7 @@ inherit
 		ball_number_to_texture_name,
 		number_of_balls,
 		next_state,
+		set_player_a,
 		make
 	end
 	
@@ -33,6 +34,17 @@ feature -- Interface
 	identifier :STRING is "eth"	
 	
 	number_of_balls : INTEGER is 28
+	
+	set_player_a(p_: Q_PLAYER) is
+			-- don't change the info hud
+		do
+			player_a ?= p_
+		end
+		
+feature -- state
+		
+feature -- hud
+	time_info_hud: Q_TIME_INFO_HUD
 	
 feature {NONE} -- setup
 	
