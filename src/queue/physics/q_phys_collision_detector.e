@@ -38,7 +38,13 @@ feature -- interface
 			obj_list.delete (o)
 		end
 		
-	collision_test (step: DOUBLE) is
+	remove_all_objects is
+			-- Remove all objects from collision detection
+		do
+			obj_list.wipe_out	
+		end
+		
+	collision_test: BOOLEAN is
 			-- Check if any element collides with any other element.
 		local
 			cursor1, cursor2: DS_LINKED_LIST_CURSOR [Q_OBJECT]
@@ -58,8 +64,11 @@ feature -- interface
 				loop
 					if does_collide (cursor1.item.bounding_object, cursor2.item.bounding_object) then
 						
-						cursor1.item.revert_update_position
-						cursor2.item.revert_update_position
+						result := True
+						
+						-- Now in the response handler
+--						cursor1.item.revert_update_position
+--						cursor2.item.revert_update_position
 						
 						cursor1.item.on_collide (cursor2.item)
 						cursor2.item.on_collide (cursor1.item)
@@ -124,13 +133,28 @@ feature {NONE} -- implementation
 			circle: Q_BOUNDING_CIRCLE
 			line: Q_BOUNDING_LINE
 			dist: DOUBLE
+			distv, a: Q_VECTOR_2D
+			t: TUPLE[DOUBLE, DOUBLE]
+			b: BOOLEAN
+			k: DOUBLE
 		do
 			circle ?= o1
 			line ?= o2
 			
-			dist := line.distance (circle.center)
+			-- calc bounce point on bank
+			distv := line.distance_vector (circle.center)
+			dist := distv.length
+			a := circle.center - distv		-- bounce point on bank
 			
-			result := dist <= circle.radius
+			create t.default_create
+			b := line.contains_k (a, t)
+			k := t.double_item (1)
+			
+			if (k >= -1 * circle.radius) and (k <= line.length + circle.radius) then
+				result := dist <= circle.radius
+			else
+				result := False
+			end
 		end
 		
 	does_collide_always_false (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is
@@ -144,7 +168,7 @@ feature {NONE} -- implementation
 feature {NONE} -- implementation
 
 	obj_list: DS_LINKED_LIST[Q_OBJECT]
-			-- 
+
 	fun_list: ARRAY2[FUNCTION[ANY, TUPLE[Q_BOUNDING_OBJECT, Q_BOUNDING_OBJECT], BOOLEAN]]
 
 	response_handler: Q_PHYS_COLLISION_RESPONSE_HANDLER

@@ -51,6 +51,12 @@ feature -- interface
 			bounding_object.set_edge2 (e2)
 		end	
 
+	length: DOUBLE is
+			-- Length of bank
+		do
+			result := bounding_object.length
+		end
+		
 	edge1: Q_VECTOR_2D is
 			-- Edge1
 		do

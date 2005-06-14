@@ -29,15 +29,21 @@ feature -- interface
 			shot /= Void
 		local
 			arr: ARRAY[Q_OBJECT]
+			i: INTEGER
+			b: Q_BANK
 		do
 			oldticks := timer_funcs.sdl_get_ticks_external
 
 			shot.hitball.set_velocity (shot.direction)
 			
+			-- empty list of collision detector
+			collision_detector.remove_all_objects
+			
 			-- empty collision list
 			-- DO I REALLY HAVE TO DO THIS, SEVERIN?
 			collision_handler.collision_list.wipe_out
 			
+--			collision_detector.add_object (table.balls.item (0))
 			-- add balls
 			arr := table.balls
 			arr.do_all (agent addto_detector)
@@ -45,6 +51,32 @@ feature -- interface
 			-- add banks
 			arr := table.banks
 			arr.do_all (agent addto_detector)
+			
+			-- START DEBUG --
+			from
+				i := arr.lower
+			until
+				i > arr.upper
+			loop
+				b ?= arr @ i
+				
+				io.putstring ("banks.put (create bank.make (create {Q_VECTOR_2D}.make (")
+				io.putdouble (b.edge1.x)
+				io.putstring (", ")
+				io.putdouble (b.edge1.y)
+				io.putstring ("), create {Q_VECTOR_2D}.make (")
+				io.putdouble (b.edge2.x)
+				io.putstring (", ")
+				io.putdouble (b.edge2.y)
+				io.putstring (")), ")
+				io.putint (i)
+				io.putstring (")")
+				io.put_new_line
+				
+				i := i + 1	
+			end
+			
+			-- END DEBUG --
 
 		end
 		
@@ -55,7 +87,8 @@ feature -- interface
 		local
 			newticks, stepsize: INTEGER
 			stepd: DOUBLE
-			i: INTEGER
+			i, j: INTEGER
+			b: BOOLEAN
 		do
 			if is_test then
 				newticks := timer_funcs.sdl_get_ticks_external
@@ -66,27 +99,33 @@ feature -- interface
 				stepd := time.delta_time_millis / 1000
 			end
 			
-			-- update objects
-			table.balls.do_all (agent do_update_position(?, stepd))
+			stepd := stepd / steps_per_frame
 			
-			-- balls standing still?
-			if table.balls.item (1).is_stationary then
-				i := 1	
-			end
-			
-			from 
-				finished := true
-				i := table.balls.lower
+			from i := 0
 			until
-				(finished = false) or (i > table.balls.upper)
-			loop
-				finished := finished and (table.balls.item (i).is_stationary)
+				i >= steps_per_frame
+			loop		
+				-- update objects
+--				table.balls.item (0).do_update_position (stepd)
+				table.balls.do_all (agent do_update_position(?, stepd))
+				
+				-- balls standing still?
+				from 
+					finished := true
+					j := table.balls.lower
+				until
+					(finished = false) or (j > table.balls.upper)
+				loop
+					finished := finished and (table.balls.item (j).is_stationary)
+					j := j + 1
+				end
+				
+				-- collision detection
+				collision_detector.set_response_handler (collision_handler)
+				b := collision_detector.collision_test -- (stepd)
+				
 				i := i + 1
-			end
-			
-			-- collision detection
-			collision_detector.collision_test (stepd)
-
+			end -- from (step)
 		end
 		
 	has_finished: BOOLEAN is
@@ -110,7 +149,8 @@ feature -- interface
 		end
 		
 	collision_detector: Q_PHYS_COLLISION_DETECTOR
-		
+	
+	collision_handler: Q_PHYS_COLLISION_RESPONSE_HANDLER
 
 feature {NONE} -- implementation
 
@@ -129,11 +169,6 @@ feature {NONE} -- implementation
 		do
 			b.do_update_position (stepsize)
 		end
-		
-
-
-	
-	collision_handler: Q_PHYS_COLLISION_RESPONSE_HANDLER
 	
 	oldticks: INTEGER
 	
@@ -142,11 +177,13 @@ feature {NONE} -- implementation
 	timer_funcs: SDL_TIMER_FUNCTIONS_EXTERNAL is
 			-- sdl timer functions, directly used, sorry Benno :-p
 		once
-			create Result
+			create result
 		end
 		
+	steps_per_frame: INTEGER is 3
+		
 	-- START DEBUG --
-	is_test: BOOLEAN is false
+	is_test: BOOLEAN is False
 	-- END DEBUG --
 		
 end -- class SIMULATION

@@ -72,6 +72,12 @@ feature -- interface
 			owner.force (owner_)
 		end
 
+	set_ball_model (ball_model_:Q_BALL_MODEL) is
+			-- set the ball model of this ball
+		do
+			ball_model := ball_model_
+		end		
+
 	do_update_position (step: DOUBLE) is
 			-- Update object position for one time step (given in ms).
 		local
@@ -95,7 +101,7 @@ feature -- interface
 			-- > Calculate velocity dv = a*t --> v[new] = a*t + v[old]
 			a := f / mass
 			
-			velocity := velocity + (a * step)
+--			velocity := velocity + (a * step)
 			
 			-- v = s/t --> s = v * t
 			c := center + velocity * step			
@@ -107,8 +113,16 @@ feature -- interface
 			mom := radvec.cross ( dim2_to_dim3 (f_sf) )
 			om := mom / theta
 			
-			angular_velocity := angular_velocity + (om * step)
+--			angular_velocity := angular_velocity + (om * step)
 			
+			if number = 0 then
+				io.putstring ("pos: " + center.out)
+				io.put_new_line
+				io.putstring ("vel: " + velocity.out)
+				io.put_new_line
+				io.putdouble (step)
+				io.put_new_line
+			end
 		end
 		
 	is_stationary: BOOLEAN is
@@ -177,6 +191,7 @@ feature -- interface
 	color : INTEGER -- the color of the ball
 	number: INTEGER -- the number of the ball, 0 is the white ball
 	owner : LINKED_LIST[Q_PLAYER] -- the owners of the ball, null if no owner yet specified, usually the list has only one owner
+	ball_model : Q_BALL_MODEL -- the 3d model of this ball
 
 	bounding_object: Q_BOUNDING_CIRCLE
 		
