@@ -81,7 +81,7 @@ feature {NONE} -- setup
 			inspect number_
 				when  0 then result := "model/voll_00_weiss.png"
 				else  
-					result := "model/voll_08_schwarz.png"
+					result := "model/rot.png"
 			end
 		
 		end
