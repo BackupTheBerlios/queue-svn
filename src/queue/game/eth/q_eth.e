@@ -85,6 +85,7 @@ feature {NONE} -- setup
 			end
 			create table.make (balls_, table_model.banks, table_model.holes)
 			link_table_and_balls
+			stretch
 		end
 		
 	ball_number_to_texture_name (number_: INTEGER):STRING is

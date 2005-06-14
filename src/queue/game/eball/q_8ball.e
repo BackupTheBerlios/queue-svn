@@ -925,11 +925,35 @@ feature{NONE} -- set-up
 				y := y +1
 			end
 			create table.make (balls_, table_model.banks, table_model.holes)
-			
+			stretch
 			link_table_and_balls
 			
 			read_ini_file
 		end
+	
+	stretch is
+			-- stretch the positions of the balls in the triangle to avoid collisions at the beginning of the game
+		local
+			center_of_triangle_ : Q_VECTOR_2D
+			factor_, scale_factor_: DOUBLE
+			i: INTEGER
+			center_to_ball_ : Q_VECTOR_2D
+		do
+			factor_ := 0.86602540378445
+			scale_factor_ := 1.05
+			create center_of_triangle_.make (root_point.x+factor_*5*ball_radius,root_point.y)
+			from
+				i := table.balls.lower
+			until
+				i > table.balls.upper
+			loop
+				center_to_ball_ := table.balls.item (i).center - center_of_triangle_
+				center_to_ball_.scale (scale_factor_)
+				table.balls.item(i).set_center (center_of_triangle_+center_to_ball_)
+				i := i+1
+			end
+		end
+		
 		
 	link_table_and_balls is
 		local
