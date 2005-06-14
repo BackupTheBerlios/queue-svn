@@ -98,7 +98,9 @@ feature  -- Commands
 						material_.set_shininess (ase_material_.shine)
 						model_.set_material (material_)
 						
-						model_.set_diffuse_texture (create {Q_GL_TEXTURE}.make (ase_material_.diffuse_texutre))
+						if ase_material_.diffuse_texutre /= void then
+							model_.set_diffuse_texture (create {Q_GL_TEXTURE}.make (ase_material_.diffuse_texutre))	
+						end
 					end
 					
 					result.extend (model_)
@@ -190,6 +192,7 @@ feature {NONE} -- Implementation
 					scanner.read_token
 					index_ := scanner.last_string.to_integer
 					materials.force (create {Q_GL_3D_ASE_MATERIAL}.make(file_), index_)
+					file_.read_line
 				elseif file_.last_string.has ('{') then
 					read_subclause (file_)
 					file_.read_line
