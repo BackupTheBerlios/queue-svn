@@ -43,11 +43,28 @@ feature
 		end
 	
 	step( ressources_ : Q_GAME_RESSOURCES ) is
+		local
+			balls_ : ARRAY[ Q_BALL_MODEL ]
+			ball_  : Q_BALL_MODEL
+			index_ : INTEGER
+			length_ : DOUBLE
 		do
 			if next_state = void then
 				if not simulation_step( ressources_ ) then
 					set_next_state( prepare_next_state( ressources_ ))
 				end
+			end
+	
+			-- update ball position and rotation
+			balls_ := ressources_.mode.ball_models
+			from index_ := balls_.lower	until index_ > balls_.upper loop
+				ball_ := balls_.item( index_ )
+				
+				length_ := ball_.ball.angular_velocity.length
+				if length_ /= 0 then
+					ball_.add_rotation( ball_.ball.angular_velocity.scale( 1 / length_ ), length_ )	
+				end
+				index_ := index_ + 1
 			end
 		end
 		

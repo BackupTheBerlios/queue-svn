@@ -20,13 +20,7 @@ feature -- Interface
 	draw( open_gl : Q_GL_DRAWABLE ) is
 		-- paint the table
 	do
-		model.draw (open_gl)
-		--axis.draw (open_gl)
-		
-		from balls.start until balls.after loop
-			balls.item.set_position( position_table_to_world( balls.item.ball.center ))
-			balls.forth
-		end
+		model.draw (open_gl)		
 	end
 	
 	balls : ARRAYED_LIST[ Q_BALL_MODEL ]
@@ -73,8 +67,6 @@ feature {NONE} -- internal properties
 	root: Q_VECTOR_2D
 	
 	zero_level: DOUBLE
-
-	--axis: Q_GL_GROUP[Q_GL_LINE]
 feature {NONE} -- Implementation
 	make_from_file (file_name_: STRING) is
 			-- create the model from out of a file
@@ -94,24 +86,6 @@ feature {NONE} -- Implementation
 			holes := make_holes (loader.shape_objects)
 			make_table_size (holes)
 			banks := make_banks (loader.shape_objects)
-			
---			create axis.make
---			
---			axis.extend(create {Q_GL_LINE}.make_position_material (
---				create {Q_VECTOR_3D}.make(0,0,0),
---				create {Q_VECTOR_3D}.make(500, 0, 0),
---				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
---			))
---			axis.extend(create {Q_GL_LINE}.make_position_material (
---				create {Q_VECTOR_3D}.make(0,0,0),
---				create {Q_VECTOR_3D}.make(0, 500, 0),
---				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
---			))
---			axis.extend(create {Q_GL_LINE}.make_position_material (
---				create {Q_VECTOR_3D}.make(0,0,0),
---				create {Q_VECTOR_3D}.make(0, 0, 500),
---				create {Q_GL_MATERIAL}.make_single_colored (create {Q_GL_COLOR}.make_white)
---			))
 		end
 	
 	make_table_size (holes_ : ARRAY[Q_HOLE]) is 

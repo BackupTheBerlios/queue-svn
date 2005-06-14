@@ -28,6 +28,8 @@ feature -- creation
 			-- create the model and the table
 			new_table_model
 			new_table
+
+			create ball_updater.make( current )
 			
 			-- create hud
 			create info_hud.make_ordered( true )
@@ -43,6 +45,7 @@ feature	-- Interface
 	player_B : Q_8BALL_PLAYER -- the second player
 	active_player : Q_8BALL_PLAYER
 	info_hud : Q_2_INFO_HUD -- the informations for the user
+	ball_updater : Q_BALL_POSITION_UPDATER
 	
 	set_player_a( player_ : Q_PLAYER ) is
 		do
@@ -191,6 +194,7 @@ feature -- state features
 			light_position_ : Q_VECTOR_3D
 		do
 			ressources_.gl_manager.add_object (table_model)
+			ressources_.gl_manager.add_object( ball_updater )
 			balls := table.balls
 			from
 				index_ := balls.lower
@@ -248,6 +252,7 @@ feature -- state features
 			index_: INTEGER
 		do
 			ressources_.gl_manager.remove_object (table_model)
+			ressources_.gl_manager.remove_object( ball_updater )
 			balls := table.balls
 			from
 				index_ := balls.lower

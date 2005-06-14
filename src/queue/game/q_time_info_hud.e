@@ -8,7 +8,7 @@ class
 inherit
 	Q_HUD_CONTAINER
 	redefine
-		make, enqueue
+		make, enqueue, draw
 	end
 
 creation
@@ -98,6 +98,31 @@ feature -- text
 			loop_small_label.looping
 		end
 
+feature -- progress
+	running : BOOLEAN
+	
+	start is
+		do
+			running := true
+		end
+		
+	restart is
+		do
+			time := 0
+			start
+		end
+		
+	stop is
+		do
+			running := false
+		end
+		
+	over : BOOLEAN is
+			-- true, if no time is left
+		do
+			result := time = time_max
+		end
+		
 feature -- time
 	time_max : INTEGER
 		-- whats the maximum time
@@ -163,6 +188,22 @@ feature -- time
 		
 	
 feature -- draw
+	draw( open_gl : Q_GL_DRAWABLE ) is
+		local
+			time_ : INTEGER
+		do
+			precursor( open_gl )
+			if running then
+				time_ := time + open_gl.time.delta_time_millis
+				if time_ > time_max then
+					time_ := time_max
+				end
+				
+				set_time( time_ )
+			end
+		end
+		
+
 	enqueue( queue_: Q_HUD_QUEUE ) is
 		do
 			queue_.push_matrix
