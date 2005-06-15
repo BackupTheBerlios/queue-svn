@@ -96,9 +96,9 @@ feature{NONE} -- agent handlers
 	handle_restart(command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_ETH_CHOICE_STATE) is
 			-- next state is a new game in bird state
 		local
-			ns_ : Q_ETH_BIRD_STATE
+			ns_ : Q_ETH_RESET_STATE
 		do
-			ns_ ?= ressources.request_state ("eth bird")
+			ns_ ?= ressources.request_state ("eth reset")
 			if ns_ = void then
 				create ns_.make_mode (current)
 				ressources.put_state (ns_)

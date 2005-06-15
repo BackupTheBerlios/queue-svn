@@ -301,9 +301,9 @@ feature {NONE} -- event handlers
 	handle_restart(command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is a new game in bird state
 		local
-			ns_ : Q_8BALL_BIRD_STATE
+			ns_ : Q_8BALL_RESET_STATE
 		do
-			ns_ ?= ressources.request_state ("8ball bird")
+			ns_ ?= ressources.request_state ("8ball reset")
 			if ns_ = void then
 				create ns_.make_mode (current)
 				ressources.put_state (ns_)

@@ -159,6 +159,8 @@ feature -- queries
 		do
 			create sim_.make
 			sim_.new (table,create {Q_SHOT}.make (table.balls.item (white_number), create {Q_VECTOR_2D}.default_create))
+			sim_.collision_detector.remove_object (ball_)
+			sim_.collision_detector.add_object (create {Q_BALL}.make (v_,ball_radius))
 			sim_.collision_detector.set_response_handler (void)
 			Result := not sim_.collision_detector.collision_test
 		end
