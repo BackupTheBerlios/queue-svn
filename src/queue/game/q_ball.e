@@ -107,12 +107,16 @@ feature -- interface
 			angular_velocity := angular_velocity + (om * step)
 			
 			if number = 0 then
-				io.putstring ("pos: " + center.out)
-				io.put_new_line
-				io.putstring ("vel: " + velocity.out)
-				io.put_new_line
-				io.putdouble (step)
-				io.put_new_line
+				
+--				ball0_track.put_right (center)
+--				ball0_track.extend (center)
+				
+--				io.putstring ("pos: " + center.out)
+--				io.put_new_line
+--				io.putstring ("vel: " + velocity.out)
+--				io.put_new_line
+--				io.putdouble (step)
+--				io.put_new_line
 			end
 		end
 		
@@ -210,6 +214,15 @@ feature -- interface
 		do
 			mass := m
 		end
+		
+	-- START DEBUG --
+	set_ball0_track (track: LINKED_LIST[Q_VECTOR_2D]) is
+		do
+			ball0_track := track
+		end
+		
+	ball0_track: LINKED_LIST[Q_VECTOR_2D]
+	-- END DEBUG --
 	
 feature -- implementation
 	

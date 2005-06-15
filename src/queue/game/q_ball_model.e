@@ -15,7 +15,7 @@ inherit
 create
 	make_from_file,
 	make_from_loader_and_texture
-
+		
 feature -- Interface
 	draw( open_gl : Q_GL_DRAWABLE ) is
 		-- paint the table
@@ -25,7 +25,6 @@ feature -- Interface
 		model.draw (open_gl)
 		rotation.untransform (open_gl)
 		transformation.untransform (open_gl)
-		
 	end
 	
 	set_position (new_position: Q_VECTOR_3D) is

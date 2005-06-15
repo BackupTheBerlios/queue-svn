@@ -29,8 +29,6 @@ feature -- interface
 			shot /= Void
 		local
 			arr: ARRAY[Q_OBJECT]
-			i: INTEGER
-			b: Q_BANK
 		do
 			oldticks := timer_funcs.sdl_get_ticks_external
 
@@ -50,6 +48,10 @@ feature -- interface
 
 			-- add banks
 			arr := table.banks
+			arr.do_all (agent addto_detector)
+			
+			-- add holes
+			arr := table.holes
 			arr.do_all (agent addto_detector)
 			
 			-- START DEBUG --
@@ -77,6 +79,10 @@ feature -- interface
 --			end
 			
 			-- END DEBUG --
+			
+			-- START DEBUG --
+			table.balls.item (0).set_ball0_track (create {LINKED_LIST[Q_VECTOR_2D]}.make)
+			-- END DEBUG --
 
 		end
 		
@@ -102,16 +108,17 @@ feature -- interface
 			-- Determine step from maximum velocity of a ball
 			-- v = s/t,  v = maxv,  s = radius/4
 			--> t = radius / (4*maxv)
-			maxv := maximum_velocity (table.balls)
+--			maxv := maximum_velocity (table.balls)
 			t := (table.balls @ table.balls.lower).radius
 			t := t / (4*maxv)
 
-			steps_per_frame := 1 -- (stepd / t).ceiling
+			steps_per_frame := 1 
+--			steps_per_frame := (stepd / t).ceiling
 			stepd := stepd / steps_per_frame
 			
-			io.putstring ("steps: ")
-			io.putint (steps_per_frame)
-			io.put_new_line
+--			io.putstring ("steps: ")
+--			io.putint (steps_per_frame)
+--			io.put_new_line
 			
 			from i := 0
 			until

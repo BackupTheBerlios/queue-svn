@@ -170,7 +170,10 @@ feature -- interface
 			if ball.center.distance (hole.position) < hole.radius then
 				-- Ball "inside" hole
 				add_collision (ball, hole)
-				collision_detector.remove_object (ball)	
+				collision_detector.remove_object (ball)
+				
+				ball.velocity.scale (0)
+				ball.angular_velocity.scaled (0)
 			end
 			
 		end

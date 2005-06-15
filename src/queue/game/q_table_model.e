@@ -16,11 +16,46 @@ inherit
 create
 	make_from_file
 
+feature -- Debug
+
+	draw_track (ogl: Q_GL_DRAWABLE; ballpos_list: LINKED_LIST[Q_VECTOR_2D]) is
+			-- Draw track lines for ball
+		local
+			glf: GL_FUNCTIONS
+		do
+			glf := ogl.gl
+			
+			-- don't use color3b or color3i, that does not work!
+			glf.gl_color3f(0,1,0)
+			glf.gl_line_width (1)
+			
+			glf.gl_begin (ogl.gl_constants.esdl_gl_line_strip)
+
+			if ballpos_list /= Void then
+				from ballpos_list.start
+				until
+					ballpos_list.after
+				loop
+					glf.gl_vertex2d (ballpos_list.item.x, ballpos_list.item.y)				
+					ballpos_list.forth
+				end
+			end
+			
+			
+			glf.gl_end
+			
+		end
+		
 feature -- Interface
 	draw( open_gl : Q_GL_DRAWABLE ) is
 		-- paint the table
 	do
-		model.draw (open_gl)		
+		model.draw (open_gl)
+		
+		-- START DEBUG (AK) --
+--		balls.start
+--		draw_track (open_gl, balls.item.ball.ball0_track)
+		-- END DEBUG --
 	end
 	
 	balls : ARRAYED_LIST[ Q_BALL_MODEL ]

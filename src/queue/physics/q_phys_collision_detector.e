@@ -70,8 +70,8 @@ feature -- interface
 --						cursor1.item.revert_update_position
 --						cursor2.item.revert_update_position
 						
-						cursor1.item.on_collide (cursor2.item)
-						cursor2.item.on_collide (cursor1.item)
+--						cursor1.item.on_collide (cursor2.item)
+--						cursor2.item.on_collide (cursor1.item)
 						
 						if response_handler /= void then
 							response_handler.on_collide (cursor1.item, cursor2.item)	
