@@ -56,7 +56,25 @@ feature
 		end
 
 	next( ressources_: Q_GAME_RESSOURCES ): Q_GAME_STATE is
+		local
+			events_ : Q_EVENT_QUEUE
+			key_event_ : ESDL_KEYBOARD_EVENT
 		do
+			from
+				events_ := ressources_.event_queue
+			until
+				events_.is_empty or do_return
+			loop
+				if events_.is_key_down_event then
+					key_event_ := events_.pop_keyboard_event
+					if key_event_.key = key_event_.sdlk_escape then
+						do_return := true
+					end
+				else
+					events_.pop
+				end
+			end
+			
 			if do_return and next_state = void then
 				result := return_state
 			else
