@@ -1,8 +1,6 @@
 indexing
 	description: "This class implements the official 8-Ball billard game and rules (according to www.billardaire.de)"
 	author: "Severin Hacker"
-	date: "$Date$"
-	revision: "$Revision$"
 
 class
 	Q_8BALL
@@ -590,7 +588,8 @@ feature{NONE} -- Game Logic
 			-- converts the ball number to the apropriate texture name
 		do
 			inspect number_
-				when  0 then result := "model/voll_00_weiss.png"
+--				when  0 then result := "model/voll_00_weiss.png"
+				when  0 then result := "model/halb_08_schwarz.png"
 				when  1 then result := "model/voll_01_gelb.png"
 				when  2 then result := "model/voll_02_blau.png"
 				when  3 then result := "model/voll_03_rot.png"
@@ -737,4 +736,3 @@ feature{NONE} -- set-up
 		end
 
 end -- class Q_8BALL
-

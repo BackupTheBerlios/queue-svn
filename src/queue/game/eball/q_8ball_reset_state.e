@@ -85,6 +85,8 @@ feature
 			else
 				Result := ressources_.mode.valid_position (ball_position_, ball)
 			end
+			
+			result := True
 		end
 		
 	headfield :BOOLEAN
