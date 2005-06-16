@@ -23,6 +23,52 @@ feature
 		deferred
 		end
 		
+
+feature {NONE} -- ini section
+
+	read_ini_file is
+			-- Read ini file.
+		local
+			ini_file: PLAIN_TEXT_FILE
+			ini_reader: Q_INI_FILE_READER
+			setting: STRING
+			mu_sf, mu_rf, mass: DOUBLE
+		do
+			create ini_file.make_open_read ("data/abstractmode.ini")
+			
+			if ini_file.exists then
+				create ini_reader.make
+			
+				ini_reader.load_ini_file (ini_file)
+				
+				-- take the settings
+				setting := ini_reader.value ("BALL", "mu_sf")
+				if setting /= void and then not setting.is_empty then
+					mu_sf := setting.to_double
+				end
+				
+				setting := ini_reader.value ("BALL", "mu_rf")
+				if setting /= void and then not setting.is_empty then
+					mu_rf := setting.to_double
+				end
+				
+				setting := ini_reader.value ("BALL", "mass")
+				if setting /= void and then not setting.is_empty then
+					mass := setting.to_double
+				end
+			end
+			
+			-- Assign values to balls
+			table.balls.do_all (agent assign_values_to_balls (?, mu_sf, mu_rf, mass))
+		end
+		
+	assign_values_to_balls (b: Q_BALL; mu_sf, mu_rf, mass: DOUBLE) is
+		do
+			b.set_mu_sf (mu_sf)
+			b.set_mu_rf (mu_rf)
+			b.set_mass (mass)
+		end
+		
 feature -- sizes & points
 	width: DOUBLE is
 			-- the size of the table in x-direction

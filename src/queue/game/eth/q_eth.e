@@ -32,6 +32,9 @@ feature -- Interface
 			-- create hud
 			create time_info_hud.make
 			time_info_hud.set_location( 0.05, 0.75 )
+			time_info_hud.set_time_max (15000)
+			time_info_hud.set_time_cuts (10)
+			time_info_hud.stop
 		end
 		
 		
@@ -43,6 +46,7 @@ feature -- Interface
 			-- don't change the info hud
 		do
 			player ?= p_
+			time_info_hud.set_big_text (p_.name)
 		end
 	
 	active_player: Q_ETH_PLAYER
@@ -50,7 +54,7 @@ feature -- Interface
 	human_player : Q_HUMAN_PLAYER is
 			-- an eth human player
 		do
-			Result := create {Q_ETH_HUMAN_PLAYER}
+			Result := create {Q_ETH_HUMAN_PLAYER}.make_mode (current)
 		end
 		
 	ai_player : Q_AI_PLAYER is
@@ -63,6 +67,8 @@ feature -- Interface
 			-- reset the balls randomly
 		do
 			new_table
+			time_info_hud.restart
+			time_info_hud.stop
 		end
 		
 	assign_fallen_balls(fb_: LIST[INTEGER]) is
@@ -87,35 +93,33 @@ feature -- Interface
 
 feature -- hud
 	time_info_hud: Q_TIME_INFO_HUD
-	
-feature {NONE} -- temporary ressources
-	ressources: Q_GAME_RESSOURCES
 		
 feature{NONE} -- agent handlers
 
-	handle_restart(command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_ETH_CHOICE_STATE) is
+	handle_restart(r_:Q_GAME_RESSOURCES; command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_ETH_CHOICE_STATE) is
 			-- next state is a new game in bird state
 		local
 			ns_ : Q_ETH_RESET_STATE
 		do
-			ns_ ?= ressources.request_state ("eth reset")
+			ns_ ?= r_.request_state ("eth reset")
 			if ns_ = void then
 				create ns_.make_mode (current)
-				ressources.put_state (ns_)
+				r_.put_state (ns_)
 			end
 			reset_balls
+			ns_.set_ball (table.balls.item (white_number))
 			cs_.set_next_state (ns_)
 		end
 		
-	handle_main_menu(command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_ETH_CHOICE_STATE) is
+	handle_main_menu(r_:Q_GAME_RESSOURCES; command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_ETH_CHOICE_STATE) is
 			-- goto main menu, next state is escape state
 		local
 			ns_: Q_ESCAPE_STATE
 		do
-			ns_ ?= ressources.request_state ("escape")
+			ns_ ?= r_.request_state ("escape")
 			if ns_ = void then
 				create ns_.make (false)
-				ressources.put_state (ns_)
+				r_.put_state (ns_)
 			end
 			cs_.set_next_state (ns_)
 		end
@@ -162,6 +166,7 @@ feature {NONE} -- setup
 			create table.make (balls_, table_model.banks, table_model.holes)
 			link_table_and_balls
 			stretch
+			read_ini_file
 		end
 		
 	ball_number_to_texture_name (number_: INTEGER):STRING is
@@ -228,25 +233,26 @@ feature --state
 		do
 			colls_ := ressources_.simulation.collision_list
 			fb_ := fallen_balls (colls_)
+			
 			if is_lost then
 				choice_state_ ?= ressources_.request_state ("eth lost")
 				if choice_state_ = void then
 					create choice_state_.make_mode_titled( current,"Time is up "+ active_player.name+" loses", "eth lost", 2)
 					choice_state_.button (1).set_text ("Play again")
-					choice_state_.button (1).actions.force (agent handle_restart(?,?,choice_state_))
+					choice_state_.button (1).actions.force (agent handle_restart(ressources_,?,?,choice_state_))
 					choice_state_.button (2).set_text ("Main menu")
-					choice_state_.button (2).actions.force (agent handle_main_menu(?,?,choice_state_))
+					choice_state_.button (2).actions.force (agent handle_main_menu(ressources_,?,?,choice_state_))
 				end
 				choice_state_.set_title(active_player.name+" loses")
 				Result := choice_state_
 			elseif is_won then
-				choice_state_ ?= ressources.request_state("eth won")
+				choice_state_ ?= ressources_.request_state("eth won")
 				if choice_state_ = void then
 					create choice_state_.make_mode_titled (current,"Congratulation, "+ active_player.name+" wins", "eth won", 2)
 					choice_state_.button (1).set_text ("Play again")
-					choice_state_.button (1).actions.force (agent handle_restart(?,?,choice_state_))
+					choice_state_.button (1).actions.force (agent handle_restart(ressources_,?,?,choice_state_))
 					choice_state_.button (2).set_text ("Main menu")
-					choice_state_.button (2).actions.force (agent handle_main_menu(?,?,choice_state_))
+					choice_state_.button (2).actions.force (agent handle_main_menu(ressources_,?,?,choice_state_))
 				end
 				choice_state_.set_title ("Congratulation, "+ active_player.name+" wins")
 				Result := choice_state_
@@ -272,9 +278,7 @@ feature{NONE} -- game logic
 	is_lost:BOOLEAN is
 			-- is time up?
 		do
-			Result := time_to_play <= 0
+			Result := time_info_hud.over
 		end
-	
-	time_to_play: INTEGER	
 	
 end -- class Q_ETH

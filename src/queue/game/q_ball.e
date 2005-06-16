@@ -111,13 +111,13 @@ feature -- interface
 --				ball0_track.put_right (center)
 				ball0_track.extend (center)
 				
-				io.putstring ("sf: " + f_sf.out)
-				io.put_new_line
-				io.putstring ("om: " + om.out)
-				io.put_new_line
-				io.putstring ("av: " + angular_velocity.out)
-				io.put_new_line
-				io.put_new_line
+--				io.putstring ("sf: " + f_sf.out)
+--				io.put_new_line
+--				io.putstring ("om: " + om.out)
+--				io.put_new_line
+--				io.putstring ("av: " + angular_velocity.out)
+--				io.put_new_line
+--				io.put_new_line
 --				io.putstring ("pos: " + center.out)
 --				io.put_new_line
 --				io.putstring ("vel: " + velocity.out)

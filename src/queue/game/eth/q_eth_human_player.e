@@ -10,12 +10,22 @@ class
 inherit
 	Q_ETH_PLAYER
 	Q_HUMAN_PLAYER
-feature -- state
+
+creation
+	make_mode
+	
+feature{NONE}
+	make_mode( mode_ : Q_ETH ) is
+		do
+			mode := mode_
+			create fallen_balls.make
+		end
+		
+	mode : Q_ETH
 
 	first_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
 		local
 			reset_ : Q_ETH_RESET_STATE
-			mode: Q_ETH
 		do
 			mode ?= ressources_.mode
 --			result := ressources_.request_state( "8ball bird" )

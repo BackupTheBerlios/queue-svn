@@ -27,7 +27,7 @@ feature -- interface
 			shot_state_ :Q_ETH_SHOT_STATE
 		do
 			-- set hit_point
-			shot_state_ ?= ressources_.request_state( "8ball shot" )
+			shot_state_ ?= ressources_.request_state( "eth shot" )
 			if shot_state_ = void then
 				create shot_state_.make_mode( mode )
 				ressources_.put_state( shot_state_ )

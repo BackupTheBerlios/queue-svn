@@ -43,6 +43,12 @@ feature -- Interface
 			rotation.rotate_around (axis_,  angle_, middle_point)
 		end
 		
+	set_visible(v_:BOOLEAN) is
+			-- should the ball model be displayed?
+		do
+			visible := v_
+		end
+		
 	
 	model: Q_GL_FLAT_MODEL
 		-- the model
@@ -58,6 +64,8 @@ feature {NONE} -- Properties
 	height_translation: Q_VECTOR_3D
 	
 	rotation: Q_GL_MULTI_ROTATION
+	
+	visible: BOOLEAN
 feature {NONE} -- Creation
 	make_from_file (file_name_: STRING) is
 			-- Create a new ball model

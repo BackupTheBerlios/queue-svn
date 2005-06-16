@@ -32,50 +32,6 @@ feature -- creation
 			info_hud.set_location( 0.05, 0.75 )
 		end
 
-feature {NONE} -- ini section
-
-	read_ini_file is
-			-- Read ini file.
-		local
-			ini_file: PLAIN_TEXT_FILE
-			ini_reader: Q_INI_FILE_READER
-			setting: STRING
-			mu_sf, mu_rf, mass: DOUBLE
-		do
-			create ini_file.make_open_read ("data/8ball.ini")
-			
-			if ini_file.exists then
-				create ini_reader.make
-			
-				ini_reader.load_ini_file (ini_file)
-				
-				-- take the settings
-				setting := ini_reader.value ("BALL", "mu_sf")
-				if setting /= void and then not setting.is_empty then
-					mu_sf := setting.to_double
-				end
-				
-				setting := ini_reader.value ("BALL", "mu_rf")
-				if setting /= void and then not setting.is_empty then
-					mu_rf := setting.to_double
-				end
-				
-				setting := ini_reader.value ("BALL", "mass")
-				if setting /= void and then not setting.is_empty then
-					mass := setting.to_double
-				end
-			end
-			
-			-- Assign values to balls
-			table.balls.do_all (agent assign_values_to_balls (?, mu_sf, mu_rf, mass))
-		end
-		
-	assign_values_to_balls (b: Q_BALL; mu_sf, mu_rf, mass: DOUBLE) is
-		do
-			b.set_mu_sf (mu_sf)
-			b.set_mu_rf (mu_rf)
-			b.set_mass (mass)
-		end
 		
 feature	-- Interface
 	player_A : Q_8BALL_PLAYER -- the first player
@@ -158,28 +114,28 @@ feature -- state features
 			colls_ : LIST[Q_COLLISION_EVENT]
 			fb_: LIST[INTEGER]
 		do
-			ressources := ressources_
+--			ressources := ressources_
 			colls_ := ressources_.simulation.collision_list
 			fb_ := fallen_balls (colls_)
 			if is_game_lost(colls_) then
-				choice_state_ ?= ressources.request_state ("8ball lost")
+				choice_state_ ?= ressources_.request_state ("8ball lost")
 				if choice_state_ = void then
 					create choice_state_.make_mode_titled( current, active_player.name+" loses", "8ball lost", 2)
 					choice_state_.button (1).set_text ("Play again")
-					choice_state_.button (1).actions.force (agent handle_restart(?,?,choice_state_))
+					choice_state_.button (1).actions.force (agent handle_restart(ressources_,?,?,choice_state_))
 					choice_state_.button (2).set_text ("Main menu")
-					choice_state_.button (2).actions.force (agent handle_main_menu(?,?,choice_state_))
+					choice_state_.button (2).actions.force (agent handle_main_menu(ressources_,?,?,choice_state_))
 				end
 				choice_state_.set_title(active_player.name+" loses")
 				Result := choice_state_
 			elseif is_game_won(colls_) then
-				choice_state_ ?= ressources.request_state("8ball won")
+				choice_state_ ?= ressources_.request_state("8ball won")
 				if choice_state_ = void then
 					create choice_state_.make_mode_titled (current, active_player.name+" wins", "8ball won", 2)
 					choice_state_.button (1).set_text ("Play again")
-					choice_state_.button (1).actions.force (agent handle_restart(?,?,choice_state_))
+					choice_state_.button (1).actions.force (agent handle_restart(ressources_,?,?,choice_state_))
 					choice_state_.button (2).set_text ("Main menu")
-					choice_state_.button (2).actions.force (agent handle_main_menu(?,?,choice_state_))
+					choice_state_.button (2).actions.force (agent handle_main_menu(ressources_,?,?,choice_state_))
 				end
 				choice_state_.set_title (active_player.name+" wins")
 				Result := choice_state_
@@ -188,15 +144,15 @@ feature -- state features
 --				-- the current player made an error, the other player can
 --				a) die Position so übernehmen und weiterspielen oder
 --				b) die Kugeln neu aufbauen lassen und selbst einen neuen Eröffnungsstoß durchführen oder den Gegner neu anstoßen lassen.
-				choice_state_ ?= ressources.request_state ("8ball incorrect opening")
+				choice_state_ ?= ressources_.request_state ("8ball incorrect opening")
 				if choice_state_ = void then
 					create choice_state_.make_mode_titled (current, "Incorrect opening", "8ball incorrect opening", 3)
 					choice_state_.button (1).set_text ("Continue playing with this board")
-					choice_state_.button (1).actions.force (agent handle_continue(?,?,choice_state_))
+					choice_state_.button (1).actions.force (agent handle_continue(ressources_,?,?,choice_state_))
 					choice_state_.button (2).set_text ("Rebuild the table and start yourself")
-					choice_state_.button (2).actions.force (agent handle_restart (?,?,choice_state_))
+					choice_state_.button (2).actions.force (agent handle_restart (ressources_,?,?,choice_state_))
 					choice_state_.button (3).set_text ("Rebuild the table and let opponent start")
-					choice_state_.button (3).actions.force (agent handle_restart_other (?,?,choice_state_))	
+					choice_state_.button (3).actions.force (agent handle_restart_other (ressources_,?,?,choice_state_))	
 				end
 				Result := choice_state_
 			elseif first_shot and then is_correct_opening (colls_) and then fb_.has(white_number) and not fb_.has(8) then
@@ -220,13 +176,13 @@ feature -- state features
 --				(1) Wird die "8" mit dem Eröffnungsstoß versenkt, so kann der eröffnende Spieler verlangen, daß
 --				a) neu aufgebaut wird oder
 --				b) die "8" wieder eingesetzt wird und er selbst so weiterspielt.
-				choice_state_ ?= ressources.request_state ("8ball 8 fallen")
+				choice_state_ ?= ressources_.request_state ("8ball 8 fallen")
 				if choice_state_ = void then
 					create choice_state_.make_mode_titled (current, "Correct opening but has 8 fallen", "8ball 8 fallen", 2)
 					choice_state_.button (1).set_text ("Rebuild the table and start yourself")
-					choice_state_.button (1).actions.force (agent handle_restart)
+					choice_state_.button (1).actions.force (agent handle_restart(ressources_,?,?,choice_state_))
 					choice_state_.button (2).set_text ("Reset 8 and continue playing")
-					choice_state_.button (2).actions.force (agent handle_set8_and_continue)
+					choice_state_.button (2).actions.force (agent handle_set8_and_continue(ressources_,?,?,choice_state_))
 					is_open := true	
 				end
 				result := choice_state_
@@ -235,13 +191,13 @@ feature -- state features
 --				(2) Fallen dem Spieler beim Eröffnungsstoß die Weiße und die "8", so kann der Gegner
 --				a) neu aufbauen lassen oder
 --				b) die "8" wieder einsetzen lassen und aus dem Kopffeld weiterspielen.
-				choice_state_ ?= ressources.request_state ("8ball 8 and white fallen")
+				choice_state_ ?= ressources_.request_state ("8ball 8 and white fallen")
 				if choice_state_ = void then
 					create choice_state_.make_mode_titled (current,"Correct opening but 8 and white have fallen", "8ball 8 and white fallen",2)
 					choice_state_.button (1).set_text ("Rebuild the table and start yourself")
-					choice_state_.button (1).actions.force (agent handle_restart)
+					choice_state_.button (1).actions.force (agent handle_restart(ressources_,?,?,choice_state_))
 					choice_state_.button (2).set_text ("Set 8, reset white in headfield and continue playing")
-					choice_state_.button (2).actions.force (agent handle_set8_and_continue_in_headfield)
+					choice_state_.button (2).actions.force (agent handle_set8_and_continue_in_headfield(ressources_,?,?,choice_state_))
 					is_open := true
 				end
 				result := choice_state_
@@ -278,90 +234,93 @@ feature -- state features
 				-- change players
 				switch_players
 			end
+			first_shot := false
 			assign_fallen_balls (fb_)
 		end
 		
 feature {NONE} -- event handlers
-	handle_continue(command_ :STRING; button_:Q_HUD_BUTTON;cs_: Q_8BALL_CHOICE_STATE) is
+	handle_continue(r_: Q_GAME_RESSOURCES; command_ :STRING; button_:Q_HUD_BUTTON;cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is bird state, switch players and continue
 		local
 			ns_ : Q_8BALL_BIRD_STATE
 		do
-			ns_ ?= ressources.request_state ("8ball bird")
+			ns_ ?= r_.request_state ("8ball bird")
 			if ns_ = void then
 				create ns_.make_mode (current)
-				ressources.put_state (ns_)
+				r_.put_state (ns_)
 			end
 			switch_players
 			cs_.set_next_state (ns_)
 		end
 	
-	handle_restart(command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
+	handle_restart(r_: Q_GAME_RESSOURCES; command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is a new game in bird state
 		local
 			ns_ : Q_8BALL_RESET_STATE
 		do
-			ns_ ?= ressources.request_state ("8ball reset")
+			ns_ ?= r_.request_state ("8ball reset")
 			if ns_ = void then
 				create ns_.make_mode (current)
-				ressources.put_state (ns_)
+				r_.put_state (ns_)
 			end
 			reset_balls
+			ns_.set_ball (table.balls.item (white_number))
 			cs_.set_next_state (ns_)
 		end
 		
-	handle_restart_other(command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
+	handle_restart_other(r_: Q_GAME_RESSOURCES; command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is a new game in bird state, switch players
 		do
-			handle_restart(command_, button_,cs_)
+			handle_restart(r_,command_, button_,cs_)
 			switch_players
 		end
 		
-	handle_set8_and_continue(command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
+	handle_set8_and_continue(r_: Q_GAME_RESSOURCES; command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is bird state, don't switch players
 		local
 			ns_: Q_8BALL_BIRD_STATE
 		do
-			ns_ ?= ressources.request_state ("8ball bird")
+			ns_ ?= r_.request_state ("8ball bird")
 			if ns_ = void then
 				create ns_.make_mode (current)
-				ressources.put_state (ns_)
+				r_.put_state (ns_)
 			end
 			insert_ball(table.balls.item (8))
 			cs_.set_next_state (ns_)
 		end
 		
-	handle_set8_and_continue_in_headfield(command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
+	handle_set8_and_continue_in_headfield(r_: Q_GAME_RESSOURCES;command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- next state is reset state, don't switch players
 		local
 			ns_: Q_8BALL_RESET_STATE
 		do
-			ns_ ?= ressources.request_state ("8ball reset")
+			ns_ ?= r_.request_state ("8ball reset")
 			if ns_ = void then
 				create ns_.make_mode (current)
-				ressources.put_state (ns_)
+				r_.put_state (ns_)
 			end
+			ns_.set_ball (table.balls.item (white_number))
 			ns_.set_headfield (true)
 			insert_ball (table.balls.item (8))
 			cs_.set_next_state (ns_)
 		end
 		
-	handle_main_menu(command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
+	handle_main_menu(r_:Q_GAME_RESSOURCES;command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
 			-- goto main menu, next state is escape state
 		local
 			ns_: Q_ESCAPE_STATE
 		do
-			ns_ ?= ressources.request_state ("escape")
+			ns_ ?= r_.request_state ("escape")
 			if ns_ = void then
 				create ns_.make (false)
-				ressources.put_state (ns_)
+				r_.put_state (ns_)
 			end
 			cs_.set_next_state (ns_)
 		end
 		
 		
 feature {NONE} -- temporary ressources
-	ressources: Q_GAME_RESSOURCES
+--	ressources: Q_GAME_RESSOURCES
 		
 
 feature{NONE} -- Game Logic
@@ -584,6 +543,8 @@ feature{NONE} -- Game Logic
 			end
 		end
 
+feature -- helper functions
+
 	ball_number_to_texture_name (number_: INTEGER):STRING is
 			-- converts the ball number to the apropriate texture name
 		do
@@ -726,7 +687,6 @@ feature{NONE} -- set-up
 			create table.make (balls_, table_model.banks, table_model.holes)
 			stretch
 			link_table_and_balls
-			
 			read_ini_file
 		end
 		

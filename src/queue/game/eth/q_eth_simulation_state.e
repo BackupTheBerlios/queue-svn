@@ -34,12 +34,14 @@ feature
 		do
 			precursor( ressources_ )
 			ressources_.gl_manager.add_hud( mode.time_info_hud )
+			mode.time_info_hud.start
 		end
 		
 	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
 		do
 			precursor( ressources_ )
 			ressources_.gl_manager.remove_hud( mode.time_info_hud )
+			mode.time_info_hud.stop
 		end
 		
 	simulation_step (ressources_: Q_GAME_RESSOURCES): BOOLEAN is
@@ -48,6 +50,7 @@ feature
 		do
 			if not ressources_.simulation.has_finished then
 				ressources_.simulation.step (ressources_.mode.table, ressources_.time)
+				mode.time_info_hud.set_time (mode.time_info_hud.time+ressources_.time.delta_time_millis)
 				Result := true
 			else
 				Result := false
