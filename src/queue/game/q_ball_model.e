@@ -22,7 +22,9 @@ feature -- Interface
 	do
 		transformation.transform (open_gl)
 		rotation.transform (open_gl)
-		model.draw (open_gl)
+		if visible then			
+			model.draw (open_gl)
+		end
 		rotation.untransform (open_gl)
 		transformation.untransform (open_gl)
 	end
@@ -85,6 +87,7 @@ feature {NONE} -- Creation
 			create height_translation.make (0, radius, 0)
 			create transformation.make_from_vector (height_translation)
 			create rotation.make
+			visible := true
 		end
 		
 	make_from_loader_and_texture (loader_: Q_GL_3D_ASE_LOADER; texture_: STRING) is
@@ -101,6 +104,7 @@ feature {NONE} -- Creation
 			create height_translation.make (0, radius, 0)
 			create transformation.make_from_vector (height_translation)
 			create rotation.make
+			visible := true
 		end		
 		
 	calc_middle_point is

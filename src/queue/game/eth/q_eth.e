@@ -32,7 +32,7 @@ feature -- Interface
 			-- create hud
 			create time_info_hud.make
 			time_info_hud.set_location( 0.05, 0.75 )
-			time_info_hud.set_time_max (15000)
+			time_info_hud.set_time_max (150000)
 			time_info_hud.set_time_cuts (10)
 			time_info_hud.stop
 		end

@@ -211,7 +211,7 @@ feature -- queries
 			Result := not sim_.collision_detector.collision_test
 		end
 		
-feature {Q_MODE} -- common game logic
+feature -- common game logic
 	fallen_balls (collisions_ : LIST[Q_COLLISION_EVENT]) : LINKED_LIST[INTEGER] is
 			-- all balls that have fallen into holes since last shot
 		require

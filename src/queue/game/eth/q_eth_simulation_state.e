@@ -51,6 +51,7 @@ feature
 			if not ressources_.simulation.has_finished then
 				ressources_.simulation.step (ressources_.mode.table, ressources_.time)
 				mode.time_info_hud.set_time (mode.time_info_hud.time+ressources_.time.delta_time_millis)
+				delete_fallen_balls(ressources_)
 				Result := true
 			else
 				Result := false
@@ -66,5 +67,24 @@ feature
 		
 feature{NONE}
 	mode : Q_ETH
+	
+	delete_fallen_balls(ressources_: Q_GAME_RESSOURCES) is
+		 -- delete the fallen balls
+		 local
+			fb_ : LINKED_LIST[INTEGER]
+		 do
+		 	-- don't draw them and set them away from other balls
+			fb_ := mode.fallen_balls (ressources_.simulation.collision_list.deep_twin)
+			from
+				fb_.start
+			until
+				fb_.after
+			loop
+				mode.ball_to_ball_model (mode.table.balls.item(fb_.item)).set_visible (false)
+				mode.table.balls.item (fb_.item).set_center (create {Q_VECTOR_2D}.make (0,0))
+				fb_.forth
+			end
+		end
+		
 	
 end -- class Q_8BALL_SIMULATION
