@@ -48,6 +48,7 @@ feature
 			ball_  : Q_BALL_MODEL
 			index_ : INTEGER
 			length_ : DOUBLE
+			vector_ : Q_VECTOR_3D
 		do
 			if next_state = void then
 				if not simulation_step( ressources_ ) then
@@ -59,10 +60,12 @@ feature
 			balls_ := ressources_.mode.ball_models
 			from index_ := balls_.lower	until index_ > balls_.upper loop
 				ball_ := balls_.item( index_ )
-				
-				length_ := ball_.ball.angular_velocity.length
+				vector_ := ressources_.mode.direction_table3d_to_world( ball_.ball.angular_velocity )
+				length_ := vector_.length
 				if length_ /= 0 then
-					ball_.add_rotation( ball_.ball.angular_velocity.scale( 1 / length_ ), length_)	
+					vector_.scaled( -1 / length_ )
+					ball_.add_rotation( vector_,
+						length_ / 1000 * ressources_.time.delta_time_millis )	
 				end
 				index_ := index_ + 1
 			end

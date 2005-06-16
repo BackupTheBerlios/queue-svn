@@ -26,7 +26,7 @@ feature -- interface
 			motion_event_ : ESDL_MOUSEMOTION_EVENT
 			press_event_ : ESDL_MOUSEBUTTON_EVENT
 			key_event_ : ESDL_KEYBOARD_EVENT
-		do
+		do			
 			from
 				event_queue_ := ressources_.event_queue
 			until
