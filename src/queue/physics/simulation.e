@@ -44,15 +44,15 @@ feature -- interface
 --			collision_detector.add_object (table.balls.item (0))
 			-- add balls
 			arr := table.balls
-			arr.do_all (agent addto_detector)
+			arr.do_all (agent addto_detector_active)
 
 			-- add banks
 			arr := table.banks
-			arr.do_all (agent addto_detector)
+			arr.do_all (agent addto_detector_passive)
 			
 			-- add holes
 			arr := table.holes
-			arr.do_all (agent addto_detector)
+			arr.do_all (agent addto_detector_passive)
 			
 			-- START DEBUG --
 --			from
@@ -109,8 +109,8 @@ feature -- interface
 			-- v = s/t,  v = maxv,  s = radius/4
 			--> t = radius / (4*maxv)
 --			maxv := maximum_velocity (table.balls)
-			t := (table.balls @ table.balls.lower).radius
-			t := t / (4*maxv)
+--			t := (table.balls @ table.balls.lower).radius
+--			t := t / (4*maxv)
 
 			steps_per_frame := 1 
 --			steps_per_frame := (stepd / t).ceiling
@@ -173,12 +173,20 @@ feature -- interface
 
 feature {NONE} -- implementation
 
-	addto_detector (o: Q_OBJECT) is
-			-- Add object 'o' to collsion detecter's list.
+	addto_detector_active (o: Q_OBJECT) is
+			-- Add active object 'o' to collsion detecter's list.
 		require
 			o /= void
 		do
-			collision_detector.add_object (o)
+			collision_detector.add_active_object (o)
+		end
+		
+	addto_detector_passive (o: Q_OBJECT) is
+			-- Add passive object 'o' to collsion detecter's list.
+		require
+			o /= void
+		do
+			collision_detector.add_passive_object (o)
 		end
 		
 	do_update_position (b: Q_BALL; stepsize: DOUBLE) is

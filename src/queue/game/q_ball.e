@@ -109,8 +109,15 @@ feature -- interface
 			if number = 0 then
 				
 --				ball0_track.put_right (center)
---				ball0_track.extend (center)
+				ball0_track.extend (center)
 				
+				io.putstring ("sf: " + f_sf.out)
+				io.put_new_line
+				io.putstring ("om: " + om.out)
+				io.put_new_line
+				io.putstring ("av: " + angular_velocity.out)
+				io.put_new_line
+				io.put_new_line
 --				io.putstring ("pos: " + center.out)
 --				io.put_new_line
 --				io.putstring ("vel: " + velocity.out)
@@ -224,7 +231,7 @@ feature -- interface
 	ball0_track: LINKED_LIST[Q_VECTOR_2D]
 	-- END DEBUG --
 	
-feature -- implementation
+feature {NONE}-- implementation
 	
 	physics: Q_PHYSICS is
 			-- Physics helper functions

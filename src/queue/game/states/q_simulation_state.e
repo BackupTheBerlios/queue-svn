@@ -62,7 +62,7 @@ feature
 				
 				length_ := ball_.ball.angular_velocity.length
 				if length_ /= 0 then
-					ball_.add_rotation( ball_.ball.angular_velocity.scale( 1 / length_ ), length_ )	
+					ball_.add_rotation( ball_.ball.angular_velocity.scale( 1 / length_ ), length_)	
 				end
 				index_ := index_ + 1
 			end

@@ -22,13 +22,14 @@ feature -- Debug
 			-- Draw track lines for ball
 		local
 			glf: GL_FUNCTIONS
+			v: Q_VECTOR_3D
 		do
 			glf := ogl.gl
 			
 			-- don't use color3b or color3i, that does not work!
-			glf.gl_color3f(0,1,0)
-			glf.gl_line_width (1)
-			
+			glf.gl_color3f(1,1,1)
+			glf.gl_line_width (2)
+			glf.gl_disable (ogl.gl_constants.esdl_gl_lighting)
 			glf.gl_begin (ogl.gl_constants.esdl_gl_line_strip)
 
 			if ballpos_list /= Void then
@@ -36,13 +37,45 @@ feature -- Debug
 				until
 					ballpos_list.after
 				loop
-					glf.gl_vertex2d (ballpos_list.item.x, ballpos_list.item.y)				
+					v := position_table_to_world (ballpos_list.item)
+					glf.gl_vertex3d (v.x, v.y, v.z)
 					ballpos_list.forth
 				end
 			end
 			
-			
 			glf.gl_end
+			glf.gl_enable (ogl.gl_constants.esdl_gl_lighting)
+			
+		end
+		
+	draw_ballvectors (ogl: Q_GL_DRAWABLE; b: Q_BALL) is
+			-- Draw ball velocity vectors
+		local
+			glf: GL_FUNCTIONS
+			a, v: Q_VECTOR_3D
+		do
+			glf := ogl.gl
+			
+			v := position_table_to_world (b.center)
+			a := direction_table_to_world (b.velocity)
+			glf.gl_color3f(1,1,0)
+			glf.gl_line_width (2)
+			glf.gl_disable (ogl.gl_constants.esdl_gl_lighting)
+			
+			glf.gl_begin (ogl.gl_constants.esdl_gl_lines)
+				glf.gl_vertex3d (v.x, v.y, v.z)
+				glf.gl_vertex3d (v.x + a.x, v.y + a.y, v.z + a.z)
+			glf.gl_end
+			
+			a := b.angular_velocity.scale (10) --.cross (b.radvec)
+			
+			glf.gl_color3f(0,1,1)
+			glf.gl_line_width (2)
+			glf.gl_begin (ogl.gl_constants.esdl_gl_lines)
+				glf.gl_vertex3d (v.x, v.y, v.z)
+				glf.gl_vertex3d (v.x + a.x, v.y + a.y, v.z - a.z)
+			glf.gl_end
+			glf.gl_enable (ogl.gl_constants.esdl_gl_lighting)
 			
 		end
 		
@@ -53,8 +86,9 @@ feature -- Interface
 		model.draw (open_gl)
 		
 		-- START DEBUG (AK) --
---		balls.start
---		draw_track (open_gl, balls.item.ball.ball0_track)
+		balls.start
+		draw_track (open_gl, balls.item.ball.ball0_track)
+		draw_ballvectors (open_gl, balls.item.ball)
 		-- END DEBUG --
 	end
 	

@@ -9,7 +9,8 @@ class
 inherit
 	ANY
 	redefine
-		default_create
+		default_create,
+		out
 	end
 
 creation
@@ -175,6 +176,14 @@ feature -- modification
 		do
 			create result.make_from( current )
 			result.normaliced
+		end
+		
+feature -- output
+
+	out: STRING is
+			-- Textual representation
+		do
+			Result := "(x = " + x.out + ", y = " + y.out + ", " + z.out + ")"
 		end
 
 feature{NONE} -- implementation

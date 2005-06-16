@@ -26,7 +26,11 @@ feature {NONE} -- create
 			fun_list.put (agent on_collide_ball_hole, 1, 3)
 			fun_list.put (agent on_collide_ball_hole, 3, 1)
 			
+			fun_list.put (agent on_collide_dummy, 2, 3)
+			fun_list.put (agent on_collide_dummy, 3, 2)
+			
 			fun_list.put (agent on_collide_dummy, 2, 2)
+			fun_list.put (agent on_collide_dummy, 3, 3)
 			
 			collision_detector := detector
 
@@ -70,11 +74,11 @@ feature -- interface
 			ball1 ?= o1
 			ball2 ?= o2
 			
-			io.putstring ("bb: ")
-			io.putint (ball1.number)
-			io.putstring (" ")
-			io.putint (ball2.number)
-			io.put_new_line
+--			io.putstring ("bb: ")
+--			io.putint (ball1.number)
+--			io.putstring (" ")
+--			io.putint (ball2.number)
+--			io.put_new_line
 			
 			-- First of all add event to collision list
 			if ball1.velocity.is_null then
@@ -124,10 +128,10 @@ feature -- interface
 			bank ?= o2
 			line := bank.bounding_object
 			
-			io.putstring ("bank: ")
-			io.putint (ball.number)
-			io.putstring (" ")
-			io.put_new_line
+--			io.putstring ("bank: ")
+--			io.putint (ball.number)
+--			io.putstring (" ")
+--			io.put_new_line
 			
 			-- First of all add event to collision list
 			add_collision (ball, bank)
@@ -164,8 +168,8 @@ feature -- interface
 			ball ?= o1
 			hole ?= o2
 			
-			io.putstring ("hole")
-			io.put_new_line
+--			io.putstring ("hole")
+--			io.put_new_line
 			
 			if ball.center.distance (hole.position) < hole.radius then
 				-- Ball "inside" hole
