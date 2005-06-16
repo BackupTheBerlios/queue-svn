@@ -56,7 +56,7 @@ feature -- Transformation
 		do
 			create matrix_.identity
 			matrix_.rotate_at( axis_.x, axis_.y, axis_.z, angle_, point_.x, point_.y, point_.z )
-			matrix := matrix.mul( matrix_ )
+			matrix := matrix_.mul( matrix )
 			
 			count := count+1
 			if count >= orthonormalize then
