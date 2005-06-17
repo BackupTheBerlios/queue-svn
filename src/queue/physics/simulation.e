@@ -261,7 +261,7 @@ feature {NONE} -- implementation
 		end
 		
 	
-	is_test: BOOLEAN is True
+	is_test: BOOLEAN is False
 	-- END DEBUG --
 		
 end -- class SIMULATION
