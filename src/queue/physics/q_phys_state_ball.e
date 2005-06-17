@@ -18,9 +18,12 @@ feature -- interface
 	assign (bo: Q_BOUNDING_CIRCLE; v: Q_VECTOR_2D; av: Q_VECTOR_3D) is
 			-- Create ball state
 		do
-			bounding_object := bo.deep_twin
-			velocity := v.twin
-			angular_velocity := av.twin
+--			bounding_object := bo.deep_twin
+--			velocity := v.twin
+--			angular_velocity := av.twin
+
+
+
 		end
 		
 	apply_to (o: Q_BALL) is

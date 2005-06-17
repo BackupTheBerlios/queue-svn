@@ -107,8 +107,6 @@ feature -- interface
 			angular_velocity := angular_velocity + (om * step)
 			
 			if number = 0 then
-				
---				ball0_track.put_right (center)
 				ball0_track.extend (center)
 				
 --				io.putstring ("sf: " + f_sf.out)
@@ -117,12 +115,6 @@ feature -- interface
 --				io.put_new_line
 --				io.putstring ("av: " + angular_velocity.out)
 --				io.put_new_line
---				io.put_new_line
---				io.putstring ("pos: " + center.out)
---				io.put_new_line
---				io.putstring ("vel: " + velocity.out)
---				io.put_new_line
---				io.putdouble (step)
 --				io.put_new_line
 			end
 		end

@@ -30,7 +30,6 @@ feature -- interface
 		local
 			arr: ARRAY[Q_OBJECT]
 		do
-			finished := false
 			oldticks := timer_funcs.sdl_get_ticks_external
 
 			shot.hitball.set_velocity (shot.direction)
@@ -98,10 +97,7 @@ feature -- interface
 			b: BOOLEAN
 		do
 			if is_test then
-				newticks := timer_funcs.sdl_get_ticks_external
-				stepsize := newticks - oldticks
-				stepd := stepsize / 1000
-				oldticks := newticks
+				stepd := delta_end / 1000
 			else
 				stepd := time.delta_time_millis / 1000
 			end
@@ -109,12 +105,12 @@ feature -- interface
 			-- Determine step from maximum velocity of a ball
 			-- v = s/t,  v = maxv,  s = radius/4
 			--> t = radius / (4*maxv)
-			maxv := maximum_velocity (table.balls)
-			t := (table.balls @ table.balls.lower).radius
-			t := t / (5*maxv)
+--			maxv := maximum_velocity (table.balls)
+--			t := (table.balls @ table.balls.lower).radius
+--			t := t / (4*maxv)
 
---			steps_per_frame := 1 
-			steps_per_frame := (stepd / t).ceiling
+			steps_per_frame := 1 
+--			steps_per_frame := (stepd / t).ceiling
 			stepd := stepd / steps_per_frame
 			
 --			io.putstring ("steps: ")
@@ -127,7 +123,9 @@ feature -- interface
 			loop		
 				-- update objects
 --				table.balls.item (0).do_update_position (stepd)
+				delta_start
 				table.balls.do_all (agent do_update_position(?, stepd))
+				delta_end_output ("up ball pos:")
 				
 				-- balls standing still?
 				from 
@@ -142,7 +140,10 @@ feature -- interface
 				
 				-- collision detection
 				collision_detector.set_response_handler (collision_handler)
+				
+				delta_start
 				b := collision_detector.collision_test -- (stepd)
+				delta_end_output ("coll test:")
 				
 				i := i + 1
 			end -- from (step)
@@ -232,6 +233,32 @@ feature {NONE} -- implementation
 		end
 		
 	-- START DEBUG --
+	
+	delta_start is
+		do
+			oldticks := timer_funcs.sdl_get_ticks_external
+		end
+		
+	
+	delta_end: INTEGER is
+		local
+			newticks: INTEGER
+		do
+			newticks := timer_funcs.sdl_get_ticks_external
+			result := newticks - oldticks
+			oldticks := newticks
+		end
+	
+	delta_end_output (s: STRING) is
+		local
+			d: INTEGER
+		do
+			d := delta_end
+			io.putstring (s + " " + d.out)
+			io.put_new_line
+		end
+		
+	
 	is_test: BOOLEAN is False
 	-- END DEBUG --
 		
