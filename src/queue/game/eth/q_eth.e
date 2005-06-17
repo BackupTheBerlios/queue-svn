@@ -72,8 +72,8 @@ feature -- Interface
 			-- reset the balls randomly
 		do
 			new_table
-			time_info_hud.restart
 			time_info_hud.stop
+			time_info_hud.set_time( 0 )
 		end
 		
 	assign_fallen_balls(fb_: LIST[INTEGER]) is
