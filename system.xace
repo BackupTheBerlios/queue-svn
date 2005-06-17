@@ -19,7 +19,9 @@
 		<cluster name="events"/>
 		<cluster name="game">
 			<cluster name="states"/>
-			<cluster name="eball"/>
+			<cluster name="eball">
+				<cluster name="rules"/>
+			</cluster>
 			<cluster name="eth"/>
 		</cluster>
 		<cluster name="math"/>
