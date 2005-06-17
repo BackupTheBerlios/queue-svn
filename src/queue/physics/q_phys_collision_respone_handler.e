@@ -120,33 +120,18 @@ feature -- interface
 			bank: Q_BANK
 			line: Q_LINE_2D
 			a, p, pr, distv: Q_VECTOR_2D
-			t: TUPLE[DOUBLE, DOUBLE]
-			k: DOUBLE
-			b: BOOLEAN
 		do
 			ball ?= o1
 			bank ?= o2
 			line := bank.bounding_object
-			
---			io.putstring ("bank: ")
---			io.putint (ball.number)
---			io.putstring (" ")
---			io.put_new_line
-			
+		
 			-- First of all add event to collision list
 			add_collision (ball, bank)
 			
 			-- calc bounce point on bank
 			distv := line.distance_vector (ball.center)
 			a := ball.center - distv		-- bounce point on bank
-			
-			-- Is a on line?
---			create t.default_create
---			b := line.contains_k (a, t)
---			
---			k := t.double_item (1)
---			
---			if (k >= -1 * ball.radius) and (k <= bank.length + ball.radius) then
+
 			p := a - ball.velocity			-- point to reflect
 			distv := line.distance_vector (p)
 			pr := p - (distv * 2)			-- point "gespiegelt" at bank

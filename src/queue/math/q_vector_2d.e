@@ -65,7 +65,19 @@ feature -- interface
 			end
 		end
 		
+	length_square: DOUBLE is
+			-- Square length of vector
+		do
+			result := x*x + y*y
+		end
 		
+	distance_square (other: like Current): DOUBLE is
+			-- Square distance to 'other'
+		require
+			other /= Void
+		do
+			result := (other.x - x)^2 + (other.y - y)^2
+		end	
 
 end -- class Q_VECTOR_2D
 

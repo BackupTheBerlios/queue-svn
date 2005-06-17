@@ -14,28 +14,7 @@ feature -- interface
 		
 	init is
 			-- Invoked when this test ist choosen.
-		local
-			l: Q_LINE_2D
-			b: BOOLEAN
-			t: TUPLE[DOUBLE, DOUBLE]
-		do
-			create t.default_create
-			create l.make (create {Q_VECTOR_2D}.make (0, 0), create {Q_VECTOR_2D}.make (100, 0))
-			
-			b := l.contains_k (create {Q_VECTOR_2D}.make (10, 0), t)
-			b := l.contains_k (create {Q_VECTOR_2D}.make (-10, 0), t)
-			b := l.contains_k (create {Q_VECTOR_2D}.make (10, 1), t)
-			b := l.contains_k (create {Q_VECTOR_2D}.make (0, 0), t)
-			b := l.contains_k (create {Q_VECTOR_2D}.make (100, 0), t)
-			
-			create l.make (create {Q_VECTOR_2D}.make (0, 0), create {Q_VECTOR_2D}.make (0, 100))
-			
-			b := l.contains_k (create {Q_VECTOR_2D}.make (10, 0), t)
-			b := l.contains_k (create {Q_VECTOR_2D}.make (0, 0), t)
-			b := l.contains_k (create {Q_VECTOR_2D}.make (0, 100), t)
-			b := l.contains_k (create {Q_VECTOR_2D}.make (0, 20), t)
-			b := l.contains_k (create {Q_VECTOR_2D}.make (0, 110), t)
-			
+		do			
 		end
 		
 	initialized( root_ : Q_GL_ROOT ) is

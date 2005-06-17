@@ -187,9 +187,9 @@ feature {NONE} -- implementation
 			c1 ?= o1
 			c2 ?= o2
 			
-			dist := c1.center.distance (c2.center)
+			dist := c1.center.distance_square (c2.center)
 			
-			result := dist <= (c1.radius + c2.radius)
+			result := dist <= (c1.radius + c2.radius)^2
 		end
 		
 	does_collide_circle_line (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is
@@ -197,29 +197,16 @@ feature {NONE} -- implementation
 		local
 			circle: Q_BOUNDING_CIRCLE
 			line: Q_BOUNDING_LINE
-			dist: DOUBLE
-			distv, a: Q_VECTOR_2D
-			t: TUPLE[DOUBLE, DOUBLE]
-			b: BOOLEAN
-			k: DOUBLE
+			len_line, len_e1ce2: DOUBLE
 		do
 			circle ?= o1
 			line ?= o2
 			
-			-- calc bounce point on bank
-			distv := line.distance_vector (circle.center)
-			dist := distv.length
-			a := circle.center - distv		-- bounce point on bank
+			len_line := line.length 
+			len_e1ce2 := circle.center.distance (line.edge1) + circle.center.distance (line.edge2)
 			
-			create t.default_create
-			b := line.contains_k (a, t)
-			k := t.double_item (1)
-			
-			if (k >= -1 * circle.radius) and (k <= line.length + circle.radius) then
-				result := dist <= circle.radius
-			else
-				result := False
-			end
+			result := dmath.dabs (len_e1ce2 - len_line) < 1
+
 		end
 		
 	does_collide_always_false (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is
@@ -235,6 +222,11 @@ feature {NONE} -- implementation
 	active_list: DS_LINKED_LIST[Q_OBJECT]
 	passive_list: DS_LINKED_LIST[Q_OBJECT]
 
+	dmath: DOUBLE_MATH is
+		once
+			result := create {DOUBLE_MATH}
+		end
+		
 	fun_list: ARRAY2[FUNCTION[ANY, TUPLE[Q_BOUNDING_OBJECT, Q_BOUNDING_OBJECT], BOOLEAN]]
 
 	response_handler: Q_PHYS_COLLISION_RESPONSE_HANDLER

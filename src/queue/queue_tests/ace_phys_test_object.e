@@ -28,7 +28,7 @@ feature -- interface
 			-- Reinitialize scene.
 		do
 			create balls.make (0, 0)
-			create banks.make (0, 19)
+			create banks.make (0, 0) --19)
 			
 			create ball1.make (create {Q_VECTOR_2D}.make (50, 60), 2.5)
 			ball1.set_mu_sf (0.05)
@@ -38,27 +38,29 @@ feature -- interface
 --			create ball2.make (create {Q_VECTOR_2D}.make (300, 50), 2.5)
 --			create ball3.make (create {Q_VECTOR_2D}.make (0, -100), 2.5)
 			
+			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (150, -100), create {Q_VECTOR_2D}.make (150, 100)), 0)
 			
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (123, 140), create {Q_VECTOR_2D}.make (121.5, 133.5)), 0)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (121.5, 133.5), create {Q_VECTOR_2D}.make (11.658199999999994, 133.5)), 1)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (11.658199999999994, 133.5), create {Q_VECTOR_2D}.make (3.4168999999999983, 139.2689)), 2)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (-4.2689000000000021, 131.5831), create {Q_VECTOR_2D}.make (1.5, 123.34180000000001)), 3)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (1.5, 123.34180000000001), create {Q_VECTOR_2D}.make (1.5, 70)), 4)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (1.5, 70), create {Q_VECTOR_2D}.make (1.5, 16.658200000000001)), 5)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (1.5, 16.658200000000001), create {Q_VECTOR_2D}.make (-4.2689000000000021, 8.4168999999999983)), 6)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (3.4168999999999983, 0.73109999999999786), create {Q_VECTOR_2D}.make (11.658199999999994, 6.5)), 7)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (11.658199999999994, 6.5), create {Q_VECTOR_2D}.make (121.5, 6.5)), 8)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (121.5, 6.5), create {Q_VECTOR_2D}.make (123, 0)), 9)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (134, 0), create {Q_VECTOR_2D}.make (135.5, 6.5)), 10)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (135.5, 6.5), create {Q_VECTOR_2D}.make (245.34180000000001, 6.5)), 11)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (245.34180000000001, 6.5), create {Q_VECTOR_2D}.make (253.5831, 0.73109999999999786)), 12)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (261.26890000000003, 8.4168999999999983), create {Q_VECTOR_2D}.make (255.5, 16.658200000000001)), 13)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (255.5, 16.658200000000001), create {Q_VECTOR_2D}.make (255.5, 70)), 14)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (255.5, 70), create {Q_VECTOR_2D}.make (255.5, 123.34180000000001)), 15)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (255.5, 123.34180000000001), create {Q_VECTOR_2D}.make (261.26890000000003, 131.5831)), 16)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (253.5831, 139.2689), create {Q_VECTOR_2D}.make (245.34180000000001, 133.5)), 17)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (245.34180000000001, 133.5), create {Q_VECTOR_2D}.make (135.5, 133.5)), 18)
-			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (135.5, 133.5), create {Q_VECTOR_2D}.make (134, 140)), 19)
+			
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (123, 140), create {Q_VECTOR_2D}.make (121.5, 133.5)), 0)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (121.5, 133.5), create {Q_VECTOR_2D}.make (11.658199999999994, 133.5)), 1)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (11.658199999999994, 133.5), create {Q_VECTOR_2D}.make (3.4168999999999983, 139.2689)), 2)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (-4.2689000000000021, 131.5831), create {Q_VECTOR_2D}.make (1.5, 123.34180000000001)), 3)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (1.5, 123.34180000000001), create {Q_VECTOR_2D}.make (1.5, 70)), 4)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (1.5, 70), create {Q_VECTOR_2D}.make (1.5, 16.658200000000001)), 5)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (1.5, 16.658200000000001), create {Q_VECTOR_2D}.make (-4.2689000000000021, 8.4168999999999983)), 6)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (3.4168999999999983, 0.73109999999999786), create {Q_VECTOR_2D}.make (11.658199999999994, 6.5)), 7)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (11.658199999999994, 6.5), create {Q_VECTOR_2D}.make (121.5, 6.5)), 8)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (121.5, 6.5), create {Q_VECTOR_2D}.make (123, 0)), 9)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (134, 0), create {Q_VECTOR_2D}.make (135.5, 6.5)), 10)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (135.5, 6.5), create {Q_VECTOR_2D}.make (245.34180000000001, 6.5)), 11)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (245.34180000000001, 6.5), create {Q_VECTOR_2D}.make (253.5831, 0.73109999999999786)), 12)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (261.26890000000003, 8.4168999999999983), create {Q_VECTOR_2D}.make (255.5, 16.658200000000001)), 13)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (255.5, 16.658200000000001), create {Q_VECTOR_2D}.make (255.5, 70)), 14)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (255.5, 70), create {Q_VECTOR_2D}.make (255.5, 123.34180000000001)), 15)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (255.5, 123.34180000000001), create {Q_VECTOR_2D}.make (261.26890000000003, 131.5831)), 16)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (253.5831, 139.2689), create {Q_VECTOR_2D}.make (245.34180000000001, 133.5)), 17)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (245.34180000000001, 133.5), create {Q_VECTOR_2D}.make (135.5, 133.5)), 18)
+--			banks.put (create {Q_BANK}.make (create {Q_VECTOR_2D}.make (135.5, 133.5), create {Q_VECTOR_2D}.make (134, 140)), 19)
 
 
 --			create bank1.make (create {Q_VECTOR_2D}.make (500, -300), create {Q_VECTOR_2D}.make (500, 300))
@@ -83,7 +85,7 @@ feature -- interface
 			
 			ballpos_list.wipe_out
 			
-			create shot.make (ball1, create {Q_VECTOR_2D}.make (50, 50))
+			create shot.make (ball1, create {Q_VECTOR_2D}.make (100, 0))
 
 			simulation.new (table, shot)
 		end

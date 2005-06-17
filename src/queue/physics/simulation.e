@@ -40,8 +40,7 @@ feature -- interface
 			-- empty collision list
 			-- DO I REALLY HAVE TO DO THIS, SEVERIN?
 			collision_handler.collision_list.wipe_out
-			
---			collision_detector.add_object (table.balls.item (0))
+
 			-- add balls
 			arr := table.balls
 			arr.do_all (agent addto_detector_active)
@@ -124,10 +123,7 @@ feature -- interface
 				i >= steps_per_frame
 			loop		
 				-- update objects
---				table.balls.item (0).do_update_position (stepd)
-				delta_start
 				table.balls.do_all (agent do_update_position(?, stepd))
-				delta_end_output ("up ball pos:")
 				
 				-- balls standing still?
 				from 
@@ -142,10 +138,8 @@ feature -- interface
 				
 				-- collision detection
 				collision_detector.set_response_handler (collision_handler)
-				
-				delta_start
+
 				b := collision_detector.collision_test -- (stepd)
-				delta_end_output ("coll test:")
 				
 				i := i + 1
 			end -- from (step)
