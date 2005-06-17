@@ -30,6 +30,9 @@ feature -- interface
 		local
 			arr: ARRAY[Q_OBJECT]
 		do
+			-- ANDREAS: DO NOT OVERWRITE THIS!
+			finished := false
+			
 			oldticks := timer_funcs.sdl_get_ticks_external
 
 			shot.hitball.set_velocity (shot.direction)

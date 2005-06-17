@@ -52,7 +52,7 @@ feature
 				ressources_.simulation.step (ressources_.mode.table, ressources_.time)
 				io.put_integer(ressources_.simulation.collision_list.count)
 				io.put_new_line
-				--delete_fallen_balls(ressources_)
+				delete_fallen_balls(ressources_)
 				Result := true
 			else
 				Result := false
@@ -76,7 +76,7 @@ feature{NONE}
 		 do
 		 	-- don't draw them and set them away from other balls
 			fb_ := mode.fallen_balls (ressources_.simulation.collision_list.deep_twin)
-			if not fb_.empty then
+			if not fb_.is_empty then
 				io.put_string ("ball fallen")
 				from
 					fb_.start
@@ -84,7 +84,7 @@ feature{NONE}
 					fb_.after
 				loop
 					mode.ball_to_ball_model (mode.table.balls.item(fb_.item)).set_visible (false)
-					mode.table.balls.item (fb_.item).set_center (create {Q_VECTOR_2D}.make (0,0))
+					mode.table.balls.item (fb_.item).set_center (create {Q_VECTOR_2D}.make (-100,-100))
 					fb_.forth
 				end
 			end

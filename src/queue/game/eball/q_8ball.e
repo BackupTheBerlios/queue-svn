@@ -25,11 +25,26 @@ feature -- creation
 			-- create the model and the table
 			new_table_model
 			new_table
-
+			
 			create ball_updater.make( current )	
 			-- create hud
 			create info_hud.make_ordered( true )
 			info_hud.set_location( 0.05, 0.75 )
+			
+			-- create the ruleset
+			create ruleset.make
+			-- be careful order DOES matter, this a kind of Zuständigkeitskette
+			ruleset.force (create {Q_8BALL_LOST_RULE}.make_mode (current))
+			ruleset.force (create {Q_8BALL_WON_RULE}.make_mode (current))
+			ruleset.force (create {Q_8BALL_INCORRECT_OPENING_RULE}.make_mode (current))
+			ruleset.force (create {Q_8BALL_OPENING_WHITE_FALLEN_RULE}.make_mode (current))
+			ruleset.force (create {Q_8BALL_OPENING_BLACK_FALLEN_RULE}.make_mode (current))
+			ruleset.force (create {Q_8BALL_OPENING_BW_FALLEN_RULE}.make_mode (current))
+			ruleset.force (create {Q_8BALL_INCORRECT_SHOT_RULE}.make_mode (current))
+			ruleset.force (create {Q_8BALL_CLOSE_TABLE_RULE}.make_mode (current))
+			ruleset.force (create {Q_8BALL_PLAY_BLACK_RULE}.make_mode (current))
+			ruleset.force (create {Q_8BALL_CORRECT_SHOT_RULE}.make_mode(current))
+			is_open := true
 		end
 
 		
@@ -87,6 +102,7 @@ feature	-- Interface
 		do
 			Result := 15 
 		end
+		
 
 feature -- state features
 
@@ -108,330 +124,47 @@ feature -- state features
 	next_state (ressources_: Q_GAME_RESSOURCES) : Q_GAME_STATE is
 			-- next state according to the ruleset
 		local
-			reset_state_ : Q_8BALL_RESET_STATE
-			aim_state_ : Q_8BALL_AIM_STATE
-			choice_state_ : Q_8BALL_CHOICE_STATE
 			colls_ : LIST[Q_COLLISION_EVENT]
-			fb_: LIST[INTEGER]
 		do
---			ressources := ressources_
 			colls_ := ressources_.simulation.collision_list
-			fb_ := fallen_balls (colls_)
-			if is_game_lost(colls_) then
-				choice_state_ ?= ressources_.request_state ("8ball lost")
-				if choice_state_ = void then
-					create choice_state_.make_mode_titled( current, active_player.name+" loses", "8ball lost", 2)
-					choice_state_.button (1).set_text ("Play again")
-					choice_state_.button (1).actions.force (agent handle_restart(ressources_,?,?,choice_state_))
-					choice_state_.button (2).set_text ("Main menu")
-					choice_state_.button (2).actions.force (agent handle_main_menu(ressources_,?,?,choice_state_))
+			assign_fallen_balls (colls_)
+			-- DEBUG
+			io.put_new_line
+			io.put_string ("first shot: "+first_shot.out+"; is_open: "+is_open.out)
+			io.put_new_line
+			io.put_string ("correct shot: "+ruleset.first.is_correct_shot(colls_,active_player).out+"; is_correct_opening: "+ruleset.first.is_correct_opening(colls_).out)
+			io.put_new_line
+			-- END DEBUG
+			from
+				ruleset.start	
+			until
+				ruleset.after
+			loop
+				if ruleset.item.is_guard_satisfied (colls_) then
+					-- DEBUG
+					io.put_string(ruleset.item.identifier)
+					io.put_new_line
+					-- END DEBUG
+					Result := ruleset.item.next_state (ressources_)
 				end
-				choice_state_.set_title(active_player.name+" loses")
-				Result := choice_state_
-			elseif is_game_won(colls_) then
-				choice_state_ ?= ressources_.request_state("8ball won")
-				if choice_state_ = void then
-					create choice_state_.make_mode_titled (current, active_player.name+" wins", "8ball won", 2)
-					choice_state_.button (1).set_text ("Play again")
-					choice_state_.button (1).actions.force (agent handle_restart(ressources_,?,?,choice_state_))
-					choice_state_.button (2).set_text ("Main menu")
-					choice_state_.button (2).actions.force (agent handle_main_menu(ressources_,?,?,choice_state_))
-				end
-				choice_state_.set_title (active_player.name+" wins")
-				Result := choice_state_
-			elseif first_shot and then not is_correct_opening (colls_) then
-				-- rule 4.6 second part
---				-- the current player made an error, the other player can
---				a) die Position so übernehmen und weiterspielen oder
---				b) die Kugeln neu aufbauen lassen und selbst einen neuen Eröffnungsstoß durchführen oder den Gegner neu anstoßen lassen.
-				choice_state_ ?= ressources_.request_state ("8ball incorrect opening")
-				if choice_state_ = void then
-					create choice_state_.make_mode_titled (current, "Incorrect opening", "8ball incorrect opening", 3)
-					choice_state_.button (1).set_text ("Continue playing with this board")
-					choice_state_.button (1).actions.force (agent handle_continue(ressources_,?,?,choice_state_))
-					choice_state_.button (2).set_text ("Rebuild the table and start yourself")
-					choice_state_.button (2).actions.force (agent handle_restart (ressources_,?,?,choice_state_))
-					choice_state_.button (3).set_text ("Rebuild the table and let opponent start")
-					choice_state_.button (3).actions.force (agent handle_restart_other (ressources_,?,?,choice_state_))	
-				end
-				Result := choice_state_
-			elseif first_shot and then is_correct_opening (colls_) and then fb_.has(white_number) and not fb_.has(8) then
-				-- rule 4.7
-				-- white has fallen in a correct opening shot
---				 Der dann aufnahmeberechtigte Spieler hat Lageverbesserung im Kopffeld und darf keine Kugel direkt anspielen, 
-				reset_state_ ?= ressources_.request_state( "8ball reset" )
-				if reset_state_ = void then
-					reset_state_ := create {Q_8BALL_RESET_STATE}.make_mode( current )
-					ressources_.put_state( reset_state_ )
-				end
-				reset_state_.set_headfield (true)
-				-- player can shot only out of headfield in next turn
-				aim_state_ ?= ressources_.request_state ("8ball aim")
-				aim_state_.set_out_of_headfield (true)
-				switch_players
-				is_open := true
-				Result := reset_state_
-			elseif first_shot and then is_correct_opening (colls_) and then fb_.has(8) and not fb_.has (white_number) then
-				-- rule 4.9 first part
---				(1) Wird die "8" mit dem Eröffnungsstoß versenkt, so kann der eröffnende Spieler verlangen, daß
---				a) neu aufgebaut wird oder
---				b) die "8" wieder eingesetzt wird und er selbst so weiterspielt.
-				choice_state_ ?= ressources_.request_state ("8ball 8 fallen")
-				if choice_state_ = void then
-					create choice_state_.make_mode_titled (current, "Correct opening but has 8 fallen", "8ball 8 fallen", 2)
-					choice_state_.button (1).set_text ("Rebuild the table and start yourself")
-					choice_state_.button (1).actions.force (agent handle_restart(ressources_,?,?,choice_state_))
-					choice_state_.button (2).set_text ("Reset 8 and continue playing")
-					choice_state_.button (2).actions.force (agent handle_set8_and_continue(ressources_,?,?,choice_state_))
-					is_open := true	
-				end
-				result := choice_state_
-			elseif first_shot and then is_correct_opening (colls_) and then fb_.has(8) and fb_.has (white_number) then
---				-- rule 4.9 second part
---				(2) Fallen dem Spieler beim Eröffnungsstoß die Weiße und die "8", so kann der Gegner
---				a) neu aufbauen lassen oder
---				b) die "8" wieder einsetzen lassen und aus dem Kopffeld weiterspielen.
-				choice_state_ ?= ressources_.request_state ("8ball 8 and white fallen")
-				if choice_state_ = void then
-					create choice_state_.make_mode_titled (current,"Correct opening but 8 and white have fallen", "8ball 8 and white fallen",2)
-					choice_state_.button (1).set_text ("Rebuild the table and start yourself")
-					choice_state_.button (1).actions.force (agent handle_restart(ressources_,?,?,choice_state_))
-					choice_state_.button (2).set_text ("Set 8, reset white in headfield and continue playing")
-					choice_state_.button (2).actions.force (agent handle_set8_and_continue_in_headfield(ressources_,?,?,choice_state_))
-					is_open := true
-				end
-				result := choice_state_
-			elseif not first_shot and then not is_correct_shot (colls_, active_player)  then
-				-- rule 4.15
-				-- the player made an incorrect shot during the game
---				(1) Der Gegner hat freie Lageverbesserung auf dem ganzen Tisch. 
-				reset_state_ ?= ressources_.request_state( "8ball reset" )
-				if reset_state_ = void then
-					reset_state_ := create {Q_8BALL_RESET_STATE}.make_mode( current )
-					ressources_.put_state( reset_state_ )
-				end
-				reset_state_.set_headfield (false)
-				switch_players
-				Result := reset_state_
-			else				
-				-- ok, everything seems fine
-				-- check if we can assign colors to players
-				if is_open then
-					close_table(fallen_balls (colls_).first)
-					is_open := false
-				end
-				
-				-- check if active player can play on black ball
-				if all_balls_fallen then
-					table.balls.item (8).add_owner (active_player)
-				end
-				-- set next state as bird state
-				result := ressources_.request_state( "8ball bird" )
-				if result = void then
-					result := create {Q_8BALL_BIRD_STATE}.make_mode (Current)
-					ressources_.put_state( result )
-				end	
-				-- change players
-				switch_players
+				ruleset.forth
 			end
-			first_shot := false
-			assign_fallen_balls (fb_)
-		end
-		
-feature {NONE} -- event handlers
-	handle_continue(r_: Q_GAME_RESSOURCES; command_ :STRING; button_:Q_HUD_BUTTON;cs_: Q_8BALL_CHOICE_STATE) is
-			-- next state is bird state, switch players and continue
-		local
-			ns_ : Q_8BALL_BIRD_STATE
-		do
-			ns_ ?= r_.request_state ("8ball bird")
-			if ns_ = void then
-				create ns_.make_mode (current)
-				r_.put_state (ns_)
-			end
-			switch_players
-			cs_.set_next_state (ns_)
-		end
-	
-	handle_restart(r_: Q_GAME_RESSOURCES; command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
-			-- next state is a new game in bird state
-		local
-			ns_ : Q_8BALL_RESET_STATE
-		do
-			ns_ ?= r_.request_state ("8ball reset")
-			if ns_ = void then
-				create ns_.make_mode (current)
-				r_.put_state (ns_)
-			end
-			reset_balls
-			ns_.set_ball (table.balls.item (white_number))
-			cs_.set_next_state (ns_)
-		end
-		
-	handle_restart_other(r_: Q_GAME_RESSOURCES; command_ :STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
-			-- next state is a new game in bird state, switch players
-		do
-			handle_restart(r_,command_, button_,cs_)
-			switch_players
-		end
-		
-	handle_set8_and_continue(r_: Q_GAME_RESSOURCES; command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
-			-- next state is bird state, don't switch players
-		local
-			ns_: Q_8BALL_BIRD_STATE
-		do
-			ns_ ?= r_.request_state ("8ball bird")
-			if ns_ = void then
-				create ns_.make_mode (current)
-				r_.put_state (ns_)
-			end
-			insert_ball(table.balls.item (8))
-			cs_.set_next_state (ns_)
-		end
-		
-	handle_set8_and_continue_in_headfield(r_: Q_GAME_RESSOURCES;command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
-			-- next state is reset state, don't switch players
-		local
-			ns_: Q_8BALL_RESET_STATE
-		do
-			ns_ ?= r_.request_state ("8ball reset")
-			if ns_ = void then
-				create ns_.make_mode (current)
-				r_.put_state (ns_)
-			end
-			ns_.set_ball (table.balls.item (white_number))
-			ns_.set_headfield (true)
-			insert_ball (table.balls.item (8))
-			cs_.set_next_state (ns_)
-		end
-		
-	handle_main_menu(r_:Q_GAME_RESSOURCES;command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_8BALL_CHOICE_STATE) is
-			-- goto main menu, next state is escape state
-		local
-			ns_: Q_ESCAPE_STATE
-		do
-			ns_ ?= r_.request_state ("escape")
-			if ns_ = void then
-				create ns_.make (false)
-				r_.put_state (ns_)
-			end
-			cs_.set_next_state (ns_)
-		end
+		end	
 
-feature{NONE} -- Game Logic
-	is_game_lost(colls_: LIST[Q_COLLISION_EVENT]) : BOOLEAN is
-			-- is the game lost
-			-- 4.20 Verlust des Spiels
---				(1) Ein Spieler verliert das Spiel, wenn er
---				a) ein Foul spielt, während er die "8" versenkt (Ausnahme: siehe "8" fällt beim Eröffnungsstoß)
---				b) die "8" mit demselben Stoß versenkt, mit dem er die letzte Farbige versenkt
---				c) die "8" vom Tisch springen läßt
---				d) die "8" in eine andere als die angesagte Tasche versenkt
---				e) die "8" versenkt, bevor er berechtigt ist, darauf zu spielen.
-		local
-			foul_8, last_8, too_early_8: BOOLEAN
-			i : INTEGER
-		do
-			foul_8 := fallen_balls (colls_).has (8) and not is_correct_shot (colls_,active_player)
-			from
-				i := 1
-			until
-				i > 15
-			loop
-				last_8 := last_8 or (fallen_balls (colls_).has (i) and table.balls.item (i).owner.has (active_player))
-				i := i+1
-			end
-			last_8 := last_8 and fallen_balls (colls_).has (8)
-			too_early_8 := not all_balls_fallen and fallen_balls (colls_).has (8)
-			Result := foul_8 or last_8 or too_early_8
-		end
+feature{Q_8BALL_RULE} -- game state & change game state
+
 		
-	is_game_won(collisions_:LIST[Q_COLLISION_EVENT]): BOOLEAN is
-			-- is the game won
-		do
-			Result := all_balls_fallen and fallen_balls (collisions_).has (8)
-		end
-		
-	is_correct_opening(collisions_: LIST[Q_COLLISION_EVENT]):BOOLEAN is
-			-- this implements rule 4.6 for a correct opening, the definition
-		local
-			ball_fallen_, four_balls_: BOOLEAN
-			touched_balls_: LINKED_LIST[INTEGER]
-			ball_ : Q_BALL
-			
-		do
-			-- (a) a ball has fallen into a hole
-			ball_fallen_ := not fallen_balls (collisions_).is_empty
-			
-			-- (b) or at least four balls have touched a bank
-			create touched_balls_.make
-			
-			from
-				collisions_.start
-			until
-				collisions_.after
-			loop
-				if collisions_.item.defendent.typeid = bank_type_id then
-					-- it is a collision with a bank the aggressor must be a ball
-					ball_ ?= collisions_.item.aggressor
-					if not touched_balls_.has (ball_.number) then
-						touched_balls_.force (ball_.number)
-					end
-				end
-				collisions_.forth
-			end
-			four_balls_ := touched_balls_.count >=4
-			
-			Result := ball_fallen_ or else four_balls_
-		end
-		
-	is_correct_shot(collisions_ :LIST[Q_COLLISION_EVENT]; player_: Q_PLAYER): BOOLEAN is
-			-- implements rule 4.12 correct shot, definition
-		require
-			collisions_ /= Void
-			player_ /= Void
-		local
-			own_colored_first_ :BOOLEAN
-			colored_ball_fallen_ : BOOLEAN
-			any_bank_touched_ : BOOLEAN
-			bank_shot_ : BOOLEAN
-			ball_: Q_BALL
-		do
-			own_colored_first_ := false
-			-- 4.12.1
-			if collisions_.first.defendent.typeid = ball_type_id then
-				ball_ ?= collisions_.first.defendent
-				own_colored_first_ := ball_.owner.has(player_)
-			end
-			colored_ball_fallen_ := not fallen_balls (collisions_).is_empty and not fallen_balls (collisions_).has (white_number)
-			any_bank_touched_ := not banks_touched (collisions_).is_empty
-			-- 4.12.2
-			-- white -> bank -> own_color -> (bank or color fallen)
-			if collisions_.first.defendent.typeid = bank_type_id then
-				if collisions_.i_th (2).defendent.typeid = ball_type_id then
-					ball_ ?= collisions_.i_th (2).defendent
-					if ball_.owner.has (active_player) and then (fallen_balls (collisions_).has (ball_.number) or else banks_touched (collisions_).count > 1) then
-						bank_shot_ := true
-					end
-				end
-				
-			end
-			Result := is_open implies (own_colored_first_ and then (colored_ball_fallen_ or else any_bank_touched_) or else bank_shot_)
-		end
-	
 	is_open : BOOLEAN -- is the table "open", i.e. no colors yet specified
+	first_shot : BOOLEAN -- is this the first shot
+	ruleset: LINKED_LIST[Q_8BALL_RULE]
 
-	all_balls_fallen : BOOLEAN is
-			-- are all balls of the active player's color fallen? (but not 8)
-		do
-			Result := active_player.fallen_balls.count = 7
-		end
-
-	assign_fallen_balls(fb_: LIST[INTEGER]) is
+	assign_fallen_balls(colls_: LIST[Q_COLLISION_EVENT]) is
 		-- assign fallen balls to players
 		local
 			p_ : Q_8BALL_PLAYER
+			fb_ : LINKED_LIST[INTEGER]
 		do
+			fb_ := fallen_balls (colls_)
 			from
 				fb_.start
 			until
@@ -483,8 +216,6 @@ feature{NONE} -- Game Logic
 			end
 		end
 		
-	first_shot : BOOLEAN
-	
 	close_table(ball_nr: INTEGER) is
 			-- close the table, i.e. assign the active player to all balls with same colors as ball_nr
 		require
@@ -508,34 +239,7 @@ feature{NONE} -- Game Logic
 				end
 				i := i+1
 			end
-		end
-		
-	triangle_position (nr_: INTEGER):Q_VECTOR_2D is
-			-- the nr_'s position in the opening triangle
-			-- the ordering is from 1-5 last row left to right, 6-9 second last row, 10-12 middle row, 13-14 second row, 15 first row
-		require
-			nr_ <= 15 and nr_>=1
-		local
-			factor_: DOUBLE
-		do
-			factor_ := 0.86602540378445
-			inspect nr_
-				when 1 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y-4*ball_radius)
-				when 2 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y-2*ball_radius)
-				when 3 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y)
-				when 4 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y+2*ball_radius)
-				when 5 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y+4*ball_radius)
-				when 6 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y-3*ball_radius)
-				when 7 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y-1*ball_radius)
-				when 8 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y+1*ball_radius)
-				when 9 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y+3*ball_radius)
-				when 10 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y-2*ball_radius)
-				when 11 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y)
-				when 12 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y+2*ball_radius)
-				when 13 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y-ball_radius)
-				when 14 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y+ball_radius)
-				when 15 then create result.make(root_point.x, root_point.y)
-			end
+			is_open := false
 		end
 
 feature -- helper functions
@@ -683,6 +387,34 @@ feature{NONE} -- set-up
 			stretch
 			link_table_and_balls
 			read_ini_file
+		end
+		
+	triangle_position (nr_: INTEGER):Q_VECTOR_2D is
+			-- the nr_'s position in the opening triangle
+			-- the ordering is from 1-5 last row left to right, 6-9 second last row, 10-12 middle row, 13-14 second row, 15 first row
+		require
+			nr_ <= 15 and nr_>=1
+		local
+			factor_: DOUBLE
+		do
+			factor_ := 0.86602540378445
+			inspect nr_
+				when 1 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y-4*ball_radius)
+				when 2 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y-2*ball_radius)
+				when 3 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y)
+				when 4 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y+2*ball_radius)
+				when 5 then create result.make(root_point.x+factor_*(8*ball_radius), root_point.y+4*ball_radius)
+				when 6 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y-3*ball_radius)
+				when 7 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y-1*ball_radius)
+				when 8 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y+1*ball_radius)
+				when 9 then create result.make(root_point.x+factor_*(6*ball_radius), root_point.y+3*ball_radius)
+				when 10 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y-2*ball_radius)
+				when 11 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y)
+				when 12 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y+2*ball_radius)
+				when 13 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y-ball_radius)
+				when 14 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y+ball_radius)
+				when 15 then create result.make(root_point.x, root_point.y)
+			end
 		end
 		
 	new_ai_player is

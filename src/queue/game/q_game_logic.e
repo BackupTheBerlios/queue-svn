@@ -128,8 +128,12 @@ feature {NONE} -- THE game loop
 			ressources.time.restart
 			state.step( ressources )
 			next_ := state.next( ressources )
-				
+			
 			if next_ /= void then
+				-- DEBUG
+				io.put_string ("Next state is :"+next_.identifier)
+				io.put_new_line
+				-- END DEBUG
 				state.uninstall( ressources )
 				state := next_
 				state.install( ressources )

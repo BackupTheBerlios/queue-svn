@@ -36,12 +36,6 @@ feature -- Interface
 			time_info_hud.set_time_cuts (10)
 			time_info_hud.stop
 		end
-	install( ressources_: Q_GAME_RESSOURCES ) is
-		do
-			precursor( ressources_ )
-			time_info_hud.stop
-			time_info_hud.set_time( 0 )
-		end
 		
 	identifier :STRING is "eth"	
 	
@@ -68,33 +62,13 @@ feature -- Interface
 			result := void
 		end
 	
-	reset_balls is
-			-- reset the balls randomly
+	restart is
+			-- reset the balls randomly and restart the timer
 		do
 			new_table
 			time_info_hud.stop
 			time_info_hud.set_time( 0 )
 		end
-		
-	assign_fallen_balls(fb_: LIST[INTEGER]) is
-		-- assign fallen balls to players
-		local
-			p_ : Q_ETH_PLAYER
-		do
-			from
-				fb_.start
-			until
-				fb_.after
-			loop
-				if fb_.item /= white_number then
-					p_ ?= table.balls.item (fb_.item).owner
-					p_.fallen_balls.force (table.balls.item(fb_.item))
-				end
-				fb_.forth
-			end
-		end
-		
-	
 
 feature -- hud
 	time_info_hud: Q_TIME_INFO_HUD
@@ -111,7 +85,7 @@ feature{NONE} -- agent handlers
 				create ns_.make_mode (current)
 				r_.put_state (ns_)
 			end
-			reset_balls
+			restart
 			ns_.set_ball (table.balls.item (white_number))
 			cs_.set_next_state (ns_)
 		end
@@ -129,8 +103,6 @@ feature{NONE} -- agent handlers
 			cs_.set_next_state (ns_)
 		end
 		
-feature -- game logic
-	player : Q_ETH_PLAYER
 feature {NONE} -- setup
 	
 	new_table is
@@ -220,7 +192,15 @@ feature {NONE} -- setup
 			end
 		end
 		
-feature --state
+feature -- game state
+
+	install( ressources_: Q_GAME_RESSOURCES ) is
+		do
+			precursor( ressources_ )
+			time_info_hud.stop
+			time_info_hud.set_time( 0 )
+		end
+		
 
 	first_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
 		do
@@ -273,7 +253,26 @@ feature --state
 		
 
 feature{NONE} -- game logic
+	player : Q_ETH_PLAYER
 	
+	assign_fallen_balls(fb_: LIST[INTEGER]) is
+		-- assign fallen balls to players
+		local
+			p_ : Q_ETH_PLAYER
+		do
+			from
+				fb_.start
+			until
+				fb_.after
+			loop
+				if fb_.item /= white_number then
+					p_ ?= table.balls.item (fb_.item).owner
+					p_.fallen_balls.force (table.balls.item(fb_.item))
+				end
+				fb_.forth
+			end
+		end
+		
 	is_won :BOOLEAN is
 			-- have all balls fallen?
 		do

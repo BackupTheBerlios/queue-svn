@@ -779,7 +779,7 @@ feature{NONE} -- new games
 					ressources.put_mode( eth )
 				end
 				-- reset the balls
-				eth.reset_balls
+				eth.restart
 				player_a_ := eth.human_player
 				player_a_.set_name (player_name_1.text)
 				eth.set_player( player_a_ )
