@@ -178,9 +178,9 @@ feature {NONE} -- setup
 			-- convertes the ball number to the apropriate texture name
 		do
 			inspect number_
-				when  0 then result := "model/voll_00_weiss.png"
+				when  0 then result := "model/halb_10_blau.png"
 				else  
-					result := "model/rot.png"
+					result := "model/halb_14_gruen.png"
 			end
 		
 		end

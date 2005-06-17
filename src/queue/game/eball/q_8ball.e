@@ -317,11 +317,6 @@ feature {NONE} -- event handlers
 			end
 			cs_.set_next_state (ns_)
 		end
-		
-		
-feature {NONE} -- temporary ressources
---	ressources: Q_GAME_RESSOURCES
-		
 
 feature{NONE} -- Game Logic
 	is_game_lost(colls_: LIST[Q_COLLISION_EVENT]) : BOOLEAN is
