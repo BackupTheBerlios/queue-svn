@@ -16,7 +16,8 @@ inherit
 creation
 	default_create, make, make_from
 	
-feature{NONE} -- creation
+feature -- creation
+
 	default_create is
 		do
 			precursor

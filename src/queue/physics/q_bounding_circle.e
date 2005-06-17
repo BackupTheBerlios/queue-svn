@@ -7,16 +7,20 @@ class
 
 inherit
 	Q_BOUNDING_OBJECT
+	redefine
+		copy
+	end
 
 create
 	make, 
 	make_empty
 	
-feature {NONE} -- create
+feature -- create
 
 	make_empty is
 			-- Make empty bounding circle.
 		do
+			create center.default_create
 		end
 		
 	make (center_: Q_VECTOR_2D; radius_: DOUBLE) is
@@ -25,9 +29,17 @@ feature {NONE} -- create
 			center_ /= void
 			radius_ >= 0
 		do
+			
 			center := center_
 			radius := radius_
 		end
+		
+	copy (other: like Current) is
+		do
+			center.make_from_other (other.center)
+			radius := other.radius
+		end
+		
 
 feature -- interface
 

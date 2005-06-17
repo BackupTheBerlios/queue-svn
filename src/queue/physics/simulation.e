@@ -51,8 +51,10 @@ feature -- interface
 			arr.do_all (agent addto_detector_passive)
 			
 			-- add holes
-			arr := table.holes
-			arr.do_all (agent addto_detector_passive)
+			if not is_test then
+				arr := table.holes
+				arr.do_all (agent addto_detector_passive)
+			end
 			
 			-- START DEBUG --
 --			from
@@ -259,7 +261,7 @@ feature {NONE} -- implementation
 		end
 		
 	
-	is_test: BOOLEAN is False
+	is_test: BOOLEAN is True
 	-- END DEBUG --
 		
 end -- class SIMULATION

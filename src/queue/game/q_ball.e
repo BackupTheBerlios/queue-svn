@@ -23,7 +23,7 @@ feature -- create
 	make_empty is
 		do
 			bounding_object := create {Q_BOUNDING_CIRCLE}.make_empty
-			create old_state
+			create old_state.make
 			
 			create velocity.default_create
 			create angular_velocity.default_create
@@ -37,7 +37,7 @@ feature -- create
 			radius_ >= 0
 		do
 			create bounding_object.make (center_, radius_)
-			create old_state
+			create old_state.make
 
 			create velocity.default_create
 			create angular_velocity.default_create
@@ -72,7 +72,6 @@ feature -- interface
 	do_update_position (step: DOUBLE) is
 			-- Update object position for one time step (given in ms).
 		local
-			c: Q_VECTOR_2D
 			wr, mom, om: Q_VECTOR_3D
 			f_sf, f_rf, f, a: Q_VECTOR_2D
 		do
@@ -80,31 +79,38 @@ feature -- interface
 			old_state.assign (bounding_object, velocity, angular_velocity)
 			
 			-- F_sf = mu_sf * Fn * (w x r + v)
-			wr := angular_velocity.cross (radvec)
-			f_sf := (dim3_to_dim2 (wr) + velocity) * sf_const
+			wr := angular_velocity.cross (radvec)	-- w x r
+			f_sf := dim3_to_dim2 (wr)
+			f_sf.add (velocity)						-- w x r + v
+			f_sf.scale (sf_const)					-- mu_sf * Fn * (w x r + v)
+
 
 			-- F_rf = mu_rf * Fn * (v / |v|)
-			f_rf := velocity.unit_vector * rf_const
+			f_rf := velocity.unit_vector
+			f_rf.scale (rf_const)
 			
-			f := f_sf + f_rf
+			f := f_rf
+			f.add (f_sf)							-- f_rf now f_rf + f_sf!!! (performance)
 			
 			-- f = a*m
 			-- > Calculate velocity dv = a*t --> v[new] = a*t + v[old]
-			a := f / mass
+			f.scale (1 / mass)
+			a := f
+			a.scale (step)
 			
-			velocity := velocity + (a * step)
+			velocity.add (a)						-- v = v + (a * step)
 			
 			-- v = s/t --> s = v * t
-			c := center + velocity * step			
-			set_center (c)
+			center.add (velocity * step)
 			
 			-- New angular velocity
 			-- f = a*m --> M = Om*Th
 			-- M = r x F
 			mom := radvec.cross ( dim2_to_dim3 (f_sf) )
-			om := mom / theta
+			om := mom
+			om.scaled (1 / theta)					-- Om = M / Th
 			
-			angular_velocity := angular_velocity + (om * step)
+			angular_velocity.add (om * step)
 			
 			if number = 0 then
 				ball0_track.extend (center)

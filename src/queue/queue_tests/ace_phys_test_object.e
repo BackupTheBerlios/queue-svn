@@ -31,6 +31,10 @@ feature -- interface
 			create banks.make (0, 19)
 			
 			create ball1.make (create {Q_VECTOR_2D}.make (50, 60), 2.5)
+			ball1.set_mu_sf (0.05)
+			ball1.set_mu_rf	(1.0)
+			ball1.set_mass (0.2)
+			
 --			create ball2.make (create {Q_VECTOR_2D}.make (300, 50), 2.5)
 --			create ball3.make (create {Q_VECTOR_2D}.make (0, -100), 2.5)
 			
