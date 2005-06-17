@@ -35,12 +35,14 @@ feature
 			
 			precursor( ressources_ )			
 			ressources_.gl_manager.add_hud( mode.time_info_hud )
+			mode.time_info_hud.start
 		end
 		
 	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
 		do
 			precursor( ressources_ )
 			ressources_.gl_manager.remove_hud( mode.time_info_hud )
+			mode.time_info_hud.stop
 		end	
 		
 	prepare_next_state( direction_ : Q_VECTOR_2D; ressources_ : Q_GAME_RESSOURCES ): Q_GAME_STATE is

@@ -50,7 +50,7 @@ feature
 		do
 			if not ressources_.simulation.has_finished then
 				ressources_.simulation.step (ressources_.mode.table, ressources_.time)
-				mode.time_info_hud.set_time (mode.time_info_hud.time+ressources_.time.delta_time_millis)
+--				mode.time_info_hud.set_time (mode.time_info_hud.time+ressources_.time.delta_time_millis)
 				delete_fallen_balls(ressources_)
 				Result := true
 			else

@@ -109,12 +109,12 @@ feature -- interface
 			-- Determine step from maximum velocity of a ball
 			-- v = s/t,  v = maxv,  s = radius/4
 			--> t = radius / (4*maxv)
---			maxv := maximum_velocity (table.balls)
---			t := (table.balls @ table.balls.lower).radius
---			t := t / (4*maxv)
+			maxv := maximum_velocity (table.balls)
+			t := (table.balls @ table.balls.lower).radius
+			t := t / (5*maxv)
 
-			steps_per_frame := 1 
---			steps_per_frame := (stepd / t).ceiling
+--			steps_per_frame := 1 
+			steps_per_frame := (stepd / t).ceiling
 			stepd := stepd / steps_per_frame
 			
 --			io.putstring ("steps: ")

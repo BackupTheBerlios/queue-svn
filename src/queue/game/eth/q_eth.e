@@ -10,7 +10,7 @@ class
 inherit
 	Q_ABSTRACT_MODE
 	redefine
-		active_player
+		active_player, install
 	end
 	Q_CONSTANTS
 
@@ -36,7 +36,12 @@ feature -- Interface
 			time_info_hud.set_time_cuts (10)
 			time_info_hud.stop
 		end
-		
+	install( ressources_: Q_GAME_RESSOURCES ) is
+		do
+			precursor( ressources_ )
+			time_info_hud.stop
+			time_info_hud.set_time( 0 )
+		end
 		
 	identifier :STRING is "eth"	
 	
