@@ -11,6 +11,7 @@ inherit
 		bounding_object,
 		on_collide,
 		do_update_position,
+		is_stationary,
 		old_state
 	end
 	
@@ -22,11 +23,13 @@ feature -- create
 
 	make_empty is
 		do
-			bounding_object := create {Q_BOUNDING_CIRCLE}.make_empty
-			create old_state.make
-			
 			create velocity.default_create
 			create angular_velocity.default_create
+			
+			create old_state.make
+			bounding_object := create {Q_BOUNDING_CIRCLE}.make_empty
+			bounding_object.set_center_old (old_state.center)
+			bounding_object.set_velocity (velocity)
 		end
 		
 	
@@ -36,11 +39,11 @@ feature -- create
 			center_ /= void
 			radius_ >= 0
 		do
-			create bounding_object.make (center_, radius_)
-			create old_state.make
-
 			create velocity.default_create
 			create angular_velocity.default_create
+
+			create old_state.make
+			create bounding_object.make (center_, old_state.center, velocity, radius_)
 			
 			old_state.assign (bounding_object, velocity, angular_velocity)
 		end
@@ -163,6 +166,7 @@ feature -- interface
 			v /= void
 		do
 			velocity := v
+			bounding_object.set_velocity (v)
 		end
 		
 	set_angular_velocity (av: Q_VECTOR_3D) is

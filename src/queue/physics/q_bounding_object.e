@@ -14,7 +14,6 @@ feature -- interface
 		deferred
 		end		
 
-
 feature {NONE} -- implementation
 
 end -- class Q_BOUNDING_OBJECT

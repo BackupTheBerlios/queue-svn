@@ -18,10 +18,15 @@ feature -- interface
 			-- Revert last position update of object
 		do
 			if old_state /= Void then
-				old_state.apply_to (current)
+				old_state.apply_to (Current)
 			end
 		end
-
+	
+	is_stationary: BOOLEAN is
+		do
+			result := True
+		end
+		
 	on_collide (other: like Current) is
 			-- Collisionn with other detected!
 		require

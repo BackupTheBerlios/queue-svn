@@ -48,6 +48,20 @@ feature -- interface
 			set_x(x_)
 			set_y(y_)
 		end
+		
+	projection (x_: like Current): Q_VECTOR_2D is
+			-- Projection of 'other' onto 'Current' vector
+		local
+			len: DOUBLE
+		do
+			-- Py*x = 1 / |y|^2 * y*y'*x	(y = Current)
+			-- y/|y| gives us the direction
+			-- y'*x / |y| gives us the length
+			
+			len := (1 / length_square) * Current.scalar_product (x_)
+			
+			result := Current * len
+		end
 	
 	is_null: BOOLEAN is
 			-- Is 'Current' equals to (0, 0)?

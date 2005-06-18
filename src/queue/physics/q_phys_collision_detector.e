@@ -82,12 +82,15 @@ feature -- interface
 					item1 := cursor1.item
 					item2 := cursor2.item
 					
-					if does_collide (item1.bounding_object, item2.bounding_object) then
-						result := True
+					if (not item2.is_stationary) or else (not item1.is_stationary) then
+						if does_collide (item1.bounding_object, item2.bounding_object) then
+							result := True
 						
-						if response_handler /= void then
-							response_handler.on_collide (item1, item2)	
+							if response_handler /= void then
+								response_handler.on_collide (item1, item2)	
+							end
 						end
+						
 					end
 					cursor2.forth
 				end
@@ -110,12 +113,15 @@ feature -- interface
 					item1 := cursor1.item
 					item2 := cursor2.item
 					
-					if does_collide (item1.bounding_object, item2.bounding_object) then
-						result := True
+					if (not item1.is_stationary) or (not item2.is_stationary) then
+						if does_collide (item1.bounding_object, item2.bounding_object) then
+							result := True
 						
-						if response_handler /= void then
-							response_handler.on_collide (item1, item2)	
+							if response_handler /= void then
+								response_handler.on_collide (item1, item2)	
+							end
 						end
+						
 					end
 					cursor2.forth
 				end
@@ -197,16 +203,30 @@ feature {NONE} -- implementation
 		local
 			circle: Q_BOUNDING_CIRCLE
 			line: Q_BOUNDING_LINE
-			len_line, len_e1ce2: DOUBLE
+			p: Q_VECTOR_2D
 		do
 			circle ?= o1
 			line ?= o2
 			
-			len_line := line.length 
-			len_e1ce2 := circle.center.distance (line.edge1) + circle.center.distance (line.edge2)
+--			track := circle.center - circle.center_old
+--			
+--			proj := track.projection (line.edge1 - circle.center)
+--			proj_old := track.projection (line.edge1 - circle.center_old)
+--			
+--			if proj_old.x /= 0 then
+--				k := proj.x / proj_old.x
+--			else
+--				k := proj.y / proj_old.y
+--			end
+--			
+--			result := k <= 0
 			
-			result := dmath.dabs (len_e1ce2 - len_line) < 1
-
+			create p.make_from_other (circle.velocity)
+			p.scale_to (circle.radius)
+			p.add (circle.center)
+			
+			result := line.intersect (circle.center_old, p)
+			
 		end
 		
 	does_collide_always_false (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is

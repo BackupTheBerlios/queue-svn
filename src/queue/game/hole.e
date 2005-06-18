@@ -19,7 +19,7 @@ feature
 	make (position_: Q_VECTOR_2D; radius_: DOUBLE) is
 			-- creation procedure
 		do
-			bounding_object := create {Q_BOUNDING_CIRCLE}.make (position_, radius_)
+			bounding_object := create {Q_BOUNDING_CIRCLE}.make (position_, Void, Void, radius_)
 			
 			create caught_balls.make (1, 5)
 		end

@@ -50,6 +50,13 @@ feature -- interface
 			o.velocity.make_from_other (velocity)
 			o.angular_velocity.make_from (angular_velocity)
 		end
+		
+	center: Q_VECTOR_2D is
+			-- Center of bounding circle
+		do
+			result := bounding_object.center
+		end
+		
 
 feature {Q_BALL} -- implementation
 
