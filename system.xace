@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <system name="queue">
-	<root class="QUEUE_TEST" creation="make"/>
+	<root class="Q_GAME_LOGIC" creation="make"/>
 	<option unless="${DEBUG}">
 		<option name="assertion" value="none"/>
 		<option name="garbage_collector" value="none"/>
