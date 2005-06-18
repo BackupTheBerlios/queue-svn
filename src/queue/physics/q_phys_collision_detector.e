@@ -251,4 +251,6 @@ feature {NONE} -- implementation
 
 	response_handler: Q_PHYS_COLLISION_RESPONSE_HANDLER
 	
+	profiler: Q_PROFILER
+	
 end -- class Q_PHYS_COLLISION_DETECTOR

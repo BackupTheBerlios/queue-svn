@@ -34,8 +34,9 @@ feature -- interface
 			ball1.set_mu_sf (0.05)
 			ball1.set_mu_rf	(1.0)
 			ball1.set_mass (0.2)
+			ball1.set_angular_velocity (create {Q_VECTOR_3D}.make (10, 0, 0))
 			
-			create ball2.make (create {Q_VECTOR_2D}.make (120, 90), 2.5)
+			create ball2.make (create {Q_VECTOR_2D}.make (54.9, 60), 2.5)
 			ball2.set_mu_sf (0.05)
 			ball2.set_mu_rf	(1.0)
 			ball2.set_mass (0.2)
@@ -94,7 +95,7 @@ feature -- interface
 			
 			ballpos_list.wipe_out
 			
-			create shot.make (ball1, create {Q_VECTOR_2D}.make (100, 40))
+			create shot.make (ball1, create {Q_VECTOR_2D}.make (0, 0))
 
 			simulation.new (table, shot)
 		end
@@ -117,8 +118,12 @@ feature -- interface
 			draw_track (ogl)
 			draw_ballvectors (ogl, ball1)
 			
+			io.putstring (ball1.angular_velocity.out)
+			io.put_new_line
+			
 			if simulation.has_finished then
-				new
+				io.putstring ("simulation finished")
+				io.put_new_line
 			end
 		end
 		

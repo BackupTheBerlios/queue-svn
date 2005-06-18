@@ -184,7 +184,7 @@ feature -- output
 	out: STRING is
 			-- Textual representation
 		do
-			Result := "(x = " + x.out + ", y = " + y.out + ", " + z.out + ")"
+			Result := "(x = " + x.out + ", y = " + y.out + ", z = " + z.out + ")"
 		end
 
 feature{NONE} -- implementation

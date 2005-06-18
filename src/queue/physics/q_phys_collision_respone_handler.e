@@ -47,9 +47,6 @@ feature -- interface
 			f: PROCEDURE[ANY, TUPLE[Q_OBJECT, Q_OBJECT]]
 			args: TUPLE[Q_OBJECT, Q_OBJECT]
 		do
-			o1.revert_update_position
-			o2.revert_update_position
-
 			f := fun_list.item (o1.typeid, o2.typeid)
 			
 			if o1.typeid <= o2.typeid then
@@ -73,6 +70,9 @@ feature -- interface
 		do
 			ball1 ?= o1
 			ball2 ?= o2
+			
+			o1.revert_update_position
+			o2.revert_update_position
 			
 --			io.putstring ("bb: ")
 --			io.putint (ball1.number)
@@ -124,7 +124,10 @@ feature -- interface
 			ball ?= o1
 			bank ?= o2
 			line := bank.bounding_object
-		
+			
+			o1.revert_update_position
+			o2.revert_update_position
+			
 			-- First of all add event to collision list
 			add_collision (ball, bank)
 			

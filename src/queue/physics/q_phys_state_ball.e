@@ -48,7 +48,7 @@ feature -- interface
 			
 			o.bounding_object.copy (bounding_object)
 			o.velocity.make_from_other (velocity)
-			o.angular_velocity.make_from (angular_velocity)
+--			o.angular_velocity.make_from (angular_velocity)
 		end
 		
 	center: Q_VECTOR_2D is
