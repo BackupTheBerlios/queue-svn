@@ -1,6 +1,6 @@
 indexing
 	description: "An 8ball player. Stores scoring information"
-	author: ""
+	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"
 

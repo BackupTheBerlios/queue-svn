@@ -1,6 +1,6 @@
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "The white ball has fallen in the opening shot, let users decide"
+	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"
 
