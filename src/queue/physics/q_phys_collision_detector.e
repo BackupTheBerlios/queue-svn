@@ -16,6 +16,7 @@ feature -- interface
 		do
 			create active_list.make
 			create passive_list.make
+			create remove_list.make
 			create fun_list.make(2, 2)
 			
 			fun_list.put(agent does_collide_circle_circle, 1, 1)
@@ -49,8 +50,7 @@ feature -- interface
 			-- Remove collision detection support for object 'o'.
 			-- Remove object from both active and passive lists.
 		do
-			active_list.delete (o)
-			passive_list.delete (o)
+			remove_list.put_first (o)
 		end
 		
 	remove_all_objects is
@@ -156,6 +156,16 @@ feature -- interface
 				end
 				cursor1.forth
 			end
+			
+			create cursor1.make (remove_list)
+			from
+				cursor1.start
+			until
+				cursor2.off
+			loop
+				active_list.delete (cursor1.item)
+				passive_list.delete (cursor1.item)
+			end
 		end
 		
 	set_response_handler (h: Q_PHYS_COLLISION_RESPONSE_HANDLER) is
@@ -241,7 +251,8 @@ feature {NONE} -- implementation
 
 	active_list: DS_LINKED_LIST[Q_OBJECT]
 	passive_list: DS_LINKED_LIST[Q_OBJECT]
-
+	remove_list: DS_LINKED_LIST[Q_OBJECT]
+	
 	dmath: DOUBLE_MATH is
 		once
 			result := create {DOUBLE_MATH}
