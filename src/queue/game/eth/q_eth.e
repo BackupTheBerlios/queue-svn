@@ -199,6 +199,7 @@ feature -- game state
 			precursor( ressources_ )
 			time_info_hud.stop
 			time_info_hud.set_time( 0 )
+			time_info_hud.set_wait( true )
 		end
 		
 
