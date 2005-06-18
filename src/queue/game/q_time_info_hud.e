@@ -133,6 +133,15 @@ feature -- time
 	time : INTEGER
 		-- current time
 
+	wait : BOOLEAN
+		-- if true, the next update will not be done
+		
+	set_wait( wait_ : BOOLEAN ) is
+		do
+			wait := wait_
+		end
+		
+
 	set_time_max( time_ : INTEGER ) is
 		require
 			time_ > 0
@@ -194,12 +203,16 @@ feature -- draw
 		do
 			precursor( open_gl )
 			if running then
-				time_ := time + open_gl.time.delta_time_millis
-				if time_ > time_max then
-					time_ := time_max
+				if wait then
+					wait := false
+				else
+					time_ := time + open_gl.time.delta_time_millis
+					if time_ > time_max then
+						time_ := time_max
+					end
+					
+					set_time( time_ )
 				end
-				
-				set_time( time_ )
 			end
 		end
 		
