@@ -28,6 +28,7 @@ feature -- rule
 		
 	next_state(ressources_: Q_GAME_RESSOURCES) : Q_GAME_STATE is
 		do
+				mode.set_first_shot (false)
 				-- set next state as bird state
 				result := ressources_.request_state( "8ball bird" )
 				if result = void then

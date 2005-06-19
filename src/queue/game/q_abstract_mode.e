@@ -254,6 +254,28 @@ feature -- common game logic
 				collisions_.forth
 			end	
 		end
+		
+	delete_fallen_balls(ressources_: Q_GAME_RESSOURCES) is
+		 -- delete the fallen balls from the table (this does not delete them from the table.balls array)
+		 local
+			fb_ : LINKED_LIST[INTEGER]
+			ball_ : Q_BALL
+		 do
+		 	-- don't draw them and set them away from other balls
+			fb_ := fallen_balls (ressources_.simulation.collision_list.deep_twin)
+			if not fb_.is_empty then
+				from
+					fb_.start
+				until
+					fb_.after
+				loop
+					ball_ := table.balls.item(fb_.item)
+					ball_to_ball_model (ball_).set_visible (true)
+					table.balls.item (fb_.item).set_center (create {Q_VECTOR_2D}.make (-ball_.number*100-50,-ball_.number*100-50))
+					fb_.forth
+				end
+			end
+		end
 
 feature -- helper functions
 

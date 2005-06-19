@@ -16,7 +16,7 @@ feature{NONE} -- creation
 			create mode_list.make( 20 )
 			create gl_manager.make_timed( logic_.screen.width, logic_.screen.height, time )
 			create simulation.make
-			
+			create logger.make
 			create values.make
 			
 			logic := logic_
@@ -67,6 +67,8 @@ feature  -- I/O
 		end
 		
 	values : Q_INI_FILE_READER
+	
+	logger : Q_LOGGER
 
 feature -- states
 	request_state( name_ : STRING ) : Q_GAME_STATE is

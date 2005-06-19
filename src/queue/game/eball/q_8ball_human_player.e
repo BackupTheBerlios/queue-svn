@@ -26,11 +26,6 @@ feature
 		local
 			reset_ : Q_8BALL_RESET_STATE
 		do
---			result := ressources_.request_state( "8ball bird" )
---			if result = void then
---				result := create {Q_8BALL_BIRD_STATE}.make_mode( mode )
---				ressources_.put_state( result )
---			end
 
 			reset_ ?= ressources_.request_state( "8ball reset" )
 			if result = void then

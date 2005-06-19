@@ -33,7 +33,7 @@ feature -- creation
 			
 			-- create the ruleset
 			create ruleset.make
-			-- be careful order DOES matter, this a kind of Zuständigkeitskette
+			-- be careful order DOES matter, this is a kind of Zuständigkeitskette
 			ruleset.force (create {Q_8BALL_LOST_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_WON_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_INCORRECT_OPENING_RULE}.make_mode (current))
@@ -104,7 +104,7 @@ feature	-- Interface
 		end
 		
 
-feature -- state features
+feature -- game state features
 
 	install(r_ : Q_GAME_RESSOURCES) is
 		do
@@ -128,12 +128,15 @@ feature -- state features
 		do
 			colls_ := ressources_.simulation.collision_list
 			assign_fallen_balls (colls_)
+			-- DEUBG
+			ressources_.logger.log ("Q_8BALL","next_state",player_a.fallen_balls.count.out)
+			
+			-- END DEBUG
+		--	info_hud.set_small_left_text (player_a.fallen_balls.count.out)
+		--	info_hud.set_small_right_text(player_b.fallen_balls.count.out)
 			-- DEBUG
-			io.put_new_line
-			io.put_string ("first shot: "+first_shot.out+"; is_open: "+is_open.out)
-			io.put_new_line
-			io.put_string ("correct shot: "+ruleset.first.is_correct_shot(colls_,active_player).out+"; is_correct_opening: "+ruleset.first.is_correct_opening(colls_).out)
-			io.put_new_line
+			ressources_.logger.log("Q_8BALL","next_state","first shot: "+first_shot.out+"; is_open: "+is_open.out)
+			ressources_.logger.log("Q_8BALL","next_state","correct shot: "+ruleset.first.is_correct_shot(colls_,active_player).out+"; is_correct_opening: "+ruleset.first.is_correct_opening(colls_).out)
 			-- END DEBUG
 			from
 				ruleset.start	
@@ -142,8 +145,7 @@ feature -- state features
 			loop
 				if ruleset.item.is_guard_satisfied (colls_) then
 					-- DEBUG
-					io.put_string(ruleset.item.identifier)
-					io.put_new_line
+					ressources_.logger.log("Q_8BALL","next_state",ruleset.item.identifier+ " is applicable")
 					-- END DEBUG
 					Result := ruleset.item.next_state (ressources_)
 				end
@@ -151,12 +153,19 @@ feature -- state features
 			end
 		end	
 
-feature{Q_8BALL_RULE} -- game state & change game state
+feature{Q_8BALL_RULE} -- 8ball state
 
 		
 	is_open : BOOLEAN -- is the table "open", i.e. no colors yet specified
 	first_shot : BOOLEAN -- is this the first shot
 	ruleset: LINKED_LIST[Q_8BALL_RULE]
+	
+	set_first_shot(b_ : BOOLEAN) is
+			-- set the first shot flag
+		do
+			first_shot := b_
+		end
+		
 
 	assign_fallen_balls(colls_: LIST[Q_COLLISION_EVENT]) is
 		-- assign fallen balls to players

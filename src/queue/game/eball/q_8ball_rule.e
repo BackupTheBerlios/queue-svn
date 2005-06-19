@@ -52,7 +52,7 @@ feature -- common game logic
 			any_bank_touched_ := not mode.banks_touched (collisions_).is_empty
 			-- 4.12.2
 			-- white -> bank -> own_color -> (bank or color fallen)
-			if not collisions_.is_empty and then collisions_.first.defendent.typeid = bank_type_id then
+			if collisions_.count >=2 and then collisions_.first.defendent.typeid = bank_type_id then
 				if collisions_.i_th (2).defendent.typeid = ball_type_id then
 					ball_ ?= collisions_.i_th (2).defendent
 					if ball_.owner.has (mode.active_player) and then (mode.fallen_balls (collisions_).has (ball_.number) or else mode.banks_touched (collisions_).count > 1) then

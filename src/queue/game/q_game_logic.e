@@ -31,6 +31,7 @@ feature -- Interface
 		do
 			precursor
 			ressources.values.save_file( "data/preferences.ini" )
+			ressources.logger.close
 		end
 		
 		
@@ -68,9 +69,7 @@ feature{NONE} -- creation
 
 --			state := create {BEN_INGAME_MENU_TEST_STATE}
 			state.install( ressources )
-			
---			io.set_file_default (create {PLAIN_TEXT_FILE}.make ("log.txt"))
---		
+
 			-- Set and launch the first scene.
 			set_scene( current )
 			launch
@@ -132,10 +131,7 @@ feature {NONE} -- THE game loop
 			next_ := state.next( ressources )
 			
 			if next_ /= void then
-				-- DEBUG
-				io.put_string ("Next state is :"+next_.identifier)
-				io.put_new_line
-				-- END DEBUG
+				ressources.logger.log ("Q_GAME_LOGIC","redraw","Next state is: "+next_.identifier)
 				state.uninstall( ressources )
 				state := next_
 				state.install( ressources )

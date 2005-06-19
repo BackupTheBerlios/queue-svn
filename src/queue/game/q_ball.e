@@ -25,7 +25,7 @@ feature -- create
 		do
 			create velocity.default_create
 			create angular_velocity.default_create
-			
+			create owner.make
 			create old_state.make
 			bounding_object := create {Q_BOUNDING_CIRCLE}.make_empty
 			bounding_object.set_center_old (old_state.center)
@@ -41,7 +41,7 @@ feature -- create
 		do
 			create velocity.default_create
 			create angular_velocity.default_create
-
+			create owner.make
 			create old_state.make
 			create bounding_object.make (center_, old_state.center, velocity, radius_)
 			

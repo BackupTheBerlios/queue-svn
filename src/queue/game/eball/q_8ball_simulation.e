@@ -48,6 +48,7 @@ feature
 		do
 			if not ressources_.simulation.has_finished then
 				ressources_.simulation.step (ressources_.mode.table, ressources_.time)
+				mode.delete_fallen_balls (ressources_)
 				Result := true
 			else
 				Result := false
