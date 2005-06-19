@@ -1,5 +1,5 @@
 indexing
-	description: "The white ball has fallen in the opening shot, let users decide"
+	description: "The white ball has fallen in the opening shot"
 	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -43,6 +43,7 @@ feature -- rule
 				reset_state_ := create {Q_8BALL_RESET_STATE}.make_mode( mode )
 				ressources_.put_state( reset_state_ )
 			end
+			reset_state_.set_ball (ressources_.mode.table.balls.item(white_number))
 			reset_state_.set_headfield (true)
 			-- player can shot only out of headfield in next turn
 			aim_state_ ?= ressources_.request_state ("8ball aim")

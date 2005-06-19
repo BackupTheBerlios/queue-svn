@@ -1,5 +1,5 @@
 indexing
-	description: "A correct shot, switch players and continue"
+	description: "A correct shot, switch players if necessary and continue"
 	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -34,9 +34,24 @@ feature -- rule
 				if result = void then
 					result := create {Q_8BALL_BIRD_STATE}.make_mode (mode)
 					ressources_.put_state( result )
-				end	
-				-- change players
-				mode.switch_players
+				end
+				if not own_color_fallen(ressources_.simulation.collision_list,mode.active_player) then
+					mode.switch_players
+				end
 		end
 
+feature{NONE}
+	own_color_fallen(collisions_: LIST[Q_COLLISION_EVENT]; player_ : Q_PLAYER):BOOLEAN is
+			-- is a ball of my own color fallen?
+		local
+			ball_ : Q_BALL
+		do
+			Result := false
+			-- 4.12.1
+			if not collisions_.is_empty and then collisions_.first.defendent.typeid = ball_type_id then
+				ball_ ?= collisions_.first.defendent
+				Result := ball_.owner.has(player_) or else mode.is_open
+			end
+		end
+		
 end -- class Q_8BALL_CORRECT_SHOT_RULE

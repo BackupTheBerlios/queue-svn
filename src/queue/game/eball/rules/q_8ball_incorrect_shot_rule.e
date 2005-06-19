@@ -9,6 +9,7 @@ class
 
 inherit
 	Q_8BALL_RULE
+	Q_CONSTANTS
 
 create
 	make_mode
@@ -39,6 +40,7 @@ feature -- rule
 					reset_state_ := create {Q_8BALL_RESET_STATE}.make_mode( mode )
 					ressources_.put_state( reset_state_ )
 				end
+				reset_state_.set_ball (ressources_.mode.table.balls.item(white_number))
 				reset_state_.set_headfield (false)
 				mode.switch_players
 				Result := reset_state_

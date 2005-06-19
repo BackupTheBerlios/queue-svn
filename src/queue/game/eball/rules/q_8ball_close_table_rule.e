@@ -25,7 +25,7 @@ feature -- rule
 		
 	is_guard_satisfied(colls_: LIST[Q_COLLISION_EVENT]): BOOLEAN is
 		do
-			Result := mode.is_open and then not mode.first_shot and then is_correct_shot(colls_, mode.active_player)
+			Result := mode.is_open and then not mode.first_shot and then is_correct_shot(colls_, mode.active_player) and then not mode.fallen_balls(colls_).is_empty
 		end
 
 	next_state(ressources_: Q_GAME_RESSOURCES) : Q_GAME_STATE is

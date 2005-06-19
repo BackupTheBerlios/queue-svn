@@ -43,6 +43,7 @@ feature -- creation
 			ruleset.force (create {Q_8BALL_INCORRECT_SHOT_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_CLOSE_TABLE_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_PLAY_BLACK_RULE}.make_mode (current))
+--			ruleset.force (create {Q_8BALL_CORRECT_SHOT_AND_BALL_FALLEN_RULE}.make_mode(current))
 			ruleset.force (create {Q_8BALL_CORRECT_SHOT_RULE}.make_mode(current))
 			is_open := true
 		end
@@ -125,15 +126,13 @@ feature -- game state features
 			-- next state according to the ruleset
 		local
 			colls_ : LIST[Q_COLLISION_EVENT]
+			finished_ : BOOLEAN
 		do
+			logger := ressources_.logger
 			colls_ := ressources_.simulation.collision_list
-			assign_fallen_balls (colls_)
-			-- DEUBG
-			ressources_.logger.log ("Q_8BALL","next_state",player_a.fallen_balls.count.out)
-			
 			-- END DEBUG
-		--	info_hud.set_small_left_text (player_a.fallen_balls.count.out)
-		--	info_hud.set_small_right_text(player_b.fallen_balls.count.out)
+			info_hud.set_small_left_text (player_a.fallen_balls.count.out)
+			info_hud.set_small_right_text(player_b.fallen_balls.count.out)
 			-- DEBUG
 			ressources_.logger.log("Q_8BALL","next_state","first shot: "+first_shot.out+"; is_open: "+is_open.out)
 			ressources_.logger.log("Q_8BALL","next_state","correct shot: "+ruleset.first.is_correct_shot(colls_,active_player).out+"; is_correct_opening: "+ruleset.first.is_correct_opening(colls_).out)
@@ -141,15 +140,19 @@ feature -- game state features
 			from
 				ruleset.start	
 			until
-				ruleset.after
+				ruleset.after or else finished_
 			loop
 				if ruleset.item.is_guard_satisfied (colls_) then
 					-- DEBUG
 					ressources_.logger.log("Q_8BALL","next_state",ruleset.item.identifier+ " is applicable")
 					-- END DEBUG
 					Result := ruleset.item.next_state (ressources_)
+					finished_ := true
 				end
 				ruleset.forth
+			end
+			if not is_open then 
+				assign_fallen_balls (colls_)
 			end
 		end	
 
@@ -174,13 +177,15 @@ feature{Q_8BALL_RULE} -- 8ball state
 			fb_ : LINKED_LIST[INTEGER]
 		do
 			fb_ := fallen_balls (colls_)
+			logger.log ("Q_8BALL","assign_fallen_balls","beginning")
 			from
 				fb_.start
 			until
 				fb_.after
 			loop
 				if fb_.item /= 8 and fb_.item /= white_number then
-					p_ ?= table.balls.item (fb_.item).owner
+					logger.log ("Q_8BALL","assign_fallen_balls","assigning "+fb_.item.out+" "+table.balls.item (fb_.item).owner.count.out)
+					p_ ?= table.balls.item (fb_.item).owner.first
 					p_.fallen_balls.force (table.balls.item(fb_.item))
 				end
 				fb_.forth
@@ -278,6 +283,9 @@ feature -- helper functions
 				
 		end
 		
+feature{Q_8BALL_RULE} -- temporary ressources
+	logger :Q_LOGGER
+	
 feature{NONE} -- set-up
 	new_table is
 			-- creates the opening table for this game mode, all balls are in a triangle, the white is set at the head of the table
@@ -421,8 +429,12 @@ feature{NONE} -- set-up
 				when 11 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y)
 				when 12 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y+2*ball_radius)
 				when 13 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y-ball_radius)
-				when 14 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y+ball_radius)
-				when 15 then create result.make(root_point.x, root_point.y)
+				when 14 then create result.make(head_point.x, head_point.y)
+					
+--				when 14 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y+ball_radius)
+--				when 15 then create result.make(root_point.x, root_point.y)
+				when 15 then create result.make(20,20)
+					
 			end
 		end
 		

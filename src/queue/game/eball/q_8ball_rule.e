@@ -46,7 +46,7 @@ feature -- common game logic
 			-- 4.12.1
 			if not collisions_.is_empty and then collisions_.first.defendent.typeid = ball_type_id then
 				ball_ ?= collisions_.first.defendent
-				own_colored_first_ := ball_.owner.has(player_)
+				own_colored_first_ := ball_.owner.has(player_) or else mode.is_open
 			end
 			colored_ball_fallen_ := not mode.fallen_balls (collisions_).is_empty and not mode.fallen_balls (collisions_).has (white_number)
 			any_bank_touched_ := not mode.banks_touched (collisions_).is_empty
@@ -61,7 +61,10 @@ feature -- common game logic
 				end
 				
 			end
-			Result := (not mode.is_open) implies (own_colored_first_ and then (colored_ball_fallen_ or else any_bank_touched_) or else bank_shot_)
+			--DEBUG
+			mode.logger.log ("Q_8BALL_RULE","is_correct_shot","own_colored_first_ :"+own_colored_first_.out +", colored_ball_fallen_: "+colored_ball_fallen_.out+", any_bank_touched_: "+any_bank_touched_.out+", bank_shot_: "+bank_shot_.out)
+			--END DEBUG
+			Result :=  (own_colored_first_ and then (colored_ball_fallen_ or else any_bank_touched_) or else bank_shot_)
 		end
 		
 	is_correct_opening(collisions_: LIST[Q_COLLISION_EVENT]):BOOLEAN is
@@ -121,6 +124,7 @@ feature{Q_8BALL_RULE} -- event handlers
 				create ns_.make_mode (mode)
 				r_.put_state (ns_)
 			end
+			mode.set_first_shot (false)
 			mode.switch_players
 			cs_.set_next_state (ns_)
 		end
