@@ -69,6 +69,8 @@ feature{NONE} -- creation
 --			state := create {BEN_INGAME_MENU_TEST_STATE}
 			state.install( ressources )
 			
+--			io.set_file_default (create {PLAIN_TEXT_FILE}.make ("log.txt"))
+--		
 			-- Set and launch the first scene.
 			set_scene( current )
 			launch

@@ -778,12 +778,12 @@ feature{NONE} -- new games
 					create eth.make
 					ressources.put_mode( eth )
 				end
-				-- reset the balls
-				eth.restart
 				player_a_ := eth.human_player
 				player_a_.set_name (player_name_1.text)
 				eth.set_player( player_a_ )
 				ressources.set_mode( eth )
+				-- reset the balls
+				eth.restart
 				next_state := eth.first_state( ressources )
 			else
 				goto_game_menu( command_, button_ )

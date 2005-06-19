@@ -44,7 +44,7 @@ feature -- Interface
 	set_player(p_: Q_PLAYER) is
 			-- don't change the info hud
 		do
-			player ?= p_
+			active_player ?= p_
 			time_info_hud.set_big_text (p_.name)
 		end
 	
@@ -66,7 +66,9 @@ feature -- Interface
 			-- reset the balls randomly and restart the timer
 		do
 			new_table
+			active_player.fallen_balls.wipe_out
 			time_info_hud.stop
+			time_info_hud.set_small_text ("0")
 			time_info_hud.set_time( 0 )
 		end
 
@@ -80,14 +82,8 @@ feature{NONE} -- agent handlers
 		local
 			ns_ : Q_ETH_RESET_STATE
 		do
-			ns_ ?= r_.request_state ("eth reset")
-			if ns_ = void then
-				create ns_.make_mode (current)
-				r_.put_state (ns_)
-			end
 			restart
-			ns_.set_ball (table.balls.item (white_number))
-			cs_.set_next_state (ns_)
+			cs_.set_next_state (first_state (r_))
 		end
 		
 	handle_main_menu(r_:Q_GAME_RESSOURCES; command_:STRING; button_:Q_HUD_BUTTON; cs_: Q_ETH_CHOICE_STATE) is
@@ -140,6 +136,7 @@ feature {NONE} -- setup
 				balls_.force (ball_,nr)
 				nr := nr +1
 			end
+			table := void
 			create table.make (balls_, table_model.banks, table_model.holes)
 			link_table_and_balls
 			stretch
@@ -187,8 +184,11 @@ feature {NONE} -- setup
 			when 24 then create result.make (root_point.x, root_point.y-6*ball_radius)
 			when 25 then create result.make (root_point.x, root_point.y-4*ball_radius)
 			when 26 then create result.make (root_point.x, root_point.y)
+--			when 27 then create result.make (head_point.x,head_point.y)
 			when 27 then create result.make (root_point.x, root_point.y+4*ball_radius)
 			when 28 then create result.make (root_point.x, root_point.y+8*ball_radius)
+--			when 28 then create result.make (30, 30)
+			
 			end
 		end
 		
@@ -205,8 +205,7 @@ feature -- game state
 
 	first_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
 		do
-			result := player.first_state( ressources_ )
-			active_player := player
+			result := active_player.first_state( ressources_ )
 		end
 	
 		
@@ -220,7 +219,7 @@ feature -- game state
 			colls_ := ressources_.simulation.collision_list
 			fb_ := fallen_balls (colls_)
 			
-			if is_lost then
+			if is_lost(colls_) then
 				choice_state_ ?= ressources_.request_state ("eth lost")
 				if choice_state_ = void then
 					create choice_state_.make_mode_titled( current,"Time is up "+ active_player.name+" loses", "eth lost", 2)
@@ -250,16 +249,14 @@ feature -- game state
 				end	
 			end
 			assign_fallen_balls (fb_)
+			time_info_hud.set_small_text (active_player.fallen_balls.count.out)
 		end
 		
 
 feature{NONE} -- game logic
-	player : Q_ETH_PLAYER
-	
+
 	assign_fallen_balls(fb_: LIST[INTEGER]) is
 		-- assign fallen balls to players
-		local
-			p_ : Q_ETH_PLAYER
 		do
 			from
 				fb_.start
@@ -267,8 +264,7 @@ feature{NONE} -- game logic
 				fb_.after
 			loop
 				if fb_.item /= white_number then
-					p_ ?= table.balls.item (fb_.item).owner
-					p_.fallen_balls.force (table.balls.item(fb_.item))
+					active_player.fallen_balls.force ((table.balls.item(fb_.item)))
 				end
 				fb_.forth
 			end
@@ -280,10 +276,10 @@ feature{NONE} -- game logic
 			Result := active_player.fallen_balls.count = 28
 		end
 		
-	is_lost:BOOLEAN is
+	is_lost (colls_:LIST[Q_COLLISION_EVENT]):BOOLEAN is
 			-- is time up?
 		do
-			Result := time_info_hud.over
+			Result := fallen_balls (colls_).has (0) or else time_info_hud.over
 		end
 	
 end -- class Q_ETH

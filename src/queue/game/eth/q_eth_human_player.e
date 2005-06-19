@@ -39,8 +39,9 @@ feature{NONE}
 				create reset_.make_mode( mode )
 				ressources_.put_state( reset_ )
 			end
-			result := reset_
+			mode.table.balls.item(mode.white_number).set_center (mode.head_point)
 			reset_.set_ball( mode.table.balls.item( mode.white_number ) )
+			result := reset_
 		end
 
 end -- class Q_ETH_HUMAN_PLAYER

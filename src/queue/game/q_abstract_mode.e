@@ -209,6 +209,7 @@ feature -- queries
 			sim_.collision_detector.add_active_object (create {Q_BALL}.make (v_,ball_radius))
 			sim_.collision_detector.set_response_handler (void)
 			Result := not sim_.collision_detector.collision_test
+			REsult := true
 		end
 		
 feature -- common game logic
