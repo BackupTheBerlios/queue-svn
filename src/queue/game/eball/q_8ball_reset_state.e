@@ -85,9 +85,6 @@ feature
 			else
 				Result := ressources_.mode.valid_position (ball_position_, ball,ressources_.simulation)
 			end
-			-- DEBUG
-			Result := true
-			-- END DEBUG
 		end
 		
 	headfield :BOOLEAN

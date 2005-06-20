@@ -32,7 +32,7 @@ feature -- Interface
 			-- create hud
 			create time_info_hud.make
 			time_info_hud.set_location( 0.05, 0.75 )
-			time_info_hud.set_time_max (150000*60)
+			time_info_hud.set_time_max (15000*60)
 			time_info_hud.set_time_cuts (15)
 			time_info_hud.stop
 		end
@@ -184,10 +184,10 @@ feature {NONE} -- setup
 			when 24 then create result.make (root_point.x, root_point.y-6*ball_radius)
 			when 25 then create result.make (root_point.x, root_point.y-4*ball_radius)
 			when 26 then create result.make (root_point.x, root_point.y)
---			when 27 then create result.make (head_point.x,head_point.y)
-			when 27 then create result.make (root_point.x, root_point.y+4*ball_radius)
-			when 28 then create result.make (root_point.x, root_point.y+8*ball_radius)
---			when 28 then create result.make (30, 30)
+			when 27 then create result.make (head_point.x,head_point.y)
+--			when 27 then create result.make (root_point.x, root_point.y+4*ball_radius)
+--			when 28 then create result.make (root_point.x, root_point.y+8*ball_radius)
+			when 28 then create result.make (30, 30)
 			
 			end
 		end

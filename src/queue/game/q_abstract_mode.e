@@ -269,6 +269,7 @@ feature -- common game logic
 		 local
 			fb_ : LINKED_LIST[INTEGER]
 			ball_ : Q_BALL
+			x_ : DOUBLE
 		 do
 		 	-- don't draw them and set them away from other balls
 			fb_ := fallen_balls (ressources_.simulation.collision_list.deep_twin)
@@ -279,8 +280,15 @@ feature -- common game logic
 					fb_.after
 				loop
 					ball_ := table.balls.item(fb_.item)
+					--DEBUG
+					--ressources_.logger.log ("Q_ABSTRACT_MODE","delete_fallen_balls", "deleting "+ball_.number.out+" table width:"+width.out)
+					--END DEBUG
 					ball_to_ball_model (ball_).set_visible (true)
-					table.balls.item (fb_.item).set_center (create {Q_VECTOR_2D}.make (-ball_.number*100-50,-ball_.number*100-50))
+					x_ := (ball_.number.to_double*width)/ball_models.count.to_double
+					--DEBUG
+					--ressources_.logger.log ("Q_ABSTRACT_MODE","delete_fallen_balls", "positioning to "+x_.out)
+					--END DEBUG
+					ball_.set_center (create {Q_VECTOR_2D}.make (x_,-20))
 					fb_.forth
 				end
 			end
