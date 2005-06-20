@@ -71,9 +71,9 @@ feature -- interface
 		do
 			result := prepare_next_state( slider.value, ressources_ )
 			
-			if result /= void then
-				to_default_strength
-			end
+--			if result /= void then
+--				to_default_strength
+--			end
 		end
 		
 		
