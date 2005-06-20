@@ -1,0 +1,151 @@
+------------------------------
+|o   *        o             o|
+|                *           |
+|          Queue        *    |
+|                            |
+|         *          *       |
+|o            o             o|
+------------------------------
+
+	Queue - Userguide
+
+Requirements
+
+Main-Menu
+	New Game
+	Options
+	Help
+	Exit
+	Return
+
+Option-Menu
+	X vs. Y
+	Name player X
+	More
+	Return
+
+Option-Menu-2
+	Follow on shot
+	Return
+	Menu
+
+Game-Menu
+	8 Ball
+	ETH
+
+States
+	Free
+	Reseting
+	Aiming
+	Spinning
+	Shoting
+	Watching
+
+** Requirements **
+To play QUEUE, you must have a computer with at least:
+
+600 Mhz
+128 MB RAM
+A graphiccard witch supports OpenGL
+Keyboard & Mouse
+
+
+** Main-menu **
+	** New Game **
+This loads a new game. Loading a new game means, all options from the option-menu are applied, and the current state (points, ball-position, etc.) is reset.
+If you are in the middle of a game, you must first confirm your decision.
+
+	** Options **
+Pressing this button brings you to the option-menu.
+
+	** Help **
+Shows an overwiev, how to move the camera, changing the state, etc.
+
+	** Exit **
+This quits the game.
+
+	** Return **
+This button is only available if you have started a game, and pressed the ESCAPE-key. If you press "return", the game will continue as if nothing happend.
+
+** Options **
+In the option-menu (and the option-menu-2), you can change the settings. Some of these settings will be applied to the game directly, others may require to restart the game ("New game" in the "Main-menu"), some doesn't take effect of the game you play (e.x. the name of a second player has no meaning in a singleplayer-game).
+
+	** X vs. Y **
+Here you set, if you want to play against your computer (AI means Artifical Intelligence), against a human, or if you just want to watch the computer playing against himself.
+
+	** Name player X**
+Lets you choose the names for the players. Don't choose a name that is too long, or some letters will be cut off.
+
+	** More **
+Goto the second screen of the option-menu, by pressing the "More"-button.
+
+	** Return **
+Returns to the main-menu
+
+** Option-Menu-2 **
+	** Follow on shot **
+If you set a tick, and you shot a ball, the camera will follow this ball. You can then rotate the camera around the ball, while the ball is rolling.
+If you don't set a tick, the camera just will stay in place, until you told her to move.
+
+	** Return **
+Returns to the first screen of the option-menu
+
+	** Menu **
+Goes to the main-menu
+
+** Game-Menu **
+Starting a new game may take some time. Don't interrupt the programm, if it das not react during the first 20 seconds.
+
+	** 8 Ball **
+The classical 8 ball.
+
+	** ETH **
+Here you are alone with a lot red balls. You have 150 seconds to shot all of them into a hole.
+
+
+** States **
+A game could be in different states. In each state, you have different options to do, or to set.
+If nothing else is told, you can go from one to the next state by pressing the "space"-key. Sometings a dialog will appear, then you have to choose an option.
+
+	** Free **
+In this mode, you can do nothing, except moving the camera.
+The camera can be controlled by the keyboard, or the mouse.
+If you choose to use the mouse: press one mousebutton, drag the mouse, and the camera will change its view-direction. Press two buttons, and you can move the camera into view-direction.
+If you choose to use the keyboard:
+A/D: changes the view-direction to the left/right.
+W/S: changes the view-direction up/downwards.
+Q/E: moves the camera along its view direction nearer/farer away.
+J/L: moves the camera to the left/right.
+I/K: moves the camera up/down relative to the camera
+arrow left/arrow right: moves the camera left/right.
+arrow up/arrow down: moves the camera up/down relative to the world.
+
+	** Reseting **
+In this state, you can set the position of a ball. Move the mouse to the position you like to drop the ball, and press a mousebutton. If you don't like you choice, press a mousebutton and drag the mouse, you can then move the ball to another location.
+The camera works equally to the free-state, except: you have to press the "ctrl"-key to controll the camera by the mouse.
+
+	** Aiming **
+You can rotate the camera around the ball, and a dashed, white line shows you, where the ball will be shot.
+The camera can be controlled by mouse or keyboard:
+Press a mousebutton to rotate the camera. As faster you drag the mouse, as faster the camera will rotate.
+Press two mousebuttons, and you can increase/decrease the distance from the camera to the ball.
+
+A/D: rotate fast left/right around the ball
+W/S: rotate fast up/downwards around the ball
+Q/E: go nearer/farer to the ball
+arrow left/arrow right: rotate slow left/right around the ball
+arrow up/arrow down: rotate slow up/downwards around the ball.
+
+	** Spinning **
+This state allows to choose, where the ball is hit. Move the mouse to the location you want to hit the ball, and press a mousebutton. A red cross will appear.
+It's only possible to hit the ball in the one half, witch can be reached by the queue.
+The camerabehaviour is simillar to the aim-state, except you have to press the "ctrl"-key to control the camera with the mouse, and left/right-rotation is disabled.
+
+	** Shoting **
+Here you can choose the strength. Yust move the slider with the mouse, or press the "+"/PageUP-key to increase, or the "-"/PageDown-key to decrease the strength.
+The camera behaves as if it were the free-state.
+
+	** Watching **
+When you have shot, you can watch the simulation.
+The camerabehaviour depence, if you have set a tick in the "option-menu-2" at "follow on shot".
+If there is a tick, the camera behaves like in the aim-state, if there is no tick, the camera behaves like in the free-state.
