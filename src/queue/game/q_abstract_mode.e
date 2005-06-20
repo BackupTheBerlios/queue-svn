@@ -208,7 +208,7 @@ feature -- queries
 			-- END DEBUG
 			ball_.set_center (v_)
 			sim_.collision_detector.set_response_handler (void)
-			Result := not sim_.collision_detector.collision_test (true)
+			Result := not sim_.collision_detector.collision_test(true)
 			-- DEBUG 
 			io.put_string (v_.out+" for ball "+ball_.number.out+" is valid position :"+result.out)
 			io.put_new_line

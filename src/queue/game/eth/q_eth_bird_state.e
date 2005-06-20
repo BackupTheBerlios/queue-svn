@@ -46,7 +46,7 @@ feature
 		end
 		
 	default_next_state( ressources_: Q_GAME_RESSOURCES ) : Q_GAME_STATE is
-			--
+			-- 
 		do
 			result := ressources_.request_state( "eth aim" )
 			if result = void then

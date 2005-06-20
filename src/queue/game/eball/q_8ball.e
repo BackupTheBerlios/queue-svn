@@ -43,7 +43,7 @@ feature -- creation
 			ruleset.force (create {Q_8BALL_INCORRECT_SHOT_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_CLOSE_TABLE_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_PLAY_BLACK_RULE}.make_mode (current))
---			ruleset.force (create {Q_8BALL_CORRECT_SHOT_AND_BALL_FALLEN_RULE}.make_mode(current))
+			ruleset.force (create {Q_8BALL_CORRECT_SHOT_AND_BALL_FALLEN_RULE}.make_mode(current))
 			ruleset.force (create {Q_8BALL_CORRECT_SHOT_RULE}.make_mode(current))
 			is_open := true
 		end
@@ -204,7 +204,7 @@ feature{Q_8BALL_RULE} -- 8ball state
 			end
 		end
 		
-	other_player : Q_PLAYER is
+	other_player : Q_8BALL_PLAYER is
 			-- the non-active player
 		do
 			if active_player = player_a then
@@ -232,7 +232,7 @@ feature{Q_8BALL_RULE} -- 8ball state
 		end
 		
 	close_table(ball_nr: INTEGER) is
-			-- close the table, i.e. assign the active player to all balls with same colors as ball_nr
+			-- close the table, i.e. assign the active player to all balls with same color as ball_nr
 		require
 			is_open
 			ball_nr /= void
@@ -251,9 +251,11 @@ feature{Q_8BALL_RULE} -- 8ball state
 				if table.balls.item(i).number <8 and ball_nr < 8 then
 					-- same color
 					table.balls.item (i).add_owner (active_player)
+					active_player.fallen_balls.force (table.balls.item(i))
 				else
 					-- different color
 					table.balls.item (i).add_owner (other_player)
+					other_player.fallen_balls.force(table.balls.item(i))
 				end
 				i := i+1
 			end

@@ -32,8 +32,8 @@ feature -- Interface
 			-- create hud
 			create time_info_hud.make
 			time_info_hud.set_location( 0.05, 0.75 )
-			time_info_hud.set_time_max (150000)
-			time_info_hud.set_time_cuts (10)
+			time_info_hud.set_time_max (150000*60)
+			time_info_hud.set_time_cuts (15)
 			time_info_hud.stop
 		end
 		
@@ -218,6 +218,7 @@ feature -- game state
 		do
 			colls_ := ressources_.simulation.collision_list
 			fb_ := fallen_balls (colls_)
+			assign_fallen_balls (fb_)
 			-- DEBUG
 			ressources_.logger.log("Q_ETH","next_state",fb_.count.out+" balls have fallen")
 			-- END DEBUG
@@ -250,7 +251,6 @@ feature -- game state
 					ressources_.put_state( result )
 				end	
 			end
-			assign_fallen_balls (fb_)
 			time_info_hud.set_small_text (active_player.fallen_balls.count.out)
 		end
 		

@@ -13,7 +13,7 @@ inherit
 
 creation
 	make_mode
-	
+
 feature{NONE} -- creation
 	make_mode( mode_ : Q_ETH ) is
 		do
@@ -59,5 +59,6 @@ feature
 			spin_.set_shot_direction( direction_ )
 			result := spin_
 		end
+
 
 end -- class Q_8BALL_AIM_STATE
