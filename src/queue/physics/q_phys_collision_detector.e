@@ -60,8 +60,9 @@ feature -- interface
 			passive_list.wipe_out
 		end
 		
-	collision_test: BOOLEAN is
+	collision_test (static_test: BOOLEAN): BOOLEAN is
 			-- Check if any element collides with any other element.
+			-- Static test: Use collision test outside of simulation.
 		local
 			cursor1, cursor2: DS_LINKED_LIST_CURSOR [Q_OBJECT]
 			item1, item2: Q_OBJECT
@@ -82,7 +83,7 @@ feature -- interface
 					item1 := cursor1.item
 					item2 := cursor2.item
 					
-					if (not item2.is_stationary) or else (not item1.is_stationary) then
+					if static_test or else (not item2.is_stationary) or else (not item1.is_stationary) then
 						if does_collide (item1.bounding_object, item2.bounding_object) then
 							result := True
 						
@@ -206,6 +207,11 @@ feature {NONE} -- implementation
 			dist := c1.center.distance_square (c2.center)
 			
 			result := dist <= (c1.radius + c2.radius)^2
+			
+			if result then
+				io.putstring ("col cc %N")
+			end
+			
 		end
 		
 	does_collide_circle_line (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is

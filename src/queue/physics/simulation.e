@@ -142,7 +142,7 @@ feature -- interface
 				-- collision detection
 				collision_detector.set_response_handler (collision_handler)
 
-				b := collision_detector.collision_test -- (stepd)
+				b := collision_detector.collision_test (false) -- (stepd)
 				
 				i := i + 1
 			end -- from (step)

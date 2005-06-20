@@ -133,9 +133,16 @@ feature -- interface
 		do
 			result := True
 		
-			result := result and (velocity.length < 0.1)
-			result := result and (angular_velocity.length < 1)
+			result := result and (velocity.length < 0.5)
+			result := result and (angular_velocity.length < 0.2)
 			
+			if number = 0 then
+--				io.putdouble (velocity.length)
+--				io.put_new_line
+--				io.putdouble (angular_velocity.length)
+--				io.put_new_line
+--				io.put_new_line
+			end
 		end	
 		
 	on_collide (other: like Current) is
