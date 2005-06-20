@@ -200,18 +200,24 @@ feature -- queries
 
 	valid_position( v_ : Q_VECTOR_2D; ball_ : Q_BALL; sim_:Q_SIMULATION ) : BOOLEAN is
 			-- is v_ a valid position, no ball in environment, not in bank, etc.
+		local
+			old_center: Q_VECTOR_2D
 		do
 			sim_.new (table,create {Q_SHOT}.make (table.balls.item (white_number), create {Q_VECTOR_2D}.default_create))
 			-- DEBUG
-			io.put_string("old position: "+ball_.center.out)
-			io.put_new_line
+			--io.put_string("old position: "+ball_.center.out)
+			--io.put_new_line
 			-- END DEBUG
+			old_center := ball_.center
 			ball_.set_center (v_)
 			sim_.collision_detector.set_response_handler (void)
 			Result := not sim_.collision_detector.collision_test(true)
+			if result = false then
+				ball_.set_center (old_center)
+			end
 			-- DEBUG 
-			io.put_string (v_.out+" for ball "+ball_.number.out+" is valid position :"+result.out)
-			io.put_new_line
+			--io.put_string (v_.out+" for ball "+ball_.number.out+" is valid position :"+result.out)
+			--io.put_new_line
 			-- END DEBUG
 		end
 		
