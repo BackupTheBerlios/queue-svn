@@ -130,10 +130,7 @@ feature -- game state features
 		do
 			logger := ressources_.logger
 			colls_ := ressources_.simulation.collision_list
-			-- END DEBUG
-			info_hud.set_small_left_text (player_a.fallen_balls.count.out)
-			info_hud.set_small_right_text(player_b.fallen_balls.count.out)
-			-- DEBUG
+			ressources_.logger.log("Q_8BALL","next_state", "fallen balls: "+fallen_balls (colls_).count.out)
 			ressources_.logger.log("Q_8BALL","next_state","first shot: "+first_shot.out+"; is_open: "+is_open.out)
 			ressources_.logger.log("Q_8BALL","next_state","correct shot: "+ruleset.first.is_correct_shot(colls_,active_player).out+"; is_correct_opening: "+ruleset.first.is_correct_opening(colls_).out)
 			-- END DEBUG
@@ -154,6 +151,10 @@ feature -- game state features
 			if not is_open then 
 				assign_fallen_balls (colls_)
 			end
+			-- END DEBUG
+			info_hud.set_small_left_text (player_a.fallen_balls.count.out)
+			info_hud.set_small_right_text(player_b.fallen_balls.count.out)
+			-- DEBUG
 		end	
 
 feature{Q_8BALL_RULE} -- 8ball state
@@ -184,7 +185,7 @@ feature{Q_8BALL_RULE} -- 8ball state
 				fb_.after
 			loop
 				if fb_.item /= 8 and fb_.item /= white_number then
-					logger.log ("Q_8BALL","assign_fallen_balls","assigning "+fb_.item.out+" "+table.balls.item (fb_.item).owner.count.out)
+					logger.log ("Q_8BALL","assign_fallen_balls","assigning "+fb_.item.out+" to "+table.balls.item (fb_.item).owner.first.name)
 					p_ ?= table.balls.item (fb_.item).owner.first
 					p_.fallen_balls.force (table.balls.item(fb_.item))
 				end
@@ -241,21 +242,23 @@ feature{Q_8BALL_RULE} -- 8ball state
 			i: INTEGER
 		do
 			-- DEBUG
-			logger.log("Q_8BALL","close_table",active_player.name +" plays"+ball_nr.out)
+			logger.log("Q_8BALL","close_table",active_player.name +" plays "+ball_nr.out)
 			-- END DEBUG
 			from
 				i := table.balls.lower
 			until
 				i > table.balls.upper
 			loop
-				if table.balls.item(i).number <8 and ball_nr < 8 then
-					-- same color
-					table.balls.item (i).add_owner (active_player)
-					active_player.fallen_balls.force (table.balls.item(i))
-				else
-					-- different color
-					table.balls.item (i).add_owner (other_player)
-					other_player.fallen_balls.force(table.balls.item(i))
+				if (table.balls.item(i).number /= white_number) and (table.balls.item(i).number /= 8) then
+					if (ball_nr < 8 and table.balls.item (i).number < 8) or else (ball_nr > 8 and table.balls.item (i).number > 8)  then
+						-- same color
+						table.balls.item (i).add_owner (active_player)
+						logger.log("Q_8BALL","close_table", active_player.name+" becomes owner of "+table.balls.item(i).number.out)
+					else
+						-- different color
+						table.balls.item (i).add_owner (other_player)
+						logger.log("Q_8BALL","close_table", other_player.name+" becomes owner of "+table.balls.item(i).number.out)
+					end
 				end
 				i := i+1
 			end

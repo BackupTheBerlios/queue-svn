@@ -42,7 +42,7 @@ feature -- common game logic
 			bank_shot_ : BOOLEAN
 			ball_: Q_BALL
 		do
-			own_colored_first_ := false
+			own_colored_first_ := false or else mode.is_open
 			-- 4.12.1
 			if not collisions_.is_empty and then collisions_.first.defendent.typeid = ball_type_id then
 				ball_ ?= collisions_.first.defendent

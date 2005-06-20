@@ -37,7 +37,5 @@ feature -- rule
 					result := create {Q_8BALL_BIRD_STATE}.make_mode (mode)
 					ressources_.put_state( result )
 				end	
-				-- change players
-				mode.switch_players
 		end
 end -- class Q_8BALL_CLOSE_TABLE_RULE
