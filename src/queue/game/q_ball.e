@@ -23,13 +23,11 @@ feature -- create
 
 	make_empty is
 		do
-			create velocity.default_create
 			create angular_velocity.default_create
 			create owner.make
 			create old_state.make
 			bounding_object := create {Q_BOUNDING_CIRCLE}.make_empty
 			bounding_object.set_center_old (old_state.center)
-			bounding_object.set_velocity (velocity)
 		end
 		
 	
@@ -38,14 +36,16 @@ feature -- create
 		require
 			center_ /= void
 			radius_ >= 0
+		local
+			v: Q_VECTOR_2D
 		do
-			create velocity.default_create
+			create v.default_create
 			create angular_velocity.default_create
 			create owner.make
 			create old_state.make
-			create bounding_object.make (center_, old_state.center, velocity, radius_)
+			create bounding_object.make (center_, old_state.center, v, radius_)
 			
-			old_state.assign (bounding_object, velocity, angular_velocity)
+			old_state.assign (bounding_object, angular_velocity)
 		end
 
 
@@ -79,7 +79,7 @@ feature -- interface
 			f_sf, f_rf, f, a: Q_VECTOR_2D
 		do
 			-- Save old position in state abstraction
-			old_state.assign (bounding_object, velocity, angular_velocity)
+			old_state.assign (bounding_object, angular_velocity)
 			
 			-- F_sf = mu_sf * Fn * (w x r + v)
 			wr := angular_velocity.cross (radvec)	-- w x r
@@ -149,6 +149,7 @@ feature -- interface
 		require
 			c /= void
 		do
+			old_state.assign (bounding_object, angular_velocity)
 			bounding_object.set_center(c)
 		end
 		
@@ -157,6 +158,7 @@ feature -- interface
 		require
 			r >= 0
 		do
+			old_state.assign (bounding_object, angular_velocity)
 			bounding_object.set_radius(r)
 		end
 		
@@ -165,7 +167,7 @@ feature -- interface
 		require
 			v /= void
 		do
-			velocity := v
+			old_state.assign (bounding_object, angular_velocity)
 			bounding_object.set_velocity (v)
 		end
 		
@@ -174,6 +176,7 @@ feature -- interface
 		require
 			av /= void
 		do
+			old_state.assign (bounding_object, angular_velocity)
 			angular_velocity := av
 		end
 		
@@ -195,8 +198,11 @@ feature -- interface
 
 	bounding_object: Q_BOUNDING_CIRCLE
 		
-	velocity: Q_VECTOR_2D
+	velocity: Q_VECTOR_2D is
 			-- Velocity of ball
+		do
+			result := bounding_object.velocity
+		end	
 			
 	angular_velocity: Q_VECTOR_3D
 			-- Angular velocity of ball

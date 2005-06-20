@@ -21,6 +21,7 @@ feature -- create
 			-- Make empty bounding circle.
 		do
 			create center.default_create
+			create velocity.default_create
 		end
 		
 	make (center_, center_old_, velocity_: Q_VECTOR_2D; radius_: DOUBLE) is
@@ -39,6 +40,7 @@ feature -- create
 	copy (other: like Current) is
 		do
 			center.make_from_other (other.center)
+			velocity.make_from_other (other.velocity)
 			radius := other.radius
 			center_old := other.center_old
 		end
