@@ -8,7 +8,10 @@ class
 inherit
 	VECTOR_2D
 		redefine
-			default_create
+			default_create,
+			is_equal
+--			out,
+--			is_equal
 --		select
 --			out
 		end
@@ -16,8 +19,10 @@ inherit
 	DEBUG_OUTPUT
 		undefine
 			default_create,
-			out
+			out,
+			is_equal
 		end
+
 
 create
 	default_create,
@@ -64,9 +69,15 @@ feature -- interface
 		end
 	
 	is_null: BOOLEAN is
-			-- Is 'Current' equals to (0, 0)?
+			-- Is 'Current' equal to (0, 0)?
 		do
 			Result := (x = 0) and (y = 0)
+		end
+	
+	is_equal (other: like Current): BOOLEAN is
+			-- Is 'other' equal to 'Current'?
+		do
+			Result := (x = other.x) and (y = other.y)
 		end
 		
 	unit_vector: Q_VECTOR_2D is

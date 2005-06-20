@@ -83,7 +83,7 @@ feature -- interface
 					item1 := cursor1.item
 					item2 := cursor2.item
 					
-					if static_test or else (not item2.is_stationary) or else (not item1.is_stationary) then
+					if (not item1.is_stationary) or else (not item2.is_stationary) then
 						if does_collide (item1.bounding_object, item2.bounding_object) then
 							result := True
 						

@@ -135,7 +135,7 @@ feature -- interface
 				until
 					(finished = false) or (j > table.balls.upper)
 				loop
-					finished := finished and (table.balls.item (j).is_stationary)
+					finished := finished and (not table.balls.item (j).is_moving)
 					j := j + 1
 				end
 				
@@ -195,7 +195,9 @@ feature {NONE} -- implementation
 		require
 			b /= void
 		do
-			b.do_update_position (stepsize)
+			if b.is_moving then
+				b.do_update_position (stepsize)
+			end
 		end
 	
 	maximum_velocity (balls: ARRAY[Q_BALL]): DOUBLE is

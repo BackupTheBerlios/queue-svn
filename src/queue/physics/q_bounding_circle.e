@@ -21,10 +21,9 @@ feature -- create
 			-- Make empty bounding circle.
 		do
 			create center.default_create
-			create velocity.default_create
 		end
 		
-	make (center_, center_old_, velocity_: Q_VECTOR_2D; radius_: DOUBLE) is
+	make (center_, center_old_: Q_VECTOR_2D; radius_: DOUBLE) is
 			-- Make bounding circle.
 		require
 			center_ /= Void
@@ -33,14 +32,12 @@ feature -- create
 		do
 			center := center_
 			center_old := center_old_
-			velocity := velocity_
 			radius := radius_
 		end
 		
 	copy (other: like Current) is
 		do
 			center.make_from_other (other.center)
-			velocity.make_from_other (other.velocity)
 			radius := other.radius
 			center_old := other.center_old
 		end
@@ -64,14 +61,6 @@ feature -- interface
 			center_old := c
 		end
 		
-	set_velocity (v: Q_VECTOR_2D) is
-			-- Set velocity to 'v'.
-		require
-			v /= Void
-		do
-			velocity := v
-		end
-		
 	set_radius (r: DOUBLE) is
 			-- Set radius to 'r'.
 		require
@@ -85,9 +74,6 @@ feature -- interface
 	
 	center_old: Q_VECTOR_2D
 			-- Old center of bounding circle
-	
-	velocity: Q_VECTOR_2D
-			-- Velocity of bounding circle
 			
 	radius: DOUBLE
 			-- Radius of bounding circle
