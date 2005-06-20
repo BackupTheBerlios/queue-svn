@@ -237,7 +237,8 @@ feature {NONE} -- implementation
 --			
 --			result := k <= 0
 			
-			create p.make_from_other (circle.velocity)
+--			create p.make_from_other (circle.velocity)
+			p := circle.center - circle.center_old
 			p.scale_to (circle.radius)
 			p.add (circle.center)
 			
