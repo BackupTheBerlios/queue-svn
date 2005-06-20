@@ -218,7 +218,9 @@ feature -- game state
 		do
 			colls_ := ressources_.simulation.collision_list
 			fb_ := fallen_balls (colls_)
-			
+			-- DEBUG
+			ressources_.logger.log("Q_ETH","next_state",fb_.count.out+" balls have fallen")
+			-- END DEBUG
 			if is_lost(colls_) then
 				choice_state_ ?= ressources_.request_state ("eth lost")
 				if choice_state_ = void then

@@ -81,12 +81,13 @@ feature
 			if headfield then
 				mode_ ?= ressources_.mode
 				Result := mode_.is_in_headfield (ball_position_) 
-					and then mode_.valid_position (ball_position_, ball)
+					and then mode_.valid_position (ball_position_, ball,ressources_.simulation)
 			else
-				Result := ressources_.mode.valid_position (ball_position_, ball)
+				Result := ressources_.mode.valid_position (ball_position_, ball,ressources_.simulation)
 			end
-			
-			result := True
+			-- DEBUG
+			Result := true
+			-- END DEBUG
 		end
 		
 	headfield :BOOLEAN

@@ -223,7 +223,8 @@ feature{Q_8BALL_RULE} -- 8ball state
 				x_ := head_point.x
 				b_.set_center (head_point)
 			until
-				x_ = width or else valid_position (b_.center, b_)
+				x_ = width
+--				or else valid_position (b_.center, b_)
 			loop
 				b_.set_center (create {Q_VECTOR_2D}.make (x_, head_point.y))
 				x_ := x_ + 0.5
@@ -239,6 +240,9 @@ feature{Q_8BALL_RULE} -- 8ball state
 		local
 			i: INTEGER
 		do
+			-- DEBUG
+			logger.log("Q_8BALL","close_table",active_player.name +" plays"+ball_nr.out)
+			-- END DEBUG
 			from
 				i := table.balls.lower
 			until

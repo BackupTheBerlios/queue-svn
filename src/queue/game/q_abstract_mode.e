@@ -198,18 +198,21 @@ feature -- state
 
 feature -- queries
 
-	valid_position( v_ : Q_VECTOR_2D; ball_ : Q_BALL ) : BOOLEAN is
+	valid_position( v_ : Q_VECTOR_2D; ball_ : Q_BALL; sim_:Q_SIMULATION ) : BOOLEAN is
 			-- is v_ a valid position, no ball in environment, not in bank, etc.
-		local
-			sim_: Q_SIMULATION
 		do
-			create sim_.make
 			sim_.new (table,create {Q_SHOT}.make (table.balls.item (white_number), create {Q_VECTOR_2D}.default_create))
-			sim_.collision_detector.remove_object (ball_)
-			sim_.collision_detector.add_active_object (create {Q_BALL}.make (v_,ball_radius))
+			-- DEBUG
+			io.put_string("old position: "+ball_.center.out)
+			io.put_new_line
+			-- END DEBUG
+			ball_.set_center (v_)
 			sim_.collision_detector.set_response_handler (void)
 			Result := not sim_.collision_detector.collision_test
-			REsult := true
+			-- DEBUG 
+			io.put_string (v_.out+" for ball "+ball_.number.out+" is valid position :"+result.out)
+			io.put_new_line
+			-- END DEBUG
 		end
 		
 feature -- common game logic

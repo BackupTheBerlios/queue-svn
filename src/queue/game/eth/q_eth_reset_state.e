@@ -72,7 +72,7 @@ feature
 	valid_position( ball_position_ : Q_VECTOR_2D; ressources_: Q_GAME_RESSOURCES ) : BOOLEAN is
 			-- true if the given ball-position is valid, otherwise false
 		do		
-			Result := ressources_.mode.valid_position (ball_position_, ball)
+			Result := ressources_.mode.valid_position (ball_position_, ball,ressources_.simulation)
 		end
 
 

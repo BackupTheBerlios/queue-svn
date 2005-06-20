@@ -48,7 +48,7 @@ feature
 			-- Makes one step of the physics. If the physics has done its job, false is
 			-- returns. If the physics is still working, true is returned.
 		do
-			if not ressources_.simulation.has_finished then
+			if not ressources_.simulation.has_finished or else mode.time_info_hud.over then
 				ressources_.simulation.step (ressources_.mode.table, ressources_.time)
 				mode.delete_fallen_balls(ressources_)
 				Result := true
