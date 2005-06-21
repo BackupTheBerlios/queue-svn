@@ -76,7 +76,7 @@ feature{NONE} -- creation
 			video_subsystem.set_opengl (true)
 			video_subsystem.set_fullscreen ( fullscreen )
 			initialize_screen
-			set_application_name ("Queue OpenGL Proof of Concept")
+			set_application_name ("Queue")
 		
 			-- Create ressources
 			create ressources.make( current )
