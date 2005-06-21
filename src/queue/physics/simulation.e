@@ -195,9 +195,7 @@ feature {NONE} -- implementation
 		require
 			b /= void
 		do
-			if b.is_moving then
-				b.do_update_position (stepsize)
-			end
+			b.do_update_position (stepsize)
 		end
 	
 	maximum_velocity (balls: ARRAY[Q_BALL]): DOUBLE is

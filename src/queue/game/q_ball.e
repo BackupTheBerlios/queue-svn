@@ -77,42 +77,47 @@ feature -- interface
 			wr, mom, om: Q_VECTOR_3D
 			f_sf, f_rf, f, a: Q_VECTOR_2D
 		do
-			-- Save old position in state abstraction
-			old_state.assign (bounding_object, velocity, angular_velocity)
-			
-			-- F_sf = mu_sf * Fn * (w x r + v)
-			wr := angular_velocity.cross (radvec)	-- w x r
-			f_sf := dim3_to_dim2 (wr)
-			f_sf.add (velocity)						-- w x r + v
-			f_sf.scale (sf_const)					-- mu_sf * Fn * (w x r + v)
-
-
-			-- F_rf = mu_rf * Fn * (v / |v|)
-			f_rf := velocity.unit_vector
-			f_rf.scale (rf_const)
-			
-			f := f_rf
-			f.add (f_sf)							-- f_rf now f_rf + f_sf!!! (performance)
-			
-			-- f = a*m
-			-- > Calculate velocity dv = a*t --> v[new] = a*t + v[old]
-			f.scale (1 / mass)
-			a := f
-			a.scale (step)
-			
-			velocity.add (a)						-- v = v + (a * step)
-			
-			-- v = s/t --> s = v * t
-			center.add (velocity * step)
-			
-			-- New angular velocity
-			-- f = a*m --> M = Om*Th
-			-- M = r x F
-			mom := radvec.cross ( dim2_to_dim3 (f_sf) )
-			om := mom
-			om.scaled (1 / theta)					-- Om = M / Th
-			
-			angular_velocity.add (om * step)
+			if is_moving then
+				-- Save old position in state abstraction
+				old_state.assign (bounding_object, velocity, angular_velocity)
+				
+				-- F_sf = mu_sf * Fn * (w x r + v)
+				wr := angular_velocity.cross (radvec)	-- w x r
+				f_sf := dim3_to_dim2 (wr)
+				f_sf.add (velocity)						-- w x r + v
+				f_sf.scale (sf_const)					-- mu_sf * Fn * (w x r + v)
+	
+	
+				-- F_rf = mu_rf * Fn * (v / |v|)
+				f_rf := velocity.unit_vector
+				f_rf.scale (rf_const)
+				
+				f := f_rf
+				f.add (f_sf)							-- f_rf now f_rf + f_sf!!! (performance)
+				
+				-- f = a*m
+				-- > Calculate velocity dv = a*t --> v[new] = a*t + v[old]
+				f.scale (1 / mass)
+				a := f
+				a.scale (step)
+				
+				velocity.add (a)						-- v = v + (a * step)
+				
+				-- v = s/t --> s = v * t
+				center.add (velocity * step)
+				
+				-- New angular velocity
+				-- f = a*m --> M = Om*Th
+				-- M = r x F
+				mom := radvec.cross ( dim2_to_dim3 (f_sf) )
+				om := mom
+				om.scaled (1 / theta)					-- Om = M / Th
+				
+				angular_velocity.add (om * step)
+			else
+				velocity.scale (0)
+				angular_velocity.scaled (0)
+			end
 			
 			if number = 0 then
 				ball0_track.extend (center)

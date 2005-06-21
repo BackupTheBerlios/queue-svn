@@ -98,37 +98,6 @@ feature -- interface
 				cursor1.forth
 			end
 			
-			-- active/passive
-			create cursor1.make (active_list)
-			create cursor2.make (passive_list)
-			from 
-				cursor1.start
-			until
-				cursor1.off
-			loop
-				from
-					cursor2.start
-				until
-					cursor2.off
-				loop
-					item1 := cursor1.item
-					item2 := cursor2.item
-					
-					if (not item1.is_stationary) or (not item2.is_stationary) then
-						if does_collide (item1.bounding_object, item2.bounding_object) then
-							result := True
-						
-							if response_handler /= void then
-								response_handler.on_collide (item1, item2)	
-							end
-						end
-						
-					end
-					cursor2.forth
-				end
-				cursor1.forth
-			end
-			
 			-- active/active
 			create cursor1.make (active_list)
 			create cursor2.make (passive_list)
@@ -146,11 +115,13 @@ feature -- interface
 					item1 := cursor1.item
 					item2 := cursor2.item
 					
-					if does_collide (item1.bounding_object, item2.bounding_object) then
-						result := True
-						
-						if response_handler /= void then
-							response_handler.on_collide (item1, item2)	
+					if (not item1.is_stationary) or (not item2.is_stationary) then
+						if does_collide (item1.bounding_object, item2.bounding_object) then
+							result := True
+							
+							if response_handler /= void then
+								response_handler.on_collide (item1, item2)	
+							end
 						end
 					end
 					cursor2.forth
@@ -158,14 +129,16 @@ feature -- interface
 				cursor1.forth
 			end
 			
+			-- remove objects from list after all collision tests
 			create cursor1.make (remove_list)
 			from
 				cursor1.start
 			until
-				cursor2.off
+				cursor1.off
 			loop
 				active_list.delete (cursor1.item)
 				passive_list.delete (cursor1.item)
+				cursor1.forth
 			end
 		end
 		
@@ -206,12 +179,7 @@ feature {NONE} -- implementation
 			
 			dist := c1.center.distance_square (c2.center)
 			
-			result := dist <= (c1.radius + c2.radius)^2
-			
-			if result then
-				io.putstring ("col cc %N")
-			end
-			
+			result := dist <= (c1.radius + c2.radius)^2			
 		end
 		
 	does_collide_circle_line (o1, o2: Q_BOUNDING_OBJECT): BOOLEAN is
