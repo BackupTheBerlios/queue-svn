@@ -170,7 +170,7 @@ feature {NONE} -- setup
 			inspect number_
 				when  0 then result := "model/voll_00_weiss.png"
 				else  
-					result := "model/halb_rot.png"
+					result := "model/rot.png"
 			end
 		
 		end
