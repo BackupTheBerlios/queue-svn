@@ -5,6 +5,15 @@ Queue is a 3D billiard game. It features a realistic physics engine
 and supports different billiard variants.
 
 
+Source
+------
+You can get the source distribution from 
+	http://developer.berlios.de/projects/queue/
+
+or directly from subversion (http://subversion.tigris.org/)
+	 svn checkout svn://svn.berlios.de/queue queue_local_path
+
+
 Installation
 ------------
 See file INSTALL (yet to come!). (Queue is written in Eiffel, that should explain
