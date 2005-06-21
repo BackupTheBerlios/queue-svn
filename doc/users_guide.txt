@@ -7,7 +7,7 @@
 |o            o             o|
 ------------------------------
 
-	Queue - Userguide
+	Queue - User's guide
 
 Date: 2005-06-21
 Authors: Basil Fierz, Severin Hacker, Andreas Kägi, Benjamin Sigg

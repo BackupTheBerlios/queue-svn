@@ -4,8 +4,31 @@ Queue
 Queue is a 3D billiard game. It features a realistic physics engine
 and supports different billiard variants.
 
+
 Installation
 ------------
-
-See file INSTALL. (Queue is written in Eiffel, that should explain
+See file INSTALL (yet to come!). (Queue is written in Eiffel, that should explain
 why an extra document is needed ;-)
+
+
+Preferences/Tweaks
+------------------
+A lot of adjustments to the game can be made trough the ini-files in
+the data/ directory.
+
+	8ball.ini            Physical parameters for 8-Ball pool.
+	abstractmode.ini     General physical parameters.
+	colors.ini           Colors for gui components.
+	fonts.ini            Self-explaining
+	preferences.ini      Stored menu settings.
+	queue.ini            Video settings.
+
+
+User's guide
+------------
+See file doc/users_guide.txt
+
+
+Developer's guide
+-----------------
+See file doc/dev_guide.rtf
