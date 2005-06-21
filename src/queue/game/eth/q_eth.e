@@ -147,9 +147,9 @@ feature {NONE} -- setup
 			-- convertes the ball number to the apropriate texture name
 		do
 			inspect number_
-				when  0 then result := "model/halb_10_blau.png"
+				when  0 then result := "model/voll_00_weiss.png"
 				else  
-					result := "model/halb_14_gruen.png"
+					result := "model/rot.png"
 			end
 		
 		end
@@ -184,10 +184,10 @@ feature {NONE} -- setup
 			when 24 then create result.make (root_point.x, root_point.y-6*ball_radius)
 			when 25 then create result.make (root_point.x, root_point.y-4*ball_radius)
 			when 26 then create result.make (root_point.x, root_point.y)
-			when 27 then create result.make (head_point.x,head_point.y)
---			when 27 then create result.make (root_point.x, root_point.y+4*ball_radius)
---			when 28 then create result.make (root_point.x, root_point.y+8*ball_radius)
-			when 28 then create result.make (30, 30)
+--			when 27 then create result.make (head_point.x,head_point.y)
+			when 27 then create result.make (root_point.x, root_point.y+4*ball_radius)
+			when 28 then create result.make (root_point.x, root_point.y+8*ball_radius)
+--			when 28 then create result.make (30, 30)
 			
 			end
 		end
