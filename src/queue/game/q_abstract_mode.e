@@ -20,8 +20,8 @@
 --
 
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "The abstract mode has all common things among the Q_ETH and Q_8BALL mode"
+	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -291,27 +291,51 @@ feature -- common game logic
 			fb_ : LINKED_LIST[INTEGER]
 			ball_ : Q_BALL
 			x_ : DOUBLE
+			i_ : INTEGER
 		 do
 		 	-- don't draw them and set them away from other balls
-			fb_ := fallen_balls (ressources_.simulation.collision_list.deep_twin)
+		 	i_ := ressources_.simulation.collision_list.index
+			fb_ := fallen_balls (ressources_.simulation.collision_list)
 			if not fb_.is_empty then
 				from
 					fb_.start
 				until
 					fb_.after
 				loop
-					ball_ := table.balls.item(fb_.item)
-					--DEBUG
-					--ressources_.logger.log ("Q_ABSTRACT_MODE","delete_fallen_balls", "deleting "+ball_.number.out+" table width:"+width.out)
-					--END DEBUG
-					ball_to_ball_model (ball_).set_visible (true)
-					x_ := (ball_.number.to_double*width)/ball_models.count.to_double
-					--DEBUG
-					--ressources_.logger.log ("Q_ABSTRACT_MODE","delete_fallen_balls", "positioning to "+x_.out)
-					--END DEBUG
-					ball_.set_center (create {Q_VECTOR_2D}.make (x_,-20))
+					if fb_.item /= white_number then
+						ball_ := table.balls.item(fb_.item)
+						--DEBUG
+						--ressources_.logger.log ("Q_ABSTRACT_MODE","delete_fallen_balls", "deleting "+ball_.number.out+" table width:"+width.out)
+						--END DEBUG
+						ball_to_ball_model (ball_).set_visible (true)
+						x_ := (ball_.number.to_double*width)/ball_models.count.to_double
+						--DEBUG
+						--ressources_.logger.log ("Q_ABSTRACT_MODE","delete_fallen_balls", "positioning to "+x_.out)
+						--END DEBUG
+						ball_.set_center (create {Q_VECTOR_2D}.make (x_,-20))
+					else
+						ball_ := table.balls.item(fb_.item)
+						insert_ball(ball_,ressources_.simulation)
+					end
 					fb_.forth
 				end
+			end
+			ressources_.simulation.collision_list.go_i_th (i_)
+		end
+		
+	insert_ball(b_ : Q_BALL; sim_:Q_SIMULATION) is
+			-- insert a ball on the fusspunkt or a position nearby
+		local
+			x_: DOUBLE
+		do
+			from
+				x_ := head_point.x
+				b_.set_center (head_point)
+			until
+				x_ >= width or else valid_position (b_.center, b_, sim_)
+			loop
+				b_.set_center (create {Q_VECTOR_2D}.make (x_, head_point.y))
+				x_ := x_ + 0.5
 			end
 		end
 

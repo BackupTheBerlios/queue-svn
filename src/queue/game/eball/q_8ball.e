@@ -55,18 +55,19 @@ feature -- creation
 			-- create the ruleset
 			create ruleset.make
 			-- be careful order DOES matter, this is a kind of Zuständigkeitskette
-			ruleset.force (create {Q_8BALL_LOST_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_WON_RULE}.make_mode (current))
+			ruleset.force (create {Q_8BALL_LOST_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_INCORRECT_OPENING_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_OPENING_WHITE_FALLEN_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_OPENING_BLACK_FALLEN_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_OPENING_BW_FALLEN_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_INCORRECT_SHOT_RULE}.make_mode (current))
-			ruleset.force (create {Q_8BALL_CLOSE_TABLE_RULE}.make_mode (current))
 			ruleset.force (create {Q_8BALL_PLAY_BLACK_RULE}.make_mode (current))
---			ruleset.force (create {Q_8BALL_CORRECT_SHOT_AND_BALL_FALLEN_RULE}.make_mode(current))
+			ruleset.force (create {Q_8BALL_CLOSE_TABLE_RULE}.make_mode (current))
+			ruleset.force (create {Q_8BALL_CORRECT_SHOT_AND_BALL_FALLEN_RULE}.make_mode(current))
 			ruleset.force (create {Q_8BALL_CORRECT_SHOT_RULE}.make_mode(current))
 			is_open := true
+			create unassigned_player.make_mode (current)
 		end
 
 		
@@ -112,6 +113,12 @@ feature	-- Interface
 			-- reset the balls randomly
 		do
 			new_table
+			first_shot := true
+			is_open := true
+			player_a.fallen_balls.wipe_out
+			player_b.fallen_balls.wipe_out
+			info_hud.set_small_left_text ("")
+			info_hud.set_small_right_text ("")
 		end
 
 	identifier : STRING is
@@ -132,13 +139,15 @@ feature -- game state features
 		do
 			precursor(r_)
 			-- set first shot
-			first_shot := true
+			
+			active_player := player_a
 		end
 		
 	first_state( ressources_ : Q_GAME_RESSOURCES ) : Q_GAME_STATE is
 		do
 			result := player_a.first_state( ressources_ )
-			active_player := player_a
+			first_shot := true
+			is_open := true
 			info_hud.set_left_active
 		end
 	
@@ -151,10 +160,11 @@ feature -- game state features
 		do
 			logger := ressources_.logger
 			colls_ := ressources_.simulation.collision_list
+			assign_fallen_balls (colls_)
+			
 			ressources_.logger.log("Q_8BALL","next_state", "fallen balls: "+fallen_balls (colls_).count.out)
 			ressources_.logger.log("Q_8BALL","next_state","first shot: "+first_shot.out+"; is_open: "+is_open.out)
 			ressources_.logger.log("Q_8BALL","next_state","correct shot: "+ruleset.first.is_correct_shot(colls_,active_player).out+"; is_correct_opening: "+ruleset.first.is_correct_opening(colls_).out)
-			-- END DEBUG
 			from
 				ruleset.start	
 			until
@@ -169,21 +179,34 @@ feature -- game state features
 				end
 				ruleset.forth
 			end
-			if not is_open then 
-				assign_fallen_balls (colls_)
-			end
-			-- END DEBUG
+			
+			
+			info_hud.set_big_left_text (player_a.name +" "+player_a.color)
 			info_hud.set_small_left_text (player_a.fallen_balls.count.out)
+			info_hud.set_big_right_text (player_b.name +" "+player_b.color)
 			info_hud.set_small_right_text(player_b.fallen_balls.count.out)
-			-- DEBUG
 		end	
 
-feature{Q_8BALL_RULE} -- 8ball state
-
+-- public for testing purposes
+--feature{Q_8BALL_RULE} -- 8ball state
+feature 
+	
+	set_active_player(player_: Q_8BALL_PLAYER) is
+			-- set active player for debugging purpose
+		do
+			active_player := player_
+		end
+		
+	set_logger (logger_: Q_LOGGER) is
+			-- set logger for debugging purpose
+		do
+			logger := logger_
+		end
 		
 	is_open : BOOLEAN -- is the table "open", i.e. no colors yet specified
 	first_shot : BOOLEAN -- is this the first shot
 	ruleset: LINKED_LIST[Q_8BALL_RULE]
+	
 	
 	set_first_shot(b_ : BOOLEAN) is
 			-- set the first shot flag
@@ -206,14 +229,21 @@ feature{Q_8BALL_RULE} -- 8ball state
 				fb_.after
 			loop
 				if fb_.item /= 8 and fb_.item /= white_number then
-					logger.log ("Q_8BALL","assign_fallen_balls","assigning "+fb_.item.out+" to "+table.balls.item (fb_.item).owner.first.name)
-					p_ ?= table.balls.item (fb_.item).owner.first
+					--logger.log ("Q_8BALL","assign_fallen_balls","assigning "+fb_.item.out+" to "+table.balls.item (fb_.item).owner.first.name)
+					if table.balls.item(fb_.item).owner.is_empty then
+						-- assign the ball to a dummy player so we can assign them when the table is closed
+						p_ ?= unassigned_player
+					else 
+						p_ ?= table.balls.item (fb_.item).owner.first
+					end
 					p_.fallen_balls.force (table.balls.item(fb_.item))
 				end
 				fb_.forth
 			end
 		end
-			
+		
+	unassigned_player : Q_8BALL_HUMAN_PLAYER -- a dummy player for storing all balls that have fallen before the table is closed
+
 	switch_players is
 			-- the active player becomes non-active, the other one active
 		do
@@ -236,23 +266,6 @@ feature{Q_8BALL_RULE} -- 8ball state
 			end
 		end
 		
-	insert_ball(b_ : Q_BALL) is
-			-- insert a ball on the fusspunkt or a position nearby
-		local
-			x_: DOUBLE
-		do
-			from
-				x_ := head_point.x
-				b_.set_center (head_point)
-			until
-				x_ = width
---				or else valid_position (b_.center, b_)
-			loop
-				b_.set_center (create {Q_VECTOR_2D}.make (x_, head_point.y))
-				x_ := x_ + 0.5
-			end
-		end
-		
 	close_table(ball_nr: INTEGER) is
 			-- close the table, i.e. assign the active player to all balls with same color as ball_nr
 		require
@@ -261,10 +274,22 @@ feature{Q_8BALL_RULE} -- 8ball state
 			ball_nr >0 and ball_nr <=15 and ball_nr /= 8
 		local
 			i: INTEGER
+			owner_: Q_8BALL_PLAYER
 		do
 			-- DEBUG
 			logger.log("Q_8BALL","close_table",active_player.name +" plays "+ball_nr.out)
 			-- END DEBUG
+			
+			-- assign colors to players
+			if ball_nr <8 then
+				active_player.set_color ("full")
+				other_player.set_color ("half")
+			elseif ball_nr > 8 then
+				active_player.set_color ("half")
+				other_player.set_color ("full")
+			end
+			
+			-- assign colors to balls
 			from
 				i := table.balls.lower
 			until
@@ -274,14 +299,24 @@ feature{Q_8BALL_RULE} -- 8ball state
 					if (ball_nr < 8 and table.balls.item (i).number < 8) or else (ball_nr > 8 and table.balls.item (i).number > 8)  then
 						-- same color
 						table.balls.item (i).add_owner (active_player)
-						logger.log("Q_8BALL","close_table", active_player.name+" becomes owner of "+table.balls.item(i).number.out)
 					else
 						-- different color
 						table.balls.item (i).add_owner (other_player)
-						logger.log("Q_8BALL","close_table", other_player.name+" becomes owner of "+table.balls.item(i).number.out)
 					end
+					logger.log("Q_8BALL","close_table", table.balls.item (i).owner.first.name +" becomes owner of "+table.balls.item(i).number.out)
 				end
 				i := i+1
+			end
+			
+			-- assign the unassigned balls that have fallen before the table was closed to the correct player
+			from
+				unassigned_player.fallen_balls.start
+			until
+				unassigned_player.fallen_balls.after
+			loop
+				owner_ ?= unassigned_player.fallen_balls.item.owner.first
+				owner_.fallen_balls.force (unassigned_player.fallen_balls.item)
+				unassigned_player.fallen_balls.forth
 			end
 			is_open := false
 		end
@@ -459,9 +494,8 @@ feature{NONE} -- set-up
 				when 11 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y)
 				when 12 then create result.make(root_point.x+factor_*(4*ball_radius), root_point.y+2*ball_radius)
 				when 13 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y-ball_radius)
-				when 14 then create result.make(head_point.x, head_point.y)
-					
---				when 14 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y+ball_radius)
+--				when 14 then create result.make(head_point.x, head_point.y)
+				when 14 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y+ball_radius)
 --				when 15 then create result.make(root_point.x, root_point.y)
 				when 15 then create result.make(20,20)
 					

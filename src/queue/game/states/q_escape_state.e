@@ -435,15 +435,15 @@ feature{NONE} -- menu creation
 			container_.set_focus_handler( create {Q_FOCUS_DEFAULT_HANDLER} )
 			container_.set_bounds( 0, 0, 1, 1 )
 			
---			button_.set_text( defaults_.value( "game", "8ball" ))
---			button_.set_bounds( 0.1, 0.1, 0.8, 0.1 )
---			container_.add( button_ )
---			button_.actions.extend( agent start_8_ball( ?, ? ))
+			button_.set_text( defaults_.value( "game", "8ball" ))
+			button_.set_bounds( 0.1, 0.1, 0.8, 0.1 )
+			container_.add( button_ )
+			button_.actions.extend( agent start_8_ball( ?, ? ))
 
 
 			create button_.make
-			button_.set_bounds( 0.1, 0.1, 0.8, 0.1 )
---			button_.set_bounds( 0.1, 0.25, 0.8, 0.1 )
+--			button_.set_bounds( 0.1, 0.1, 0.8, 0.1 )
+			button_.set_bounds( 0.1, 0.25, 0.8, 0.1 )
 			button_.set_text( defaults_.value( "game", "eth" ))
 			container_.add( button_ )
 			button_.actions.extend( agent start_eth ( ?, ? ))
@@ -762,8 +762,7 @@ feature{NONE} -- new games
 					create eball.make
 					ressources.put_mode( eball )
 				end
-				-- reset the balls
-				eball.reset_balls
+				
 				if human_player_zero.selected then
 					player_a_ := eball.ai_player
 					player_b_ := eball.ai_player
@@ -780,7 +779,8 @@ feature{NONE} -- new games
 				
 				eball.set_player_a( player_a_ )
 				eball.set_player_b( player_b_ )
-				
+				-- reset the balls
+				eball.reset_balls
 				ressources.set_mode( eball )
 				next_state := eball.first_state( ressources )
 			else

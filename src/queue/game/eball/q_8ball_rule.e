@@ -65,8 +65,18 @@ feature -- common game logic
 		do
 			own_colored_first_ := false or else mode.is_open
 			-- 4.12.1
-			if not collisions_.is_empty and then collisions_.first.defendent.typeid = ball_type_id then
+			--DEBUG
+			--mode.logger.log("Q_8BALL_RULE","is_correct_shot","collisions: "+collisions_.count.out+" "+collisions_.first.defendent.out)	
+			--END DEBUG
+			if (not collisions_.is_empty) and then (collisions_.first.defendent.typeid = ball_type_id) then
 				ball_ ?= collisions_.first.defendent
+				mode.logger.log ("Q_8BALL_RULE","is_correct_shot","first hit: "+ball_.number.out)
+				ball_ := mode.table.balls.item(ball_.number)
+				--DEBUG
+				if not ball_.owner.is_empty then
+					mode.logger.log("Q_8BALL_RULE","is_correct_shot",ball_.owner.first.name +" "+ player_.name)	
+				end
+				--END DEBUG
 				own_colored_first_ := ball_.owner.has(player_) or else mode.is_open
 			end
 			colored_ball_fallen_ := not mode.fallen_balls (collisions_).is_empty and not mode.fallen_balls (collisions_).has (white_number)
@@ -155,7 +165,7 @@ feature{Q_8BALL_RULE} -- event handlers
 		local
 			ns_ : Q_8BALL_RESET_STATE
 		do
-			ns_ ?= r_.request_state ("8ball reset")
+			ns_ ?= mode.first_state (r_)
 			if ns_ = void then
 				create ns_.make_mode (mode)
 				r_.put_state (ns_)
@@ -182,7 +192,7 @@ feature{Q_8BALL_RULE} -- event handlers
 				create ns_.make_mode (mode)
 				r_.put_state (ns_)
 			end
-			mode.insert_ball(mode.table.balls.item (8))
+			mode.insert_ball(mode.table.balls.item (8),r_.simulation)
 			cs_.set_next_state (ns_)
 		end
 		
@@ -198,7 +208,7 @@ feature{Q_8BALL_RULE} -- event handlers
 			end
 			ns_.set_ball (mode.table.balls.item (white_number))
 			ns_.set_headfield (true)
-			mode.insert_ball (mode.table.balls.item (8))
+			mode.insert_ball (mode.table.balls.item (8),r_.simulation)
 			cs_.set_next_state (ns_)
 		end
 		

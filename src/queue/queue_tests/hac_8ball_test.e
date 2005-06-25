@@ -20,8 +20,8 @@
 --
 
 indexing
-	description: "Objects that ..."
-	author: ""
+	description: "Objects that test if the rules work correctly"
+	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -33,30 +33,17 @@ inherit
 	
 feature
 	
-	name : STRING is "8Ball Test"
+	name : STRING is "8Ball rules test"
 		
 	init is
 			-- Invoked when this test ist choosen.
-		local
-			table_: Q_TABLE
-			balls_: ARRAY[Q_BALL]
-			i: INTEGER
-			eb_: Q_8BALL
 		do
-			create eb_.make
-			table_ := eb_.table
-			balls_ := table_.balls
-			from
-				i := 1
-			until
-				i >= balls_.count
-			loop
-				io.put_string(balls_.item (i).number.out+" "+balls_.item (i).center.out )
-				io.put_new_line
-				i := i+1
-			end
-
+			create tests.make
+			tests.force(["test_incorrect_shot_rule", agent test_incorrect_shot_rule])
+			set_up_mode
+			run_tests
 		end
+
 		
 	initialized( root_ : Q_GL_ROOT ) is
 			-- Called after the test-case is initialized. If you want, you
@@ -65,7 +52,6 @@ feature
 			cam: Q_GL_CAMERA
 		do
 			cam ?= root_.transform
-			
 			cam.set_position (200, 0, 400)
 			cam.set_alpha (0)
 			cam.set_beta (0)
@@ -98,5 +84,79 @@ feature
 		do
 			create result.make(0, 0, 0)
 		end
+feature {NONE}
+	tests : LINKED_LIST[TUPLE[STRING,FUNCTION [ANY, TUPLE, LIST[BOOLEAN]]]]
+	eball : Q_8BALL
+	logger: Q_LOGGER
+	
+	run_tests is
+			-- check if test holds
+		local
+			test_ : FUNCTION[ANY,TUPLE,LINKED_LIST[BOOLEAN]]
+			results_ : LINKED_LIST[BOOLEAN]
+		do
+			from
+				tests.start
+			until
+				tests.after
+			loop
+				test_ ?= tests.item.item (2)
+				test_.call ([])
+				io.put_string (tests.item.item(1).out+": [")
+				results_ ?= test_.last_result
+				from
+					results_.start
+				until
+					results_.after
+				loop
+					io.put_string(results_.item.out+" ")
+					results_.forth
+				end
+				io.put_string ("]")
+				tests.forth
+			end
+		end
+		
+	set_up_mode is
+			-- sets common variables for testing
+		do
+			create eball.make
+			eball.set_logger (create {Q_LOGGER}.make)
+		end
+		
+	
+	test_incorrect_shot_rule: LINKED_LIST[BOOLEAN] is
+			-- test if the correct shot rule works as expected
+		local
+			c_ : LINKED_LIST[Q_COLLISION_EVENT]
+			incorrect_shot_rule_ : Q_8BALL_INCORRECT_SHOT_RULE
+		do	
+			create result.make
+			eball.set_player_a (eball.human_player)
+			eball.player_a.set_name ("andy")
+			eball.set_player_b (eball.human_player)
+			eball.player_b.set_name("basil")
+			
+			-- andy is playing
+			eball.set_active_player (eball.player_a)
+			eball.set_first_shot (false)
+			
+			-- create an incorrect shot			
+			-- it is andy's turn but he touches first a ball from basil
+			eball.close_table(3)
+			create incorrect_shot_rule_.make_mode (eball)
+			create c_.make
+			c_.force (create {Q_COLLISION_EVENT}.make (eball.table.balls.item(0),eball.table.balls.item(9)))
+			result.force (incorrect_shot_rule_.is_guard_satisfied (c_) = true)
+			
+			-- create a correct shot, the guard of incorrect_shot_rule should be false
+			create c_.make
+			c_.force (create {Q_COLLISION_EVENT}.make (eball.table.balls.item(0),eball.table.balls.item(4)))
+			c_.force (create {Q_COLLISION_EVENT}.make (eball.table.balls.item(4),eball.table.holes.item (1)))
+			result.force (incorrect_shot_rule_.is_guard_satisfied (c_) = false)
+			
+		end
 
+		
+	
 end -- class HAC_8BALL_TEST

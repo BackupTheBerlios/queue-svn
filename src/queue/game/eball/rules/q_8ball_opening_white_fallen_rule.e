@@ -54,7 +54,7 @@ feature -- rule
 	next_state(ressources_: Q_GAME_RESSOURCES) : Q_GAME_STATE is
 			-- rule 4.7
 			-- white has fallen in a correct opening shot
-			-- Der dann aufnahmeberechtigte Spieler hat Lageverbesserung im Kopffeld und darf keine Kugel direkt anspielen, 
+			-- Der dann aufnahmeberechtigte Spieler hat Lageverbesserung im Kopffeld
 		local
 			reset_state_ : Q_8BALL_RESET_STATE
 			aim_state_: Q_8BALL_AIM_STATE

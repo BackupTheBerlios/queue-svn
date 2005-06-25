@@ -44,7 +44,7 @@ feature -- rule
 		
 	is_guard_satisfied(colls_: LIST[Q_COLLISION_EVENT]): BOOLEAN is
 		do
-			Result := (not (mode.fallen_balls(colls_).count =0)) and then (mode.first_shot and is_correct_opening(colls_)) or else (not mode.first_shot and then is_correct_shot(colls_, mode.active_player))
+			Result := (not mode.fallen_balls(colls_).is_empty) and then ((mode.first_shot and is_correct_opening(colls_)) or else (not mode.first_shot and then is_correct_shot(colls_, mode.active_player)))
 		end
 		
 	next_state(ressources_: Q_GAME_RESSOURCES) : Q_GAME_STATE is

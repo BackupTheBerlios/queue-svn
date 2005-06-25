@@ -38,6 +38,7 @@ feature{NONE}
 		do
 			mode := mode_
 			create fallen_balls.make
+			create color.make_empty
 		end
 		
 	mode : Q_8BALL

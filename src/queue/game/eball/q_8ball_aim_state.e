@@ -64,6 +64,7 @@ feature
 		do
 			precursor( ressources_ )
 			ressources_.gl_manager.remove_hud( mode.info_hud )
+			out_of_headfield := false
 		end
 		
 	set_out_of_headfield(o_ : BOOLEAN) is

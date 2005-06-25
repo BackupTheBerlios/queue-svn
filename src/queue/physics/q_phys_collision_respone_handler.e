@@ -207,7 +207,7 @@ feature {NONE} -- implementation
 			event: Q_COLLISION_EVENT
 		do
 			create event.make (agr, def)
-			collision_list.put_right (event)
+			collision_list.force (event)
 			
 		end
 		

@@ -65,6 +65,7 @@ feature
 		do
 			precursor( ressources_ )
 			ressources_.gl_manager.remove_hud( mode.info_hud )
+			headfield := false
 		end
 
 	identifier : STRING is
@@ -85,7 +86,7 @@ feature
 			-- set the position of the ball
 			ressources_.mode.table.balls.item (white_number).set_center (ball_position)
 			
-			-- set next state as bird state
+			-- set next state as aim state
 			result := ressources_.request_state( "8ball aim" )
 			if result = void then
 				mode_ ?= ressources_.mode

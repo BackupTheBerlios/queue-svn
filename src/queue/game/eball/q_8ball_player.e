@@ -33,5 +33,13 @@ inherit
 	
 feature	
 	fallen_balls : LINKED_LIST[Q_BALL] -- the balls that this player has correctly shot
+	color : STRING -- "half" or "full" or "black"
+	
+	set_color(c_: STRING) is
+			-- set the color of the player
+		do
+			color := c_
+		end
+		
 
 end -- class Q_8BALL_PLAYER
