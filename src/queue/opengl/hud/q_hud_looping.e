@@ -70,6 +70,7 @@ feature -- values
 	
 feature{NONE} -- looping
 	angle : DOUBLE
+	wait : BOOLEAN
 
 feature -- looping
 	looping is
@@ -78,6 +79,7 @@ feature -- looping
 		do
 			if angle > -0.1 then
 				angle := angle - 1
+				wait := true
 			end
 		end
 		
@@ -85,6 +87,7 @@ feature -- looping
 			-- adds a looping
 		do
 			angle := angle - 1
+			wait := true
 		end
 		
 	stop is
@@ -102,12 +105,13 @@ feature -- draw
 	draw( open_gl: Q_GL_DRAWABLE ) is
 		do
 			precursor( open_gl )
-			if angle < 0 then
+			if not wait and angle < 0 then
 				angle := angle + open_gl.time.delta_time_millis / duration
 				if angle > 0 then
 					angle := 0
 				end
 			end
+			wait := false
 		end
 		
 
