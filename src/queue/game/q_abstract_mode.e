@@ -149,7 +149,6 @@ feature -- state
 			balls: ARRAY[Q_BALL]
 			ball_model: Q_BALL_MODEL
 			index_: INTEGER
-			pos_ : Q_VECTOR_3D
 			light_position_ : Q_VECTOR_3D
 		do
 			ressources_.gl_manager.add_object (table_model)

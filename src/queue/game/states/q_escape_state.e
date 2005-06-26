@@ -166,6 +166,30 @@ feature{NONE} -- menus
 		end
 		
 feature{NONE} -- menu creation
+	button_as_looping( button_ : Q_HUD_BUTTON ) : Q_HUD_COMPONENT is
+		local
+			looping_ : Q_HUD_LOOPING
+		do
+			create looping_.make
+			looping_.add( button_ )
+			looping_.set_axis( create {Q_VECTOR_3D}.make( 1, 0, 0 ))
+			looping_.set_x( button_.x )
+			looping_.set_y( button_.y )
+			looping_.set_width( button_.width )
+			looping_.set_height( button_.height )
+			button_.set_location( 0, 0 )
+			button_.actions.force( agent button_looping( ?, ?, looping_ ))
+			
+			result := looping_
+		end
+		
+	button_looping( command_ : STRING; button_ : Q_HUD_BUTTON; looping_ : Q_HUD_LOOPING ) is
+		do
+			looping_.looping
+		end
+		
+		
+
 	create_menus( move_ : BOOLEAN ) is
 		local
 			index_ : INTEGER
@@ -274,10 +298,16 @@ feature{NONE} -- menu creation
 			create exit_.make
 			create return_button.make
 			
-			main_menu.add( game_ )
-			main_menu.add( option_ )
-			main_menu.add( help_ )
-			main_menu.add( exit_ )
+			game_.set_bounds( 0.1, 0.1, 0.8, 0.1 )
+			option_.set_bounds( 0.1, 0.25, 0.8, 0.1 )
+			help_.set_bounds( 0.1, 0.4, 0.8, 0.1 )
+			exit_.set_bounds( 0.1, 0.55, 0.8, 0.1 )
+			return_button.set_bounds( 0.5, 0.8, 0.4, 0.1 )			
+			
+			main_menu.add( button_as_looping( game_ ))
+			main_menu.add( button_as_looping( option_ ))
+			main_menu.add( button_as_looping( help_ ))
+			main_menu.add( button_as_looping( exit_ ))
 			
 			game_.actions.extend( agent new_game( ?,? ))
 			option_.actions.extend( agent goto_option_menu( ?, ? ))
@@ -290,12 +320,6 @@ feature{NONE} -- menu creation
 			help_.set_text( defaults_.value( "main", "help" ))
 			exit_.set_text( defaults_.value( "main", "quit" ))
 			return_button.set_text(  defaults_.value( "main", "return" ))
-			
-			game_.set_bounds( 0.1, 0.1, 0.8, 0.1 )
-			option_.set_bounds( 0.1, 0.25, 0.8, 0.1 )
-			help_.set_bounds( 0.1, 0.4, 0.8, 0.1 )
-			exit_.set_bounds( 0.1, 0.55, 0.8, 0.1 )
-			return_button.set_bounds( 0.5, 0.8, 0.4, 0.1 )
 		end
 		
 	create_quit_dialog( defaults_ : Q_INI_FILE_READER ) is
@@ -317,13 +341,13 @@ feature{NONE} -- menu creation
 			create button_.make
 			button_.set_text( defaults_.value( "quit", "no" ))
 			button_.set_bounds( 0.6, 0.55, 0.3, 0.1 )
-			container_.add( button_ )
+			container_.add( button_as_looping( button_ ))
 			button_.actions.extend( agent goto_main_menu( ?, ? ))			
 			
 			create button_.make
 			button_.set_text( defaults_.value( "quit", "yes" ))
 			button_.set_bounds( 0.2, 0.55, 0.3, 0.1 )
-			container_.add( button_ )
+			container_.add( button_as_looping( button_ ))
 			button_.actions.extend( agent exit( ?, ? ))
 			
 			quit_dialog := container_
@@ -371,16 +395,6 @@ feature{NONE} -- menu creation
 			menu_.set_text( defaults_.value( "option", "return" ))
 			secondary_.set_text( defaults_.value( "option", "secondary" ))
 			
-			option_menu.add( human_player_zero )
-			option_menu.add( human_player_one )
-			option_menu.add( human_player_two )
-			option_menu.add( label_1_ )
-			option_menu.add( label_2_ )
-			option_menu.add( player_name_1 )
-			option_menu.add( player_name_2 )
-			option_menu.add( secondary_ )
-			option_menu.add( menu_ )
-			
 			human_player_zero.set_bounds( 0.1, 0.1, 0.8, 0.08 )
 			human_player_one.set_bounds( 0.1, 0.2, 0.8, 0.08 )
 			human_player_two.set_bounds( 0.1, 0.3, 0.8, 0.08 )
@@ -396,6 +410,16 @@ feature{NONE} -- menu creation
 			
 			secondary_.set_bounds( 0.15, 0.8, 0.35, 0.08 )
 			secondary_.actions.extend( agent goto_secondary_option )
+			
+			option_menu.add( human_player_zero )
+			option_menu.add( human_player_one )
+			option_menu.add( human_player_two )
+			option_menu.add( label_1_ )
+			option_menu.add( label_2_ )
+			option_menu.add( player_name_1 )
+			option_menu.add( player_name_2 )
+			option_menu.add( button_as_looping( secondary_ ))
+			option_menu.add( button_as_looping( menu_ ))
 		end
 		
 	create_secondary_options( defaults_ : Q_INI_FILE_READER ) is
@@ -415,13 +439,13 @@ feature{NONE} -- menu creation
 			menu_.set_text( defaults_.value( "secondary", "menu" ))
 			menu_.set_bounds( 0.15, 0.8, 0.35, 0.08 )
 			menu_.actions.extend( agent goto_main_menu )
-			secondary_option.add( menu_ )
+			secondary_option.add( button_as_looping( menu_ ))
 			
 			create option_.make
 			option_.set_text( defaults_.value( "secondary", "option" ))
 			option_.set_bounds( 0.55, 0.8, 0.35, 0.08 )
 			option_.actions.extend( agent goto_option_menu( ?, ? ))
-			secondary_option.add( option_ )
+			secondary_option.add( button_as_looping( option_ ))
 		end
 		
 		
@@ -445,13 +469,13 @@ feature{NONE} -- menu creation
 --			button_.set_bounds( 0.1, 0.1, 0.8, 0.1 )
 			button_.set_bounds( 0.1, 0.25, 0.8, 0.1 )
 			button_.set_text( defaults_.value( "game", "eth" ))
-			container_.add( button_ )
+			container_.add( button_as_looping( button_ ))
 			button_.actions.extend( agent start_eth ( ?, ? ))
 
 			create button_.make
 			button_.set_bounds( 0.5, 0.8, 0.4, 0.1 )
 			button_.set_text( defaults_.value( "game", "return" ))
-			container_.add( button_ )
+			container_.add( button_as_looping( button_ ))
 			button_.actions.extend( agent goto_main_menu( ?, ? ))
 			
 			game_menu := container_
@@ -476,13 +500,13 @@ feature{NONE} -- menu creation
 			create button_.make
 			button_.set_text( defaults_.value( "new_game", "no" ))
 			button_.set_bounds( 0.6, 0.55, 0.3, 0.1 )
-			container_.add( button_ )
+			container_.add( button_as_looping( button_ ))
 			button_.actions.extend( agent goto_main_menu( ?, ? ))			
 			
 			create button_.make
 			button_.set_text( defaults_.value( "new_game", "yes" ))
 			button_.set_bounds( 0.2, 0.55, 0.3, 0.1 )
-			container_.add( button_ )
+			container_.add( button_as_looping( button_ ))
 			button_.actions.extend( agent goto_game_menu( ?, ? ))
 			
 			game_dialog := container_
@@ -522,19 +546,19 @@ feature{NONE} -- menu creation
 			button_.set_text( text_.value( "help", "back" ))
 			button_.actions.extend( agent goto_help( ?,?,menu_-1 ) )
 			button_.set_bounds( 0.1, 0.81, 0.2, 0.09 )
-			container_.add( button_ )
+			container_.add( button_as_looping( button_ ))
 			
 			create button_.make
 			button_.set_text( text_.value( "help", "menu" ))
 			button_.actions.extend( agent goto_main_menu( ?,? ) )
 			button_.set_bounds( 0.4, 0.81, 0.2, 0.09 )
-			container_.add( button_ )
+			container_.add( button_as_looping( button_ ))
 			
 			create button_.make
 			button_.set_text( text_.value( "help", "next" ))
 			button_.actions.extend( agent goto_help( ?,?,menu_+1 ) )
 			button_.set_bounds( 0.7, 0.81, 0.2, 0.09 )
-			container_.add( button_ )			
+			container_.add( button_as_looping( button_ ))			
 			
 			-- set text
 			from index_ := 1 until index_ > labels_.upper loop
