@@ -104,7 +104,7 @@ feature -- interface
 				
 				-- F_sf = mu_sf * Fn * (w x r + v)
 				wr := angular_velocity.cross (radvec)	-- w x r
-				f_sf := dim3_to_dim2 (wr)
+				f_sf := physics.dim3_to_dim2 (wr)
 				f_sf.add (velocity)						-- w x r + v
 				f_sf.scale (sf_const)					-- mu_sf * Fn * (w x r + v)
 	
@@ -130,7 +130,7 @@ feature -- interface
 				-- New angular velocity
 				-- f = a*m --> M = Om*Th
 				-- M = r x F
-				mom := radvec.cross ( dim2_to_dim3 (f_sf) )
+				mom := radvec.cross ( physics.dim2_to_dim3 (f_sf) )
 				om := mom
 				om.scaled (1 / theta)					-- Om = M / Th
 				
@@ -140,17 +140,12 @@ feature -- interface
 				angular_velocity.scaled (0)
 			end
 			
---			if number = 0 then
---				ball0_track.extend (center)
---				
---				io.putstring ("sf: " + f_sf.out)
---				io.put_new_line
---				io.putstring ("om: " + om.out)
---				io.put_new_line
---				io.putstring ("av: " + angular_velocity.out)
---				io.put_new_line
---				io.put_new_line
---			end
+			if number = 0 then
+				ball0_track.extend (center)
+				
+				io.putstring (angular_velocity.out)
+				io.put_new_line
+			end
 		end
 		
 	is_moving: BOOLEAN is
@@ -319,16 +314,6 @@ feature {NONE}-- implementation
 			Result := mu_rf * physics.force_normal_val (mass)
 		end
 		
-	dim3_to_dim2 (v: Q_VECTOR_3D): Q_VECTOR_2D is
-			-- Temporary converter!!!
-		do
-			Result := create {Q_VECTOR_2D}.make (v.x, v.z)
-		end
-		
-	dim2_to_dim3 (v: Q_VECTOR_2D): Q_VECTOR_3D is
-			-- Temporary converter!!!
-		do
-			Result := create {Q_VECTOR_3D}.make (v.x, 0, v.y)
-		end
+	
 
 end -- class Q_BALL

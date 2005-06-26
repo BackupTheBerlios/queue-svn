@@ -39,4 +39,16 @@ feature -- Interface
 			Result := -1 * mass * G
 		end
 		
+	dim3_to_dim2 (v: Q_VECTOR_3D): Q_VECTOR_2D is
+			-- Temporary converter!!!
+		do
+			Result := create {Q_VECTOR_2D}.make (v.x, v.z)
+		end
+		
+	dim2_to_dim3 (v: Q_VECTOR_2D): Q_VECTOR_3D is
+			-- Temporary converter!!!
+		do
+			Result := create {Q_VECTOR_3D}.make (v.x, 0, v.y)
+		end
+		
 end -- class Q_PHYSICS

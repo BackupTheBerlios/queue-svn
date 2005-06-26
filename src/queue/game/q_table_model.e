@@ -107,9 +107,9 @@ feature -- Interface
 		model.draw (open_gl)
 		
 		-- START DEBUG (AK) --
---		balls.start
---		draw_track (open_gl, balls.item.ball.ball0_track)
---		draw_ballvectors (open_gl, balls.item.ball)
+		balls.start
+		draw_track (open_gl, balls.item.ball.ball0_track)
+		draw_ballvectors (open_gl, balls.item.ball)
 		-- END DEBUG --
 	end
 	

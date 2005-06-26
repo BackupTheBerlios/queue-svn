@@ -55,9 +55,9 @@ feature -- interface
 			ball1.set_mu_sf (0.05)
 			ball1.set_mu_rf	(1.0)
 			ball1.set_mass (0.2)
-			ball1.set_angular_velocity (create {Q_VECTOR_3D}.make (10, 0, 0))
+--			ball1.set_angular_velocity (create {Q_VECTOR_3D}.make (10, 0, 0))
 			
-			create ball2.make (create {Q_VECTOR_2D}.make (54.9, 60), 2.5)
+			create ball2.make (create {Q_VECTOR_2D}.make (100, 60), 2.5)
 			ball2.set_mu_sf (0.05)
 			ball2.set_mu_rf	(1.0)
 			ball2.set_mass (0.2)
@@ -116,7 +116,7 @@ feature -- interface
 			
 			ballpos_list.wipe_out
 			
-			create shot.make (ball1, create {Q_VECTOR_2D}.make (0, 0))
+			create shot.make (ball1, create {Q_VECTOR_2D}.make (100, 50))
 
 			simulation.new (table, shot)
 		end
@@ -158,7 +158,7 @@ feature {NONE} -- implementation
 			v: Q_VECTOR_3D
 		do
 			glf := ogl.gl
-			
+			glf.gl_disable (ogl.gl_constants.esdl_gl_lighting)
 			glf.gl_color3f(1,1,0)
 			glf.gl_line_width (2)
 			glf.gl_begin (ogl.gl_constants.esdl_gl_lines)
@@ -175,7 +175,7 @@ feature {NONE} -- implementation
 				glf.gl_vertex2d (b.center.x + v.x, b.center.y + v.z)
 			glf.gl_end
 			
-			
+			glf.gl_enable (ogl.gl_constants.esdl_gl_lighting)
 		end
 
 	draw_ball(ogl: Q_GL_DRAWABLE; b: Q_BALL) is
@@ -220,9 +220,9 @@ feature {NONE} -- implementation
 			glf := ogl.gl
 			
 			-- don't use color3b or color3i, that does not work!
-			glf.gl_color3f(0,1,0)
-			glf.gl_line_width (1)
-			
+--			glf.gl_color3f(0,1,0)
+			glf.gl_line_width (2)
+			glf.gl_disable (ogl.gl_constants.esdl_gl_lighting)
 			glf.gl_begin (ogl.gl_constants.esdl_gl_line_strip)
 
 --			create cursor.make (simulation.position_list)
@@ -236,7 +236,7 @@ feature {NONE} -- implementation
 			end
 			
 			glf.gl_end
-			
+			glf.gl_enable (ogl.gl_constants.esdl_gl_lighting)
 		end
 
 	simulation: Q_SIMULATION

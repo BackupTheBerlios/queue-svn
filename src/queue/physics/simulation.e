@@ -50,13 +50,25 @@ feature -- interface
 			shot /= Void
 		local
 			arr: ARRAY[Q_OBJECT]
+			r, mom: Q_VECTOR_3D
 		do
 			-- ANDREAS: DO NOT OVERWRITE THIS!
 			finished := false
 			
 			oldticks := timer_funcs.sdl_get_ticks_external
 
+			-- velocity of shot
 			shot.hitball.set_velocity (shot.direction)
+			
+			-- angular velocity of shot
+			-- f = a*m --> M = Om*Th
+			-- M = r x F
+			if shot.hitpoint /= Void then
+--				r := shot.hitpoint - physics.dim2_to_dim3 (shot.hitball.center)
+--				mom := r.cross ( physics.dim2_to_dim3 (shot.direction) )
+--				mom.scaled (1/50)
+--				shot.hitball.set_angular_velocity (mom)
+			end
 			
 			-- empty list of collision detector
 			collision_detector.remove_all_objects
@@ -246,15 +258,19 @@ feature {NONE} -- implementation
 		once
 			create result
 		end
+	
+	physics: Q_PHYSICS is
+			-- Physics aggregation
+		once
+			create result
+		end
 		
 	-- START DEBUG --
-	
 	delta_start is
 		do
 			oldticks := timer_funcs.sdl_get_ticks_external
 		end
-		
-	
+
 	delta_end: INTEGER is
 		local
 			newticks: INTEGER
@@ -274,7 +290,7 @@ feature {NONE} -- implementation
 		end
 		
 	
-	is_test: BOOLEAN is False
+	is_test: BOOLEAN is True
 	-- END DEBUG --
 		
 end -- class SIMULATION
