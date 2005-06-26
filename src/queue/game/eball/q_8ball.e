@@ -496,8 +496,8 @@ feature{NONE} -- set-up
 				when 13 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y-ball_radius)
 --				when 14 then create result.make(head_point.x, head_point.y)
 				when 14 then create result.make(root_point.x+factor_*(2*ball_radius), root_point.y+ball_radius)
---				when 15 then create result.make(root_point.x, root_point.y)
-				when 15 then create result.make(20,20)
+				when 15 then create result.make(root_point.x, root_point.y)
+--				when 15 then create result.make(20,20)
 					
 			end
 		end

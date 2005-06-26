@@ -63,7 +63,7 @@ feature -- common game logic
 			bank_shot_ : BOOLEAN
 			ball_: Q_BALL
 		do
-			own_colored_first_ := false or else mode.is_open
+			own_colored_first_ := false
 			-- 4.12.1
 			--DEBUG
 			--mode.logger.log("Q_8BALL_RULE","is_correct_shot","collisions: "+collisions_.count.out+" "+collisions_.first.defendent.out)	
@@ -72,11 +72,6 @@ feature -- common game logic
 				ball_ ?= collisions_.first.defendent
 				mode.logger.log ("Q_8BALL_RULE","is_correct_shot","first hit: "+ball_.number.out)
 				ball_ := mode.table.balls.item(ball_.number)
-				--DEBUG
-				if not ball_.owner.is_empty then
-					mode.logger.log("Q_8BALL_RULE","is_correct_shot",ball_.owner.first.name +" "+ player_.name)	
-				end
-				--END DEBUG
 				own_colored_first_ := ball_.owner.has(player_) or else mode.is_open
 			end
 			colored_ball_fallen_ := not mode.fallen_balls (collisions_).is_empty and not mode.fallen_balls (collisions_).has (white_number)
@@ -86,7 +81,7 @@ feature -- common game logic
 			if collisions_.count >=2 and then collisions_.first.defendent.typeid = bank_type_id then
 				if collisions_.i_th (2).defendent.typeid = ball_type_id then
 					ball_ ?= collisions_.i_th (2).defendent
-					if ball_.owner.has (mode.active_player) and then (mode.fallen_balls (collisions_).has (ball_.number) or else mode.banks_touched (collisions_).count > 1) then
+					if (ball_.owner.has (mode.active_player) or mode.is_open) and then (mode.fallen_balls (collisions_).has (ball_.number) or else mode.banks_touched (collisions_).count > 1) then
 						bank_shot_ := true
 					end
 				end

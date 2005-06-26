@@ -54,7 +54,9 @@ feature -- interface
 		require
 			o /= void
 		do
-			active_list.put_first (o)
+			-- hackers: did not work properly with put first
+			-- active_list.put_first (o)
+			active_list.force_first (o)
 		end
 		
 	add_passive_object (o: Q_OBJECT) is
@@ -79,6 +81,8 @@ feature -- interface
 		do
 			active_list.wipe_out
 			passive_list.wipe_out
+			-- hackers: Andreas I think you have forgotten that line
+			remove_list.wipe_out
 		end
 		
 	collision_test (static_test: BOOLEAN): BOOLEAN is

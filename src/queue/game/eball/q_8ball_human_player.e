@@ -57,6 +57,7 @@ feature
 			result := reset_
 			reset_.set_ball( mode.table.balls.item( mode.white_number ) )
 			reset_.set_headfield ( true )
+			
 		end
 		
 
