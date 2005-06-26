@@ -179,12 +179,9 @@ feature -- game state features
 				end
 				ruleset.forth
 			end
-			
-			
-			info_hud.set_big_left_text (player_a.name +" "+player_a.color)
-			info_hud.set_small_left_text (player_a.fallen_balls.count.out)
-			info_hud.set_big_right_text (player_b.name +" "+player_b.color)
-			info_hud.set_small_right_text(player_b.fallen_balls.count.out)
+
+			info_hud.set_small_left_text (player_a.fallen_balls.count.out + " "+player_a.color)
+			info_hud.set_small_right_text(player_b.fallen_balls.count.out + " "+player_b.color)
 		end	
 
 -- public for testing purposes
@@ -327,8 +324,8 @@ feature -- helper functions
 			-- converts the ball number to the apropriate texture name
 		do
 			inspect number_
---				when  0 then result := "model/voll_00_weiss.png"
-				when  0 then result := "model/halb_08_schwarz.png"
+				when  0 then result := "model/voll_00_weiss.png"
+--				when  0 then result := "model/halb_08_schwarz.png"
 				when  1 then result := "model/voll_01_gelb.png"
 				when  2 then result := "model/voll_02_blau.png"
 				when  3 then result := "model/voll_03_rot.png"

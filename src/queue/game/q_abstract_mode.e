@@ -307,7 +307,7 @@ feature -- common game logic
 						--DEBUG
 						--ressources_.logger.log ("Q_ABSTRACT_MODE","delete_fallen_balls", "deleting "+ball_.number.out+" table width:"+width.out)
 						--END DEBUG
-						ball_to_ball_model (ball_).set_visible (true)
+						ball_to_ball_model (ball_).set_visible (false)
 						x_ := (ball_.number.to_double*width)/ball_models.count.to_double
 						--DEBUG
 						--ressources_.logger.log ("Q_ABSTRACT_MODE","delete_fallen_balls", "positioning to "+x_.out)
