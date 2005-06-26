@@ -180,6 +180,14 @@ feature -- state
 			ressources_.gl_manager.add_object( light_one )
 			ressources_.gl_manager.add_object( light_two )
 			
+			reset_camera (ressources_)
+		end
+	
+	reset_camera(ressources_: Q_GAME_RESSOURCES) is
+			-- reset the camera to the headfield
+		local
+			pos_: Q_VECTOR_3D
+		do
 			-- set camera
 			pos_ := ressources_.mode.position_table_to_world (create {Q_VECTOR_2D}.make (0,0))
 			ressources_.gl_manager.camera.set_position (pos_.x,pos_.y+100,pos_.z)
@@ -187,6 +195,7 @@ feature -- state
 			ressources_.gl_manager.camera.set_alpha(50)
 			
 		end
+		
 	
 	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
 		local

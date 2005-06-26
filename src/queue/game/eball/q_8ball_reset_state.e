@@ -58,6 +58,8 @@ feature
 	install( ressources_ : Q_GAME_RESSOURCES ) is
 		do
 			precursor( ressources_ )
+			-- set camera
+			mode.reset_camera (ressources_)
 			ressources_.gl_manager.add_hud( mode.info_hud )
 		end
 		
