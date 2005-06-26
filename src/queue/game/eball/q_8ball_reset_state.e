@@ -60,6 +60,7 @@ feature
 			precursor( ressources_ )
 			-- set camera
 			mode.reset_camera (ressources_)
+			mode.insert_ball (ball,ressources_.simulation)
 			ressources_.gl_manager.add_hud( mode.info_hud )
 		end
 		

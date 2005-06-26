@@ -21,7 +21,7 @@
 
 indexing
 	description: "The ETH mode is a single player mode. The starting table is an ETH logo written with balls. "
-	author: ""
+	author: "Severin Hacker"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -87,6 +87,7 @@ feature -- Interface
 			-- reset the balls randomly and restart the timer
 		do
 			new_table
+			ball_models.do_all (agent {Q_BALL_MODEL}.set_visible(true))
 			active_player.fallen_balls.wipe_out
 			time_info_hud.stop
 			time_info_hud.set_small_text ("0")

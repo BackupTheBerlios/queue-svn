@@ -113,14 +113,17 @@ feature	-- Interface
 			-- reset the balls randomly
 		do
 			new_table
+			ball_models.do_all (agent {Q_BALL_MODEL}.set_visible(true))
 			first_shot := true
 			is_open := true
 			player_a.fallen_balls.wipe_out
 			player_b.fallen_balls.wipe_out
+			player_a.set_color("")
+			player_b.set_color("")
 			info_hud.set_small_left_text ("")
 			info_hud.set_small_right_text ("")
 		end
-
+		
 	identifier : STRING is
 		do
 			result := "8ball"
