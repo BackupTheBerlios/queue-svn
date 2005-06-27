@@ -126,6 +126,7 @@ feature	-- Interface
 			is_open := true
 			player_a.fallen_balls.wipe_out
 			player_b.fallen_balls.wipe_out
+			unassigned_player.fallen_balls.wipe_out
 			player_a.set_color("")
 			player_b.set_color("")
 			info_hud.set_small_left_text ("")

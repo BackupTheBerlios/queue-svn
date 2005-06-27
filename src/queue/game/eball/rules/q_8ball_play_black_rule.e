@@ -46,7 +46,7 @@ feature -- rule
 		
 	is_guard_satisfied(colls_: LIST[Q_COLLISION_EVENT]): BOOLEAN is
 		do
-			Result := all_balls_fallen
+			Result := all_balls_fallen and (not mode.table.balls.item(8).owner.has (mode.active_player))
 		end
 		
 	next_state(ressources_: Q_GAME_RESSOURCES) : Q_GAME_STATE is

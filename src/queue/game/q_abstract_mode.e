@@ -134,7 +134,7 @@ feature -- camera & lights
 			pos_: Q_VECTOR_3D
 		do
 			-- set camera
-			pos_ := ressources_.mode.position_table_to_world (create {Q_VECTOR_2D}.make (0,0))
+			pos_ := ressources_.mode.position_table_to_world (create {Q_VECTOR_2D}.make (0,table.height/2))
 			ressources_.gl_manager.camera.set_position (pos_.x,pos_.y+100,pos_.z)
 			ressources_.gl_manager.camera.set_beta(-45)
 			ressources_.gl_manager.camera.set_alpha(50)
@@ -322,9 +322,6 @@ feature -- common game logic
 						--DEBUG
 						--ressources_.logger.log ("Q_ABSTRACT_MODE","delete_fallen_balls", "positioning to "+x_.out)
 						--END DEBUG
-						ball_.set_center (create {Q_VECTOR_2D}.make (x_,-20))
-					else
-						ball_ := table.balls.item(fb_.item)
 						ball_.set_center (create {Q_VECTOR_2D}.make (x_,-20))
 					end
 					fb_.forth
