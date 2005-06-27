@@ -43,7 +43,7 @@ creation
 feature{NONE} -- creation
 	make is
 		do
-			zoom_factor := 10.0
+			zoom_factor := 100.0
 			
 			rotate_factor := 100.0
 			rotate_vertical_min := -80

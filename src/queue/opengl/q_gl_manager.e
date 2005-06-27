@@ -56,15 +56,15 @@ feature{NONE} -- creation
 			root.set_inside( group )
 			
 			if width_ > height_ then
-				root.set_top( height_ / width_ )
-				root.set_bottom( -height_ / width_ )
-				root.set_left( 1 )
-				root.set_right( -1 )
+				root.set_top( height_ / width_ / 1.5 )
+				root.set_bottom( -height_ / width_ / 1.5 )
+				root.set_left( 1 / 1.5 )
+				root.set_right( -1 / 1.5 )
 			else
-				root.set_top( 1 )
-				root.set_bottom( -1 )
-				root.set_left( width_ / height_ )
-				root.set_right( -width_ / height_ )
+				root.set_top( 1 / 1.5 )
+				root.set_bottom( -1 / 1.5 )
+				root.set_left( width_ / height_ / 1.5 )
+				root.set_right( -width_ / height_ / 1.5 )
 			end
 		end
 		

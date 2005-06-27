@@ -65,7 +65,7 @@ feature
 			end
 
 			behaviour.set_ball( ball )
-			behaviour.set_zoom_max( ball.radius * 50 )
+			behaviour.set_zoom_max( ball.radius * 250 )
 			behaviour.set_zoom_min( ball.radius * 2 )
 			behaviour.set_rotate_vertical_min( -90 )
 			behaviour.set_rotate_vertical_max( -2.5 )					
