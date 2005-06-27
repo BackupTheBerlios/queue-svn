@@ -70,12 +70,20 @@ feature -- creation
 			create unassigned_player.make_mode (current)
 		end
 
+test is
+
+	do
+		info_hud.set_left_ball( table_model.balls.i_th( 1 ), 1  )
+		info_hud.set_left_ball( table_model.balls.i_th( 2 ), 2  )
+		info_hud.set_left_ball( table_model.balls.i_th( 3 ), 3  )		
+	end
+	
 		
 feature	-- Interface
 	player_A : Q_8BALL_PLAYER -- the first player
 	player_B : Q_8BALL_PLAYER -- the second player
 	active_player : Q_8BALL_PLAYER
-	info_hud : Q_2_INFO_HUD -- the informations for the user
+	info_hud : Q_8BALL_2_INFO_HUD -- the informations for the user
 	
 	set_player_a( player_ : Q_PLAYER ) is
 		do
@@ -122,6 +130,8 @@ feature	-- Interface
 			player_b.set_color("")
 			info_hud.set_small_left_text ("")
 			info_hud.set_small_right_text ("")
+
+			info_hud.remove_all_balls
 		end
 		
 	identifier : STRING is
@@ -237,6 +247,22 @@ feature
 						p_ ?= table.balls.item (fb_.item).owner.first
 					end
 					p_.fallen_balls.force (table.balls.item(fb_.item))
+					
+					
+--					if fb_.item < 8 then
+--						info_hud.set_left_ball( ball_to_ball_model( table.balls.item( fb_.item )), fb_.item )
+--					elseif fb_.item > 8 then
+--						info_hud.set_right_ball( ball_to_ball_model( table.balls.item( fb_.item )), fb_.item-8 )
+--					end
+
+					if player_a = p_ then
+						info_hud.set_left_ball( ball_to_ball_model( table.balls.item( fb_.item )), 
+							player_a.fallen_balls.count )
+					elseif player_b = p_ then
+						info_hud.set_right_ball( ball_to_ball_model( table.balls.item( fb_.item )), 
+							player_b.fallen_balls.count )
+					end
+
 				end
 				fb_.forth
 			end
@@ -316,6 +342,15 @@ feature
 			loop
 				owner_ ?= unassigned_player.fallen_balls.item.owner.first
 				owner_.fallen_balls.force (unassigned_player.fallen_balls.item)
+				
+				if player_a = owner_ then
+					info_hud.set_left_ball( ball_to_ball_model( unassigned_player.fallen_balls.item ), 
+						player_a.fallen_balls.count )
+				elseif player_b = owner_ then
+					info_hud.set_right_ball( ball_to_ball_model( unassigned_player.fallen_balls.item ), 
+						player_b.fallen_balls.count )
+				end
+				
 				unassigned_player.fallen_balls.forth
 			end
 			is_open := false

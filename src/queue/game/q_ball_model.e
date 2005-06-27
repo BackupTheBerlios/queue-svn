@@ -88,6 +88,8 @@ feature {NONE} -- Properties
 	
 	rotation: Q_GL_MULTI_ROTATION
 	
+feature			-- Properties
+
 	visible: BOOLEAN
 feature {NONE} -- Creation
 	make_from_file (file_name_: STRING) is
