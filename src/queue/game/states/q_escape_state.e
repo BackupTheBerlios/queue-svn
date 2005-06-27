@@ -461,12 +461,10 @@ feature{NONE} -- menu creation
 			
 			button_.set_text( defaults_.value( "game", "8ball" ))
 			button_.set_bounds( 0.1, 0.1, 0.8, 0.1 )
-			container_.add( button_ )
+			container_.add( button_as_looping( button_ ))
 			button_.actions.extend( agent start_8_ball( ?, ? ))
 
-
 			create button_.make
---			button_.set_bounds( 0.1, 0.1, 0.8, 0.1 )
 			button_.set_bounds( 0.1, 0.25, 0.8, 0.1 )
 			button_.set_text( defaults_.value( "game", "eth" ))
 			container_.add( button_as_looping( button_ ))
