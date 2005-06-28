@@ -60,7 +60,7 @@ feature
 			precursor( ressources_ )
 			-- set camera
 	--		mode.reset_camera (ressources_)
-			mode.alert.display( ressources_, "Thats a test" )
+			mode.alert.display( ressources_, mode.active_player.name+" may reset the ball")
 			mode.insert_ball (ball,ressources_.simulation)
 			ressources_.gl_manager.add_hud( mode.info_hud )
 		end
