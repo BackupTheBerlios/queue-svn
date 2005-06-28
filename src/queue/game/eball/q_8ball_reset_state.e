@@ -59,7 +59,8 @@ feature
 		do
 			precursor( ressources_ )
 			-- set camera
-			mode.reset_camera (ressources_)
+	--		mode.reset_camera (ressources_)
+			mode.alert.display( ressources_, "Thats a test" )
 			mode.insert_ball (ball,ressources_.simulation)
 			ressources_.gl_manager.add_hud( mode.info_hud )
 		end
@@ -67,6 +68,7 @@ feature
 	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
 		do
 			precursor( ressources_ )
+			mode.alert.ensure_removed
 			ressources_.gl_manager.remove_hud( mode.info_hud )
 			headfield := false
 		end

@@ -52,6 +52,8 @@ feature -- creation
 			create info_hud.make_ordered( true )
 			info_hud.set_location( 0.05, 0.75 )
 			
+			create alert.make
+			
 			-- create the ruleset
 			create ruleset.make
 			-- be careful order DOES matter, this is a kind of Zuständigkeitskette
@@ -70,20 +72,13 @@ feature -- creation
 			create unassigned_player.make_mode (current)
 		end
 
-test is
-
-	do
-		info_hud.set_left_ball( table_model.balls.i_th( 1 ), 1  )
-		info_hud.set_left_ball( table_model.balls.i_th( 2 ), 2  )
-		info_hud.set_left_ball( table_model.balls.i_th( 3 ), 3  )		
-	end
-	
-		
 feature	-- Interface
 	player_A : Q_8BALL_PLAYER -- the first player
 	player_B : Q_8BALL_PLAYER -- the second player
 	active_player : Q_8BALL_PLAYER
 	info_hud : Q_8BALL_2_INFO_HUD -- the informations for the user
+	
+	alert : Q_ALERT
 	
 	set_player_a( player_ : Q_PLAYER ) is
 		do
