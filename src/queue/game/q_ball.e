@@ -143,8 +143,8 @@ feature -- interface
 			if number = 0 then
 				ball0_track.extend (center)
 				
-				io.putstring (angular_velocity.out)
-				io.put_new_line
+--				io.putstring (angular_velocity.out)
+--				io.put_new_line
 			end
 		end
 		
