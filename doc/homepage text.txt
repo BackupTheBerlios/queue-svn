@@ -1,0 +1,7 @@
+Queue ist eine physikalisch höchst realistische Mehrspieler-3D-Billard-Simulation.
+Das populäre 8-Ball-Billard wird gemäss den offiziellen Welt-Pocket-Billard-Regeln gespielt.
+Daneben wurde eigens ein neuer ETH-Spielmodus entwickelt (Einzelspieler). Die 
+Graphics Engine, inklusive der interaktiven Menüführung, verwendet OpenGL und ist
+komplett in 3D. Die Physik unterstützt Reibung und Spins. Queue wurde von Basil Fierz, Severin Hacker, 
+Andreas Kaegi und Benjamin Sigg entwickelt. Source Code und aktuelle Binaries
+findest du unter queue.berlios.de
