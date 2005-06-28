@@ -135,7 +135,7 @@ feature -- Interface
 		do
 			create result.make (root.x + table_.x, zero_level, root.y - table_.y)
 		end
-	
+		
 	direction_table_to_world( table_ : Q_VECTOR_2D ) : Q_VECTOR_3D is
 		do
 			create result.make (table_.x, 0, -table_.y)
@@ -143,10 +143,12 @@ feature -- Interface
 		
 	position_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
 		do
---			create result.make (world_.x - root.x, world_.z + root.y)
-
--- don't know how this should work in real, but the old one is false
 			create result.make (world_.x - root.x, root.y - world_.z )
+		end
+		
+	position_world_to_table3d( world_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
+		do
+			create result.make (world_.x - root.x, world_.y - zero_level, root.y - world_.z )
 		end
 		
 	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is

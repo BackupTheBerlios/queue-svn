@@ -155,9 +155,17 @@ feature -- event-handling
 		end
 		
 	key_pressed( event_ : ESDL_KEYBOARD_EVENT; ressources_ : Q_GAME_RESSOURCES ) is
+		local
+			hit_point_ : Q_VECTOR_3D
 		do
 			if next_state = void and hit_point /= void and event_.key = event_.sdlk_space then
-				set_next_state( prepare_next( hit_point, ressources_ ))
+				hit_point_ := ressources_.mode.position_world_to_table3d( hit_point )
+				hit_point_.add_xyz( -ball.center.x, -ball.radius, -ball.center.y )
+				
+--				hit_point_ := hit_point - ressources_.mode.position_table_to_world( ball.center )
+--				hit_point_.add_xyz( 0, -ball.radius, 0 )
+				
+				set_next_state( prepare_next( hit_point_, ressources_ ))
 			elseif event_.key = event_.sdlk_escape then
 				goto_escape_menu( ressources_ )
 			end

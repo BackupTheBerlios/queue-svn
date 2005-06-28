@@ -64,10 +64,11 @@ feature -- interface
 			-- f = a*m --> M = Om*Th
 			-- M = r x F
 			if shot.hitpoint /= Void then
---				r := shot.hitpoint - physics.dim2_to_dim3 (shot.hitball.center)
---				mom := r.cross ( physics.dim2_to_dim3 (shot.direction) )
---				mom.scaled (1/50)
---				shot.hitball.set_angular_velocity (mom)
+				-- Reinserted by Beni
+				r := shot.hitpoint -- physics.dim2_to_dim3 (shot.hitball.center)
+				mom := r.cross ( physics.dim2_to_dim3 (shot.direction) )
+				mom.scaled (1/50)
+				shot.hitball.set_angular_velocity (mom)
 			end
 			
 			-- empty list of collision detector

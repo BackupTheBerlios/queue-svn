@@ -84,6 +84,12 @@ feature -- Interface
 			Result := table_model.position_world_to_table (world_)
 		end
 		
+	position_world_to_table3d( world_ : Q_VECTOR_3D ) : Q_VECTOR_3D is
+		do
+			result := table_model.position_world_to_table3d( world_ )
+		end
+		
+		
 	direction_world_to_table( world_ : Q_VECTOR_3D ) : Q_VECTOR_2D is
 		do
 			Result := table_model.direction_world_to_table (world_)
