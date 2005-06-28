@@ -68,7 +68,7 @@ feature
 	uninstall( ressources_ : Q_GAME_RESSOURCES ) is
 		do
 			precursor( ressources_ )
-			mode.alert.ensure_removed
+			mode.alert.remove_alert
 			ressources_.gl_manager.remove_hud( mode.info_hud )
 			headfield := false
 		end
