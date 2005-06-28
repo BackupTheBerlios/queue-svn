@@ -2,7 +2,10 @@ Queue
 =====
 
 Queue is a 3D billiard game. It features a realistic physics engine
-and supports different billiard variants.
+and supports different billiard variants. Currently, the popular
+8-Ball two-player mode and a time based single player mode, called
+ETH-mode, are implemented. The graphics engine and the HUD use OpenGL 
+and both are completely in 3D. 
 
 
 Source
