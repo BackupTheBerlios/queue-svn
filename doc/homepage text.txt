@@ -1,4 +1,4 @@
-Queue ist eine physikalisch höchst realistische Mehrspieler-3D-Billard-Simulation.
+Queue ist eine physikalisch realistische Mehrspieler-3D-Billard-Simulation.
 Das populäre 8-Ball-Billard wird gemäss den offiziellen Welt-Pocket-Billard-Regeln gespielt.
 Daneben wurde eigens ein neuer ETH-Spielmodus entwickelt (Einzelspieler). Die 
 Graphics Engine, inklusive der interaktiven Menüführung, verwendet OpenGL und ist
